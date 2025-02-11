@@ -71,7 +71,7 @@ elif view_option == "Vendor":
         existing_agg_cols = {k: v for k, v in agg_dict.items() if k in selected_data.columns}
 
         # Perform aggregation
-        selected_data = selected_data.groupby(["vendor_id", "primary_vendor_name", "Logic"], as_index=False).agg(existing_agg_cols)
+        selected_data = selected_data.groupby(["Logic"], as_index=False).agg(existing_agg_cols)
 
         # Debugging: Check the output of aggregation
         st.write("Aggregated Data Preview:", selected_data.head())
