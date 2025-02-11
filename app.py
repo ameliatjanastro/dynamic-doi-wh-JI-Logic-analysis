@@ -33,81 +33,87 @@ data = pd.concat(dfs, ignore_index=True).sort_values(by=["product_id", "Logic"],
 # Convert 'New RL Value' to numeric (remove commas)
 data["New RL Value"] = data["New RL Value"].astype(str).str.replace(",", "", regex=True).astype(float)
 
-# Streamlit UI
-st.title("Comparison of RL Quantity Logics")
 
-# Sidebar filters
-st.sidebar.header("Filters")
-view_option = st.sidebar.radio("View by", ["Product ID", "Vendor"])
+# Create a navigation between pages
+page = st.sidebar.selectbox("Choose a page", ["Inbound Quantity Simulation", "OOS Projection WH"])
 
-if view_option == "Product ID":
-    product_options = data[['product_id', 'product_name']].drop_duplicates()
-    product_options['product_display'] = product_options['product_id'] + " - " + product_options['product_name']
-    selected_product = st.sidebar.selectbox("Select Product", product_options['product_display'])
-    selected_data = data[data["product_id"] == selected_product.split(" - ")[0]]
-elif view_option == "Vendor":
-    # Create vendor display selection
-    data["vendor_display"] = data["vendor_id"].astype(str) + " - " + data["primary_vendor_name"]
-    selected_vendor = st.sidebar.selectbox("Select Vendor", data["vendor_display"].unique())
-
-    # Ensure vendor filtering is correct
-    selected_vendor_id = selected_vendor.split(" - ")[0].strip()
-    selected_data = data[data["vendor_id"].astype(str).str.strip() == selected_vendor_id]
-
-    # Debugging: Check if selected_data has rows and expected columns
-    if selected_data.empty:
-        st.warning("No data available for this vendor. Please select a different vendor.")
-    #else:
-        #st.write("Selected Data Preview:", selected_data.head())
-
-    if "coverage" in selected_data.columns:
-        selected_data["coverage"] = pd.to_datetime(selected_data["coverage"], errors="coerce").dt.date
-        selected_data = selected_data.dropna(subset=["coverage"])
-
-    #selected_data = selected_data.drop_duplicates(subset=["vendor_id", "Logic"], keep="first")
-        # Define aggregation dictionary
-    agg_dict = {
-            "New RL Qty": "sum",
-            "New RL Value": "sum",
-            "coverage": "max",  # Max date for coverage
-            "New DOI Policy WH": "mean",
-            "Landed DOI": "mean"
-    }
-
-    # Only aggregate existing columns
-    existing_agg_cols = {k: v for k, v in agg_dict.items() if k in selected_data.columns}
-        
-        # Debug: Print available columns before aggregation
-        #st.write("Available Columns Before Aggregation:", selected_data.columns.tolist())
-        #st.write("Columns to Aggregate:", existing_agg_cols)
-
-    # Convert numeric columns to appropriate types
-    for col in existing_agg_cols.keys():
-        if col != "coverage":  
-            selected_data[col] = pd.to_numeric(selected_data[col], errors="coerce")  # Force invalid to NaN
+if page == "OOS Projection WH":
+    
+    # Streamlit UI
+    st.title("Comparison of RL Quantity Logics")
+    
+    # Sidebar filters
+    st.sidebar.header("Filters")
+    view_option = st.sidebar.radio("View by", ["Product ID", "Vendor"])
+    
+    if view_option == "Product ID":
+        product_options = data[['product_id', 'product_name']].drop_duplicates()
+        product_options['product_display'] = product_options['product_id'] + " - " + product_options['product_name']
+        selected_product = st.sidebar.selectbox("Select Product", product_options['product_display'])
+        selected_data = data[data["product_id"] == selected_product.split(" - ")[0]]
+    elif view_option == "Vendor":
+        # Create vendor display selection
+        data["vendor_display"] = data["vendor_id"].astype(str) + " - " + data["primary_vendor_name"]
+        selected_vendor = st.sidebar.selectbox("Select Vendor", data["vendor_display"].unique())
+    
+        # Ensure vendor filtering is correct
+        selected_vendor_id = selected_vendor.split(" - ")[0].strip()
+        selected_data = data[data["vendor_id"].astype(str).str.strip() == selected_vendor_id]
+    
+        # Debugging: Check if selected_data has rows and expected columns
+        if selected_data.empty:
+            st.warning("No data available for this vendor. Please select a different vendor.")
+        #else:
+            #st.write("Selected Data Preview:", selected_data.head())
+    
+        if "coverage" in selected_data.columns:
+            selected_data["coverage"] = pd.to_datetime(selected_data["coverage"], errors="coerce").dt.date
+            selected_data = selected_data.dropna(subset=["coverage"])
+    
+        #selected_data = selected_data.drop_duplicates(subset=["vendor_id", "Logic"], keep="first")
+            # Define aggregation dictionary
+        agg_dict = {
+                "New RL Qty": "sum",
+                "New RL Value": "sum",
+                "coverage": "max",  # Max date for coverage
+                "New DOI Policy WH": "mean",
+                "Landed DOI": "mean"
+        }
+    
+        # Only aggregate existing columns
+        existing_agg_cols = {k: v for k, v in agg_dict.items() if k in selected_data.columns}
             
-    selected_data = selected_data.groupby(["vendor_id", "primary_vendor_name", "Logic"], as_index=False).agg(existing_agg_cols)
-
-    # Sort by logic order (A -> D)
-    logic_order = {"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4}
-    selected_data = selected_data.sort_values(by="Logic", key=lambda x: x.map(logic_order))
-
-        # Debugging: Check the output of aggregation
-        #st.write("Aggregated Data Preview:", selected_data)
-
-        # Display Table
-        #table_columns = ["Logic", "New RL Qty", "New RL Value", "coverage", "New DOI Policy WH", "Landed DOI"]
-        #st.write("### Comparison Table")
-        #st.dataframe(selected_data[table_columns], hide_index=True)
-
-        #table_columns = ["Logic"] + list(existing_agg_cols.keys())  # Only show logic columns
-        #st.write("### Comparison Table")
-        #st.dataframe(selected_data[table_columns], hide_index=True)
-
-        # Plot Comparison Graph
-        #st.write("### Comparison Graph")
-        #fig = px.bar(selected_data, x="Logic", y="New RL Qty", color="Logic", title=f"Comparison of New RL Qty Across Logics for {selected_vendor}")
-        #st.plotly_chart(fig)
+            # Debug: Print available columns before aggregation
+            #st.write("Available Columns Before Aggregation:", selected_data.columns.tolist())
+            #st.write("Columns to Aggregate:", existing_agg_cols)
+    
+        # Convert numeric columns to appropriate types
+        for col in existing_agg_cols.keys():
+            if col != "coverage":  
+                selected_data[col] = pd.to_numeric(selected_data[col], errors="coerce")  # Force invalid to NaN
+                
+        selected_data = selected_data.groupby(["vendor_id", "primary_vendor_name", "Logic"], as_index=False).agg(existing_agg_cols)
+    
+        # Sort by logic order (A -> D)
+        logic_order = {"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4}
+        selected_data = selected_data.sort_values(by="Logic", key=lambda x: x.map(logic_order))
+    
+            # Debugging: Check the output of aggregation
+            #st.write("Aggregated Data Preview:", selected_data)
+    
+            # Display Table
+            #table_columns = ["Logic", "New RL Qty", "New RL Value", "coverage", "New DOI Policy WH", "Landed DOI"]
+            #st.write("### Comparison Table")
+            #st.dataframe(selected_data[table_columns], hide_index=True)
+    
+            #table_columns = ["Logic"] + list(existing_agg_cols.keys())  # Only show logic columns
+            #st.write("### Comparison Table")
+            #st.dataframe(selected_data[table_columns], hide_index=True)
+    
+            # Plot Comparison Graph
+            #st.write("### Comparison Graph")
+            #fig = px.bar(selected_data, x="Logic", y="New RL Qty", color="Logic", title=f"Comparison of New RL Qty Across Logics for {selected_vendor}")
+            #st.plotly_chart(fig)
 
 
 
@@ -121,85 +127,87 @@ elif view_option == "Vendor":
     #(selected_data["business_tagging"].isin(selected_business_tag) if selected_business_tag else True)
 #]
 
-# Show table with only logic columns
-st.write("### Comparison Table")
-table_columns = ["Logic", "coverage", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI"]
-st.dataframe(selected_data[table_columns].sort_values(by="Logic", key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})), hide_index=True)
+    # Show table with only logic columns
+    st.write("### Comparison Table")
+    table_columns = ["Logic", "coverage", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI"]
+    st.dataframe(selected_data[table_columns].sort_values(by="Logic", key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})), hide_index=True)
+    
+    # Comparison Graph
+    #st.write("### Comparison Graph")
+    #fig = px.bar(selected_data, x="Logic", y="Landed DOI", color="Logic", title="Comparison of New RL Qty Across Logics")
+    #st.plotly_chart(fig)
+    
+    import plotly.graph_objects as go
+    
+    # ✅ Define color based on "Landed DOI" threshold
+    selected_data["Landed DOI"] = pd.to_numeric(selected_data["Landed DOI"], errors="coerce")
+    
+    # ✅ Fill NaN values with 0 (or another safe default)
+    selected_data["Landed DOI"].fillna(0, inplace=True)
+    selected_data["color"] = selected_data["Landed DOI"].apply(lambda x: "lightgreen" if x >= 2 else "red")
+    
+    # ✅ Create bar chart
+    fig = go.Figure()
+    
+    for index, row in selected_data.iterrows():
+        fig.add_trace(go.Bar(
+            x=[row["Logic"]],
+            y=[row["Landed DOI"]],
+            name=row["Logic"],
+            marker=dict(color=row["color"]),
+        ))
+    
+    # ✅ Add horizontal line at 2 (Safe threshold)
+    fig.add_hline(y=2, line_dash="dash", line_color="red", annotation_text="Minimum Safe Level (2)", annotation_position="top right")
+    
+    # ✅ Graph layout settings
+    fig.update_layout(
+        title=f"Landed DOI Comparison Across Logics",
+        xaxis_title="Logic",
+        yaxis_title="Landed DOI",
+        showlegend=False
+    )
+    
+    # ✅ Display graph in Streamlit
+    st.write("### Landed DOI Comparison Graph")
+    st.plotly_chart(fig)
 
-# Comparison Graph
-#st.write("### Comparison Graph")
-#fig = px.bar(selected_data, x="Logic", y="Landed DOI", color="Logic", title="Comparison of New RL Qty Across Logics")
-#st.plotly_chart(fig)
-
-import plotly.graph_objects as go
-
-# ✅ Define color based on "Landed DOI" threshold
-selected_data["Landed DOI"] = pd.to_numeric(selected_data["Landed DOI"], errors="coerce")
-
-# ✅ Fill NaN values with 0 (or another safe default)
-selected_data["Landed DOI"].fillna(0, inplace=True)
-selected_data["color"] = selected_data["Landed DOI"].apply(lambda x: "lightgreen" if x >= 2 else "red")
-
-# ✅ Create bar chart
-fig = go.Figure()
-
-for index, row in selected_data.iterrows():
-    fig.add_trace(go.Bar(
-        x=[row["Logic"]],
-        y=[row["Landed DOI"]],
-        name=row["Logic"],
-        marker=dict(color=row["color"]),
-    ))
-
-# ✅ Add horizontal line at 2 (Safe threshold)
-fig.add_hline(y=2, line_dash="dash", line_color="red", annotation_text="Minimum Safe Level (2)", annotation_position="top right")
-
-# ✅ Graph layout settings
-fig.update_layout(
-    title=f"Landed DOI Comparison Across Logics",
-    xaxis_title="Logic",
-    yaxis_title="Landed DOI",
-    showlegend=False
-)
-
-# ✅ Display graph in Streamlit
-st.write("### Landed DOI Comparison Graph")
-st.plotly_chart(fig)
-
-
-data["Ship Date"] = pd.to_datetime(data["Ship Date"], errors="coerce")
-
-selected_pareto = st.multiselect("Select Pareto", data["Pareto"].dropna().unique())
-selected_location = st.multiselect("Select Location ID", data["location_id"].dropna().unique())
-selected_business_tag = st.multiselect("Select Business Tag", data["business_tagging"].dropna().unique())
-
-# Apply filters to data (only for this graph)
-filtered_data = data[
-    (data["Pareto"].isin(selected_pareto) if selected_pareto else True) &
-    (data["location_id"].isin(selected_location) if selected_location else True) &
-    (data["business_tagging"].isin(selected_business_tag) if selected_business_tag else True)
-]
-
-# ✅ Group by Ship Date and Logic to get total inbound quantity after filtering
-inbound_data = filtered_data.groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum()
-
-# Plotly Line Graph
-fig2 = px.line(
-    inbound_data, 
-    x="Ship Date", 
-    y="New RL Qty", 
-    color="Logic",  # Different line colors per logic
-    title="Total Inbound Quantity Per Ship Date"
-)
-
-# ✅ Improve layout
-fig2.update_layout(
-    xaxis_title="Ship Date",
-    yaxis_title="Total Inbound Quantity",
-    xaxis=dict(showgrid=True),
-    yaxis=dict(showgrid=True)
-)
-
-# ✅ Display in Streamlit
-st.write("### Inbound Quantity Trend Over Time")
-st.plotly_chart(fig2)
+elif page == "Inbound Quantity Simulation":
+    
+    data["Ship Date"] = pd.to_datetime(data["Ship Date"], errors="coerce")
+    
+   # Sidebar filters for Inbound Quantity Trend
+    selected_pareto = st.sidebar.multiselect("Select Pareto", data["Pareto"].dropna().unique())
+    selected_location = st.sidebar.multiselect("Select Location ID", data["location_id"].dropna().unique())
+    selected_business_tag = st.sidebar.multiselect("Select Business Tag", data["business_tagging"].dropna().unique())
+    
+    # Apply filters to data (only for this graph)
+    filtered_data = data[
+        (data["Pareto"].isin(selected_pareto) if selected_pareto else True) &
+        (data["location_id"].isin(selected_location) if selected_location else True) &
+        (data["business_tagging"].isin(selected_business_tag) if selected_business_tag else True)
+    ]
+    
+    # ✅ Group by Ship Date and Logic to get total inbound quantity after filtering
+    inbound_data = filtered_data.groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum()
+    
+    # Plotly Line Graph
+    fig2 = px.line(
+        inbound_data, 
+        x="Ship Date", 
+        y="New RL Qty", 
+        color="Logic",  # Different line colors per logic
+        title="Total Inbound Quantity Per Ship Date"
+    )
+    
+    # ✅ Improve layout
+    fig2.update_layout(
+        xaxis_title="Ship Date",
+        yaxis_title="Total Inbound Quantity",
+        xaxis=dict(showgrid=True),
+        yaxis=dict(showgrid=True)
+    )
+    
+    # ✅ Display in Streamlit
+    st.write("### Inbound Quantity Trend Over Time")
+    st.plotly_chart(fig2)
