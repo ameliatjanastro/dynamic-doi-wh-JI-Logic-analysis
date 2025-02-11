@@ -70,11 +70,25 @@ elif view_option == "Vendor":
         # Only aggregate existing columns
         existing_agg_cols = {k: v for k, v in agg_dict.items() if k in selected_data.columns}
 
-        # Perform aggregation
-        selected_data = selected_data.groupby(["Logic"], as_index=False).agg(existing_agg_cols)
+        selected_data = selected_data.groupby(["vendor_id", "primary_vendor_name", "Logic"], as_index=False).agg(existing_agg_cols)
+
+        # Sort by logic order (A -> D)
+        logic_order = {"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4}
+        selected_data = selected_data.sort_values(by="Logic", key=lambda x: x.map(logic_order))
 
         # Debugging: Check the output of aggregation
-        st.write("Aggregated Data Preview:", selected_data.head())
+        st.write("Aggregated Data Preview:", selected_data)
+
+        # Display Table
+        table_columns = ["Logic", "New RL Qty", "New RL Value", "coverage", "New DOI Policy WH", "Landed DOI"]
+        st.write("### Comparison Table")
+        st.dataframe(selected_data[table_columns], hide_index=True)
+
+        # Plot Comparison Graph
+        st.write("### Comparison Graph")
+        fig = px.bar(selected_data, x="Logic", y="New RL Qty", color="Logic", title=f"Comparison of New RL Qty Across Logics for {selected_vendor}")
+        st.plotly_chart(fig)
+
 
 
 #selected_pareto = st.sidebar.multiselect("Select Pareto", data["Pareto"].dropna().unique())
