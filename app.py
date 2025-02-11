@@ -98,9 +98,9 @@ elif view_option == "Vendor":
         #st.write("### Comparison Table")
         #st.dataframe(selected_data[table_columns], hide_index=True)
 
-        table_columns = ["Logic"] + list(existing_agg_cols.keys())  # Only show logic columns
-        st.write("### Comparison Table")
-        st.dataframe(selected_data[table_columns], hide_index=True)
+        #table_columns = ["Logic"] + list(existing_agg_cols.keys())  # Only show logic columns
+        #st.write("### Comparison Table")
+        #st.dataframe(selected_data[table_columns], hide_index=True)
 
         # Plot Comparison Graph
         #st.write("### Comparison Graph")
