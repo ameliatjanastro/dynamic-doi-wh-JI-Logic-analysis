@@ -58,6 +58,9 @@ elif view_option == "Vendor":
     else:
         st.write("Selected Data Preview:", selected_data.head())
 
+        if "coverage" in selected_data.columns:
+            selected_data["coverage"] = pd.to_datetime(selected_data["coverage"], errors="coerce")
+
         # Define aggregation dictionary
         agg_dict = {
             "New RL Qty": "sum",
@@ -84,17 +87,17 @@ elif view_option == "Vendor":
         selected_data = selected_data.sort_values(by="Logic", key=lambda x: x.map(logic_order))
 
         # Debugging: Check the output of aggregation
-        st.write("Aggregated Data Preview:", selected_data)
+        #st.write("Aggregated Data Preview:", selected_data)
 
         # Display Table
-        table_columns = ["Logic", "New RL Qty", "New RL Value", "coverage", "New DOI Policy WH", "Landed DOI"]
-        st.write("### Comparison Table")
-        st.dataframe(selected_data[table_columns], hide_index=True)
+        #table_columns = ["Logic", "New RL Qty", "New RL Value", "coverage", "New DOI Policy WH", "Landed DOI"]
+        #st.write("### Comparison Table")
+        #st.dataframe(selected_data[table_columns], hide_index=True)
 
         # Plot Comparison Graph
-        st.write("### Comparison Graph")
-        fig = px.bar(selected_data, x="Logic", y="New RL Qty", color="Logic", title=f"Comparison of New RL Qty Across Logics for {selected_vendor}")
-        st.plotly_chart(fig)
+        #st.write("### Comparison Graph")
+        #fig = px.bar(selected_data, x="Logic", y="New RL Qty", color="Logic", title=f"Comparison of New RL Qty Across Logics for {selected_vendor}")
+        #st.plotly_chart(fig)
 
 
 
