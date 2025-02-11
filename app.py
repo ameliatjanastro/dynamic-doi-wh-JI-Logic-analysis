@@ -10,7 +10,7 @@ file_paths = {
     "Logic D": "logic d.csv",
 }
 # Load and normalize data
-common_columns = ["product_id", "product_name", "vendor_id", "primary_vendor_name", "business_tagging", "location_id", "Pareto"]
+common_columns = ["product_id", "product_name", "vendor_id", "primary_vendor_name", "business_tagging", "location_id", "Pareto", "Ship Date"]
 logic_columns = [
     'coverage', 'New DOI Policy WH', 'New RL Qty', 'New RL Value', 'Landed DOI'
 ]
