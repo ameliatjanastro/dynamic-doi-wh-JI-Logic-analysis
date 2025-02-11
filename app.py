@@ -184,7 +184,7 @@ elif page == "Inbound Quantity Simulation":
     # Apply filters to data (only for this graph)
     filtered_data = data[
         (data["Pareto"].isin(selected_pareto) if selected_pareto else True) &
-        (data["location_id"].isin(selected_location) if selected_location else True) &
+        (data["location_id"] == selected_location if selected_location else True) &
         (data["business_tagging"].isin(selected_business_tag) if selected_business_tag else True)
     ]
     
