@@ -64,31 +64,31 @@ elif view_option == "Vendor":
 
     selected_data = selected_data.drop_duplicates(subset=["vendor_id", "Logic"], keep="first")
         # Define aggregation dictionary
-        agg_dict = {
+    agg_dict = {
             "New RL Qty": "sum",
             "New RL Value": "sum",
             "coverage": "max",  # Max date for coverage
             "New DOI Policy WH": "mean",
             "Landed DOI": "mean"
-        }
+    }
 
-        # Only aggregate existing columns
-        existing_agg_cols = {k: v for k, v in agg_dict.items() if k in selected_data.columns}
+    # Only aggregate existing columns
+    existing_agg_cols = {k: v for k, v in agg_dict.items() if k in selected_data.columns}
         
         # Debug: Print available columns before aggregation
         #st.write("Available Columns Before Aggregation:", selected_data.columns.tolist())
         #st.write("Columns to Aggregate:", existing_agg_cols)
 
-        # Convert numeric columns to appropriate types
-        for col in existing_agg_cols.keys():
-            if col != "coverage":  
-                selected_data[col] = pd.to_numeric(selected_data[col], errors="coerce")  # Force invalid to NaN
+    # Convert numeric columns to appropriate types
+    for col in existing_agg_cols.keys():
+        if col != "coverage":  
+            selected_data[col] = pd.to_numeric(selected_data[col], errors="coerce")  # Force invalid to NaN
             
-        selected_data = selected_data.groupby(["vendor_id", "primary_vendor_name", "Logic"], as_index=False).agg(existing_agg_cols)
+    selected_data = selected_data.groupby(["vendor_id", "primary_vendor_name", "Logic"], as_index=False).agg(existing_agg_cols)
 
-        # Sort by logic order (A -> D)
-        logic_order = {"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4}
-        selected_data = selected_data.sort_values(by="Logic", key=lambda x: x.map(logic_order))
+    # Sort by logic order (A -> D)
+    logic_order = {"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4}
+    selected_data = selected_data.sort_values(by="Logic", key=lambda x: x.map(logic_order))
 
         # Debugging: Check the output of aggregation
         #st.write("Aggregated Data Preview:", selected_data)
