@@ -80,7 +80,8 @@ elif view_option == "Vendor":
 
         # Convert numeric columns to appropriate types
         for col in existing_agg_cols.keys():
-            selected_data[col] = pd.to_numeric(selected_data[col], errors="coerce")
+            if col != "coverage":  
+                selected_data[col] = pd.to_numeric(selected_data[col], errors="coerce")  # Force invalid to NaN
             
         selected_data = selected_data.groupby(["vendor_id", "primary_vendor_name", "Logic"], as_index=False).agg(existing_agg_cols)
 
