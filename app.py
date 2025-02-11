@@ -200,19 +200,20 @@ elif page == "Inbound Quantity Simulation":
         title="Total Inbound Quantity Per Ship Date"
     )
 
-    # Add circle markers and bold text at each data point
+        # Add circle markers with logic color and black text for values
     fig2.update_traces(
         mode='lines+markers',  # Display both lines and markers
         marker=dict(
-            size=10,  # Size of the markers
+            size=8,  # Size of the markers
             symbol='circle',  # Circle-shaped markers
-            color='black'  # Color of the markers (you can customize this)
+            color=inbound_data['Logic'].map(dict(zip(inbound_data['Logic'].unique(), fig2.data[0].marker.color))),  # Set marker color according to 'Logic'
         ),
         text=inbound_data["New RL Qty"].astype(str),  # Add the value as text
         textposition='top center',  # Position of the text
         textfont=dict(
             size=12,  # Font size
             family="Arial",  # Font family
+            color='black',  # Text color is set to black
             weight='bold'  # Make the text bold
         )
     )
