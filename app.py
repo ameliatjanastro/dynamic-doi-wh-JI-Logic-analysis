@@ -125,7 +125,64 @@ table_columns = ["Logic", "coverage", "New RL Qty", "New RL Value", "New DOI Pol
 st.dataframe(selected_data[table_columns].sort_values(by="Logic", key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})), hide_index=True)
 
 # Comparison Graph
-st.write("### Comparison Graph")
-fig = px.bar(selected_data, x="Logic", y="New RL Qty", color="Logic", title="Comparison of New RL Qty Across Logics")
+#st.write("### Comparison Graph")
+#fig = px.bar(selected_data, x="Logic", y="Landed DOI", color="Logic", title="Comparison of New RL Qty Across Logics")
+#st.plotly_chart(fig)
+
+import plotly.graph_objects as go
+
+# ✅ Define color based on "Landed DOI" threshold
+selected_data["color"] = selected_data["Landed DOI"].apply(lambda x: "green" if x >= 2 else "red")
+
+# ✅ Create bar chart
+fig = go.Figure()
+
+for index, row in selected_data.iterrows():
+    fig.add_trace(go.Bar(
+        x=[row["Logic"]],
+        y=[row["Landed DOI"]],
+        name=row["Logic"],
+        marker=dict(color=row["color"]),
+    ))
+
+# ✅ Add horizontal line at 2 (Safe threshold)
+fig.add_hline(y=2, line_dash="dash", line_color="black", annotation_text="Minimum Safe Level (2)", annotation_position="top right")
+
+# ✅ Graph layout settings
+fig.update_layout(
+    title=f"Landed DOI Comparison Across Logics for {selected_vendor}",
+    xaxis_title="Logic",
+    yaxis_title="Landed DOI",
+    showlegend=False
+)
+
+# ✅ Display graph in Streamlit
+st.write("### Landed DOI Comparison Graph")
 st.plotly_chart(fig)
 
+
+data["ship_date"] = pd.to_datetime(data["ship_date"], errors="coerce")
+
+# ✅ Group by Ship Date and Logic to get total inbound quantity
+inbound_data = data.groupby(["ship_date", "Logic"], as_index=False)["Inb Qty"].sum()
+
+# ✅ Create line graph
+fig2 = px.line(
+    inbound_data,
+    x="ship_date",
+    y="Inb Qty",
+    color="Logic",
+    title="Total Inbound Quantity per Ship Date Across Logics"
+)
+
+# ✅ Improve layout
+fig2.update_layout(
+    xaxis_title="Ship Date",
+    yaxis_title="Total Inbound Quantity",
+    xaxis=dict(showgrid=True),
+    yaxis=dict(showgrid=True)
+)
+
+# ✅ Display in Streamlit
+st.write("### Inbound Quantity Trend Over Time")
+st.plotly_chart(fig2)
