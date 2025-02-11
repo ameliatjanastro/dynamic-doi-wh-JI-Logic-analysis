@@ -64,8 +64,6 @@ merged_df = pd.concat(normalized_dfs, ignore_index=True)
 
 merged_df = merged_df.sort_values(by=['location_id','product_id'])
 
-display(merged_df.head())
-
 # Streamlit UI
 st.title("Comparison of RL Quantity Logics")
 
