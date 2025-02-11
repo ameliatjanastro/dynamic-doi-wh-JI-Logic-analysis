@@ -67,7 +67,7 @@ elif view_option == "Vendor":
         agg_dict = {
             "New RL Qty": "sum",
             "New RL Value": "sum",
-            "coverage": "max",  # Max date for coverage
+            #"coverage": "max",  # Max date for coverage
             "New DOI Policy WH": "mean",
             "Landed DOI": "mean"
         }
