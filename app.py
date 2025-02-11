@@ -206,7 +206,6 @@ elif page == "Inbound Quantity Simulation":
         marker=dict(
             size=8,  # Size of the markers
             symbol='circle',  # Circle-shaped markers
-            color="Logic"
         ),
         text=inbound_data["New RL Qty"].astype(str),  # Add the value as text
         textposition='top center',  # Position of the text
