@@ -56,15 +56,15 @@ else:
         "Landed DOI": "mean"
     })
 
-selected_pareto = st.sidebar.multiselect("Select Pareto", data["Pareto"].dropna().unique())
-selected_location = st.sidebar.multiselect("Select Location ID", data["location_id"].dropna().unique())
-selected_business_tag = st.sidebar.multiselect("Select Business Tag", data["business_tagging"].dropna().unique())
+#selected_pareto = st.sidebar.multiselect("Select Pareto", data["Pareto"].dropna().unique())
+#selected_location = st.sidebar.multiselect("Select Location ID", data["location_id"].dropna().unique())
+#selected_business_tag = st.sidebar.multiselect("Select Business Tag", data["business_tagging"].dropna().unique())
 
-selected_data = selected_data[
-    (selected_data["Pareto"].isin(selected_pareto) if selected_pareto else True) &
-    (selected_data["location_id"].isin(selected_location) if selected_location else True) &
-    (selected_data["business_tagging"].isin(selected_business_tag) if selected_business_tag else True)
-]
+#selected_data = selected_data[
+    #(selected_data["Pareto"].isin(selected_pareto) if selected_pareto else True) &
+    #(selected_data["location_id"].isin(selected_location) if selected_location else True) &
+    #(selected_data["business_tagging"].isin(selected_business_tag) if selected_business_tag else True)
+#]
 
 # Show table with only logic columns
 st.write("### Comparison Table")
