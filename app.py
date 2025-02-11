@@ -44,14 +44,21 @@ if view_option == "Product ID":
     selected_product = st.sidebar.selectbox("Select Product", product_options['product_display'])
     selected_data = data[data["product_id"] == selected_product.split(" - ")[0]]
 elif view_option == "Vendor":
-    # No dropping duplicates, vendor selection remains intact
+    # Create vendor display selection
     data["vendor_display"] = data["vendor_id"].astype(str) + " - " + data["primary_vendor_name"]
     selected_vendor = st.sidebar.selectbox("Select Vendor", data["vendor_display"].unique())
 
-    selected_data = data[data["vendor_id"] == selected_vendor.split(" - ")[0]]
+    # Ensure vendor filtering is correct
+    selected_vendor_id = selected_vendor.split(" - ")[0].strip()
+    selected_data = data[data["vendor_id"].astype(str).str.strip() == selected_vendor_id]
 
-    # Ensure necessary columns exist before aggregation
-    if not selected_data.empty:
+    # Debugging: Check if selected_data has rows and expected columns
+    if selected_data.empty:
+        st.warning("No data available for this vendor. Please select a different vendor.")
+    else:
+        st.write("Selected Data Preview:", selected_data.head())
+
+        # Define aggregation dictionary
         agg_dict = {
             "New RL Qty": "sum",
             "New RL Value": "sum",
@@ -59,9 +66,15 @@ elif view_option == "Vendor":
             "New DOI Policy WH": "mean",
             "Landed DOI": "mean"
         }
+
+        # Only aggregate existing columns
         existing_agg_cols = {k: v for k, v in agg_dict.items() if k in selected_data.columns}
-        
-        selected_data = selected_data.groupby(["vendor_id", "primary_vendor_name","Logic"], as_index=False).agg(existing_agg_cols)
+
+        # Perform aggregation
+        selected_data = selected_data.groupby(["vendor_id", "primary_vendor_name", "Logic"], as_index=False).agg(existing_agg_cols)
+
+        # Debugging: Check the output of aggregation
+        st.write("Aggregated Data Preview:", selected_data.head())
 
 
 #selected_pareto = st.sidebar.multiselect("Select Pareto", data["Pareto"].dropna().unique())
