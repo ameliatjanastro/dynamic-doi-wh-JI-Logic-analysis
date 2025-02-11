@@ -63,9 +63,10 @@ if view_option == "Vendor":
 else:
     grouped_data = filtered_data
 
-# Display table
+# Show table with only logic columns
 st.write("### Comparison Table")
-st.dataframe(grouped_data.sort_values(by=["Logic"], key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})), hide_index=True)
+table_columns = ["Logic", "coverage", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI"]
+st.dataframe(grouped_data[table_columns].sort_values(by="Logic", key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})), hide_index=True)
 
 # Plot comparison graph
 st.write("### Comparison Graph")
