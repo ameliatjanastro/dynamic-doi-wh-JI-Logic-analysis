@@ -150,7 +150,7 @@ for index, row in selected_data.iterrows():
     ))
 
 # ✅ Add horizontal line at 2 (Safe threshold)
-fig.add_hline(y=2, line_dash="dash", line_color="black", annotation_text="Minimum Safe Level (2)", annotation_position="top right")
+fig.add_hline(y=2, line_dash="dash", line_color="red", annotation_text="Minimum Safe Level (2)", annotation_position="top right")
 
 # ✅ Graph layout settings
 fig.update_layout(
@@ -165,16 +165,16 @@ st.write("### Landed DOI Comparison Graph")
 st.plotly_chart(fig)
 
 
-data["ship_date"] = pd.to_datetime(data["Ship Date"], errors="coerce")
+data["Ship Date"] = pd.to_datetime(data["Ship Date"], errors="coerce")
 
 # ✅ Group by Ship Date and Logic to get total inbound quantity
-inbound_data = data.groupby(["Ship Date", "Logic"], as_index=False)["Inb Qty"].sum()
+inbound_data = data.groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum()
 
 # ✅ Create line graph
 fig2 = px.line(
     inbound_data,
-    x="ship_date",
-    y="Inb Qty",
+    x="Ship Date",
+    y="New RL Qty",
     color="Logic",
     title="Total Inbound Quantity per Ship Date Across Logics"
 )
