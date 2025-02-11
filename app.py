@@ -53,8 +53,8 @@ elif view_option == "Vendor":
     selected_data = data[data["vendor_id"].astype(str).str.strip() == selected_vendor_id]
 
     # Debugging: Check if selected_data has rows and expected columns
-    #if selected_data.empty:
-        #st.warning("No data available for this vendor. Please select a different vendor.")
+    if selected_data.empty:
+        st.warning("No data available for this vendor. Please select a different vendor.")
     #else:
         #st.write("Selected Data Preview:", selected_data.head())
 
