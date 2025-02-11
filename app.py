@@ -47,16 +47,20 @@ elif view_option == "Vendor":
     # No dropping duplicates, vendor selection remains intact
     data["vendor_display"] = data["vendor_id"].astype(str) + " - " + data["primary_vendor_name"]
     selected_vendor = st.sidebar.selectbox("Select Vendor", data["vendor_display"].unique())
-    selected_data = data[data["vendor_display"] == selected_vendor]
+    selected_data = data[data["vendor_id"] == selected_vendor.split(" - ")[0]]
 
-    # Aggregation logic
-    selected_data = selected_data.groupby(["vendor_id", "primary_vendor_name", "Logic"], as_index=False).agg({
-        "New RL Qty": "sum",
-        "New RL Value": "sum",
-        "coverage": "max",  # Max date for coverage
-        "New DOI Policy WH": "mean",
-        "Landed DOI": "mean"
-    })
+    # Ensure necessary columns exist before aggregation
+    if not selected_data.empty:
+        agg_dict = {
+            "New RL Qty": "sum",
+            "New RL Value": "sum",
+            "coverage": "max",  # Max date for coverage
+            "New DOI Policy WH": "mean",
+            "Landed DOI": "mean"
+        }
+        existing_agg_cols = {k: v for k, v in agg_dict.items() if k in selected_data.columns}
+        
+        selected_data = selected_data.groupby(["vendor_id", "primary_vendor_name", "Logic"], as_index=False).agg(existing_agg_cols)
 
 
 #selected_pareto = st.sidebar.multiselect("Select Pareto", data["Pareto"].dropna().unique())
