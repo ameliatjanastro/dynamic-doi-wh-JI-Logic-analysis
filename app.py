@@ -39,15 +39,15 @@ st.sidebar.header("Filters")
 product_options = data[['product_id', 'product_name']].drop_duplicates()
 product_options['product_display'] = product_options['product_id'] + " - " + product_options['product_name']
 selected_product = st.sidebar.selectbox("Select Product", product_options['product_display'])
-selected_pareto = st.sidebar.multiselect("Select Pareto", data["Pareto"].dropna().unique())
-selected_location = st.sidebar.multiselect("Select Location ID", data["location_id"].dropna().unique())
-selected_business_tag = st.sidebar.multiselect("Select Business Tag", data["business_tagging"].dropna().unique())
+#selected_pareto = st.sidebar.multiselect("Select Pareto", data["Pareto"].dropna().unique())
+#selected_location = st.sidebar.multiselect("Select Location ID", data["location_id"].dropna().unique())
+#selected_business_tag = st.sidebar.multiselect("Select Business Tag", data["business_tagging"].dropna().unique())
 
 filtered_data = data[
-    (data["product_id"] == selected_product.split(" - ")[0]) &
-    (data["Pareto"].isin(selected_pareto) if selected_pareto else True) &
-    (data["location_id"].isin(selected_location) if selected_location else True) &
-    (data["business_tagging"].isin(selected_business_tag) if selected_business_tag else True)
+    (data["product_id"] == selected_product.split(" - ")[0]) #&
+    #(data["Pareto"].isin(selected_pareto) if selected_pareto else True) &
+    #(data["location_id"].isin(selected_location) if selected_location else True) &
+    #(data["business_tagging"].isin(selected_business_tag) if selected_business_tag else True)
 ]
 
 view_option = st.sidebar.radio("View by", ["Product ID", "Vendor"])
@@ -56,7 +56,7 @@ if view_option == "Vendor":
     grouped_data = filtered_data.groupby(["vendor_id", "primary_vendor_name", "Logic"], as_index=False).agg({
         "New RL Qty": "sum",
         "New RL Value": "sum",
-        "coverage": "mean",
+        "coverage": "max",
         "New DOI Policy WH": "mean",
         "Landed DOI": "mean"
     })
