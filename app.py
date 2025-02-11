@@ -30,6 +30,8 @@ for key in ["Logic A", "Logic B", "Logic C", "Logic D"]:
 
 # Merge data
 data = pd.concat(dfs, ignore_index=True).sort_values(by=["product_id", "Logic"], key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4}))
+# Convert 'New RL Value' to numeric (remove commas)
+data["New RL Value"] = data["New RL Value"].astype(str).str.replace(",", "", regex=True).astype(float)
 
 # Streamlit UI
 st.title("Comparison of RL Quantity Logics")
@@ -167,16 +169,22 @@ st.plotly_chart(fig)
 
 data["Ship Date"] = pd.to_datetime(data["Ship Date"], errors="coerce")
 
-# ✅ Group by Ship Date and Logic to get total inbound quantity
-inbound_data = data.groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum()
+filtered_data = data[
+    (data["Pareto"].isin(selected_pareto) if selected_pareto else True) &
+    (data["location_id"].isin(selected_location) if selected_location else True) &
+    (data["business_tagging"].isin(selected_business_tag) if selected_business_tag else True)
+]
 
-# ✅ Create line graph
+# ✅ Group by Ship Date and Logic to get total inbound quantity after filtering
+inbound_data = filtered_data.groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum()
+
+# Plotly Line Graph
 fig2 = px.line(
-    inbound_data,
-    x="Ship Date",
-    y="New RL Qty",
-    color="Logic",
-    title="Total Inbound Quantity per Ship Date Across Logics"
+    inbound_data, 
+    x="Ship Date", 
+    y="New RL Qty", 
+    color="Logic",  # Different line colors per logic
+    title="Total Inbound Quantity Per Ship Date"
 )
 
 # ✅ Improve layout
