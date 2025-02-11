@@ -69,7 +69,14 @@ elif view_option == "Vendor":
 
         # Only aggregate existing columns
         existing_agg_cols = {k: v for k, v in agg_dict.items() if k in selected_data.columns}
+        
+        # Debug: Print available columns before aggregation
+        st.write("Available Columns Before Aggregation:", selected_data.columns.tolist())
+        st.write("Columns to Aggregate:", existing_agg_cols)
 
+        # Convert numeric columns to appropriate types
+        for col in existing_agg_cols.keys():
+            selected_data[col] = pd.to_numeric(selected_data[col], errors="coerce")
         selected_data = selected_data.groupby(["vendor_id", "primary_vendor_name", "Logic"], as_index=False).agg(existing_agg_cols)
 
         # Sort by logic order (A -> D)
