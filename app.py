@@ -97,10 +97,22 @@ else:
     grouped_df = filtered_df
     x_axis = "product_id"
 
-# Line chart for comparison
-fig = px.line(grouped_df, x=x_axis, y=["New RL Qty", "coverage", "Landed DOI", "New RL Value", "New DOI Policy WH", "max_doi_final"],
-              title=f"Comparison of Metrics by {view_by}", markers=True, color="Logic")
-st.plotly_chart(fig)
+# Ensure numeric columns are properly formatted for plotting
+numeric_cols = ["New RL Qty", "coverage", "Landed DOI", "New RL Value", "New DOI Policy WH", "max_doi_final"]
+for col in numeric_cols:
+    grouped_df[col] = pd.to_numeric(grouped_df[col], errors='coerce')
+
+# Matplotlib plot
+st.write("### Comparison of Metrics")
+fig, ax = plt.subplots(figsize=(12, 6))
+for logic in grouped_df["Logic"].unique():
+    logic_df = grouped_df[grouped_df["Logic"] == logic]
+    ax.plot(logic_df[x_axis], logic_df["New RL Qty"], marker='o', label=logic)
+ax.set_title(f"Comparison of RL Quantity by {view_by}")
+ax.set_xlabel(view_by)
+ax.set_ylabel("New RL Qty")
+ax.legend()
+st.pyplot(fig)
 
 # Display merged data
 st.write("### Merged Data Preview")
