@@ -43,11 +43,13 @@ if view_option == "Product ID":
     product_options['product_display'] = product_options['product_id'] + " - " + product_options['product_name']
     selected_product = st.sidebar.selectbox("Select Product", product_options['product_display'])
     selected_data = data[data["product_id"] == selected_product.split(" - ")[0]]
-else:
-    vendor_options = data[['vendor_id', 'primary_vendor_name']].drop_duplicates()
-    vendor_options['vendor_display'] = vendor_options['vendor_id'].astype(str) + " - " + vendor_options['primary_vendor_name']
-    selected_vendor = st.sidebar.selectbox("Select Vendor", vendor_options['vendor_display'])
-    selected_data = data[data["vendor_id"] == selected_vendor.split(" - ")[0]]
+elif view_option == "Vendor":
+    # No dropping duplicates, vendor selection remains intact
+    data["vendor_display"] = data["vendor_id"].astype(str) + " - " + data["primary_vendor_name"]
+    selected_vendor = st.sidebar.selectbox("Select Vendor", data["vendor_display"].unique())
+    selected_data = data[data["vendor_display"] == selected_vendor]
+
+    # Aggregation logic
     selected_data = selected_data.groupby(["vendor_id", "primary_vendor_name", "Logic"], as_index=False).agg({
         "New RL Qty": "sum",
         "New RL Value": "sum",
@@ -55,6 +57,7 @@ else:
         "New DOI Policy WH": "mean",
         "Landed DOI": "mean"
     })
+
 
 #selected_pareto = st.sidebar.multiselect("Select Pareto", data["Pareto"].dropna().unique())
 #selected_location = st.sidebar.multiselect("Select Location ID", data["location_id"].dropna().unique())
