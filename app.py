@@ -136,7 +136,7 @@ selected_data["Landed DOI"] = pd.to_numeric(selected_data["Landed DOI"], errors=
 
 # ✅ Fill NaN values with 0 (or another safe default)
 selected_data["Landed DOI"].fillna(0, inplace=True)
-selected_data["color"] = selected_data["Landed DOI"].apply(lambda x: "green" if x >= 2 else "red")
+selected_data["color"] = selected_data["Landed DOI"].apply(lambda x: "lightgreen" if x >= 2 else "red")
 
 # ✅ Create bar chart
 fig = go.Figure()
@@ -165,10 +165,10 @@ st.write("### Landed DOI Comparison Graph")
 st.plotly_chart(fig)
 
 
-data["ship_date"] = pd.to_datetime(data["ship_date"], errors="coerce")
+data["ship_date"] = pd.to_datetime(data["Ship Date"], errors="coerce")
 
 # ✅ Group by Ship Date and Logic to get total inbound quantity
-inbound_data = data.groupby(["ship_date", "Logic"], as_index=False)["Inb Qty"].sum()
+inbound_data = data.groupby(["Ship Date", "Logic"], as_index=False)["Inb Qty"].sum()
 
 # ✅ Create line graph
 fig2 = px.line(
