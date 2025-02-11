@@ -222,7 +222,8 @@ elif page == "Inbound Quantity Simulation":
         xaxis_title="Ship Date",
         yaxis_title="Total Inbound Quantity",
         xaxis=dict(showgrid=True),
-        yaxis=dict(showgrid=True)
+        yaxis=dict(showgrid=True),
+        showlegend=True 
     )
     
     # ✅ Display in Streamlit
