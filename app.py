@@ -92,14 +92,14 @@ elif view_option == "Vendor":
         #st.write("Aggregated Data Preview:", selected_data)
 
         # Display Table
-        table_columns = ["Logic", "New RL Qty", "New RL Value", "coverage", "New DOI Policy WH", "Landed DOI"]
-        st.write("### Comparison Table")
-        st.dataframe(selected_data[table_columns], hide_index=True)
+        #table_columns = ["Logic", "New RL Qty", "New RL Value", "coverage", "New DOI Policy WH", "Landed DOI"]
+        #st.write("### Comparison Table")
+        #st.dataframe(selected_data[table_columns], hide_index=True)
 
         # Plot Comparison Graph
-        st.write("### Comparison Graph")
-        fig = px.bar(selected_data, x="Logic", y="New RL Qty", color="Logic", title=f"Comparison of New RL Qty Across Logics for {selected_vendor}")
-        st.plotly_chart(fig)
+        #st.write("### Comparison Graph")
+        #fig = px.bar(selected_data, x="Logic", y="New RL Qty", color="Logic", title=f"Comparison of New RL Qty Across Logics for {selected_vendor}")
+        #st.plotly_chart(fig)
 
 
 
