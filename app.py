@@ -177,8 +177,8 @@ elif page == "Inbound Quantity Simulation":
     data["Ship Date"] = pd.to_datetime(data["Ship Date"], errors="coerce")
     
    # Sidebar filters for Inbound Quantity Trend
+    selected_location = st.sidebar.selectbox("Select Location ID", data["location_id"].dropna().unique())
     selected_pareto = st.sidebar.multiselect("Select Pareto", data["Pareto"].dropna().unique())
-    selected_location = st.sidebar.multiselect("Select Location ID", data["location_id"].dropna().unique())
     selected_business_tag = st.sidebar.multiselect("Select Business Tag", data["business_tagging"].dropna().unique())
     
     # Apply filters to data (only for this graph)
@@ -198,6 +198,23 @@ elif page == "Inbound Quantity Simulation":
         y="New RL Qty", 
         color="Logic",  # Different line colors per logic
         title="Total Inbound Quantity Per Ship Date"
+    )
+
+    # Add circle markers and bold text at each data point
+    fig2.update_traces(
+        mode='lines+markers',  # Display both lines and markers
+        marker=dict(
+            size=10,  # Size of the markers
+            symbol='circle',  # Circle-shaped markers
+            color='black'  # Color of the markers (you can customize this)
+        ),
+        text=inbound_data["New RL Qty"].astype(str),  # Add the value as text
+        textposition='top center',  # Position of the text
+        textfont=dict(
+            size=12,  # Font size
+            family="Arial",  # Font family
+            weight='bold'  # Make the text bold
+        )
     )
     
     # ✅ Improve layout
