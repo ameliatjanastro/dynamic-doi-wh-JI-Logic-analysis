@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import streamlit as st
 import plotly.express as px
+import matplotlib.pyplot as plt
 #data1 = pd.read_csv('logic a.csv')
 #data2 = pd.read_csv('logic b.csv')
 #data3 = pd.read_csv('logic c.csv')
