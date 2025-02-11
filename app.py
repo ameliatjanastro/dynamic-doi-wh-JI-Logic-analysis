@@ -38,15 +38,25 @@ st.title("Comparison of RL Quantity Logics")
 st.sidebar.header("Filters")
 view_option = st.sidebar.radio("View by", ["Product ID", "Vendor"])
 
+#if view_option == "Product ID":
+    #product_options = data[['product_id', 'product_name']].drop_duplicates()
+    #product_options['product_display'] = product_options['product_id'] + " - " + product_options['product_name']
+    #selected_product = st.sidebar.selectbox("Select Product", product_options['product_display'])
+    #selected_data = data[data["product_id"] == selected_product.split(" - ")[0]]
+#elif view_option == "Vendor":
+    # No dropping duplicates, vendor selection remains intact
+    #data["vendor_display"] = data["vendor_id"].astype(str) + " - " + data["primary_vendor_name"]
+    #selected_vendor = st.sidebar.selectbox("Select Vendor", data["vendor_display"].unique())
 if view_option == "Product ID":
     product_options = data[['product_id', 'product_name']].drop_duplicates()
     product_options['product_display'] = product_options['product_id'] + " - " + product_options['product_name']
     selected_product = st.sidebar.selectbox("Select Product", product_options['product_display'])
-    selected_data = data[data["product_id"] == selected_product.split(" - ")[0]]
-elif view_option == "Vendor":
-    # No dropping duplicates, vendor selection remains intact
-    data["vendor_display"] = data["vendor_id"].astype(str) + " - " + data["primary_vendor_name"]
-    selected_vendor = st.sidebar.selectbox("Select Vendor", data["vendor_display"].unique())
+    selected_data = data[data["product_id"].str.strip() == selected_product.split(" - ")[0].strip()]
+
+else:  # Vendor view
+    vendor_options = data[['vendor_id', 'primary_vendor_name']].drop_duplicates()
+    vendor_options['vendor_display'] = vendor_options['vendor_id'].astype(str).str.strip() + " - " + vendor_options['primary_vendor_name'].str.strip()
+    selected_vendor = st.sidebar.selectbox("Select Vendor", vendor_options['vendor_display'])
     vendor_id_selected = selected_vendor.split(" - ")[0].strip()
     selected_data = data[data["vendor_id"].str.strip() == vendor_id_selected]
     #selected_data = data[data["vendor_id"] == selected_vendor.split(" - ")[0]]
