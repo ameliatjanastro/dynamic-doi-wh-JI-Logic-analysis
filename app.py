@@ -45,7 +45,7 @@ if view_option == "Product ID":
     selected_data = data[data["product_id"] == selected_product.split(" - ")[0]]
 else:
     vendor_options = data[['vendor_id', 'primary_vendor_name']].drop_duplicates()
-    vendor_options['vendor_display'] = vendor_options['vendor_id'] + " - " + vendor_options['primary_vendor_name']
+    vendor_options['vendor_display'] = vendor_options['vendor_id'].astype(str) + " - " + vendor_options['primary_vendor_name']
     selected_vendor = st.sidebar.selectbox("Select Vendor", vendor_options['vendor_display'])
     selected_data = data[data["vendor_id"] == selected_vendor.split(" - ")[0]]
     selected_data = selected_data.groupby(["vendor_id", "primary_vendor_name", "Logic"], as_index=False).agg({
