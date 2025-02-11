@@ -181,15 +181,6 @@ filtered_data = data[
     (data["business_tagging"].isin(selected_business_tag) if selected_business_tag.size > 0 else True)
 ]
 
-# ✅ Group
-
-
-filtered_data = data[
-    (data["Pareto"].isin(selected_pareto) if selected_pareto else True) &
-    (data["location_id"].isin(selected_location) if selected_location else True) &
-    (data["business_tagging"].isin(selected_business_tag) if selected_business_tag else True)
-]
-
 # ✅ Group by Ship Date and Logic to get total inbound quantity after filtering
 inbound_data = filtered_data.groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum()
 
