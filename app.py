@@ -60,12 +60,13 @@ elif view_option == "Vendor":
 
         if "coverage" in selected_data.columns:
             selected_data["coverage"] = pd.to_datetime(selected_data["coverage"], errors="coerce")
+            selected_data = selected_data.dropna(subset=["coverage"])
 
         # Define aggregation dictionary
         agg_dict = {
             "New RL Qty": "sum",
             "New RL Value": "sum",
-            "coverage": "first",  # Max date for coverage
+            "coverage": "max",  # Max date for coverage
             "New DOI Policy WH": "mean",
             "Landed DOI": "mean"
         }
