@@ -154,7 +154,7 @@ fig.add_hline(y=2, line_dash="dash", line_color="black", annotation_text="Minimu
 
 # ✅ Graph layout settings
 fig.update_layout(
-    title=f"Landed DOI Comparison Across Logics for {selected_vendor}",
+    title=f"Landed DOI Comparison Across Logics",
     xaxis_title="Logic",
     yaxis_title="Landed DOI",
     showlegend=False
