@@ -62,6 +62,7 @@ elif view_option == "Vendor":
             selected_data["coverage"] = pd.to_datetime(selected_data["coverage"], errors="coerce")
             selected_data = selected_data.dropna(subset=["coverage"])
 
+        selected_data = selected_data.drop_duplicates(subset=["vendor_id", "Logic"], keep="first")
         # Define aggregation dictionary
         agg_dict = {
             "New RL Qty": "sum",
