@@ -132,6 +132,10 @@ st.dataframe(selected_data[table_columns].sort_values(by="Logic", key=lambda x: 
 import plotly.graph_objects as go
 
 # ✅ Define color based on "Landed DOI" threshold
+selected_data["Landed DOI"] = pd.to_numeric(selected_data["Landed DOI"], errors="coerce")
+
+# ✅ Fill NaN values with 0 (or another safe default)
+selected_data["Landed DOI"].fillna(0, inplace=True)
 selected_data["color"] = selected_data["Landed DOI"].apply(lambda x: "green" if x >= 2 else "red")
 
 # ✅ Create bar chart
