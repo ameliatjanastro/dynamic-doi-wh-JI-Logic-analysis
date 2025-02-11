@@ -169,16 +169,15 @@ st.plotly_chart(fig)
 
 data["Ship Date"] = pd.to_datetime(data["Ship Date"], errors="coerce")
 
-# Define filters (not from sidebar, just for this graph)
-selected_pareto = data["Pareto"].dropna().unique()
-selected_location = data["location_id"].dropna().unique()
-selected_business_tag = data["business_tagging"].dropna().unique()
+selected_pareto = st.multiselect("Select Pareto", data["Pareto"].dropna().unique())
+selected_location = st.multiselect("Select Location ID", data["location_id"].dropna().unique())
+selected_business_tag = st.multiselect("Select Business Tag", data["business_tagging"].dropna().unique())
 
-# Apply filters
+# Apply filters to data (only for this graph)
 filtered_data = data[
-    (data["Pareto"].isin(selected_pareto) if selected_pareto.size > 0 else True) &
-    (data["location_id"].isin(selected_location) if selected_location.size > 0 else True) &
-    (data["business_tagging"].isin(selected_business_tag) if selected_business_tag.size > 0 else True)
+    (data["Pareto"].isin(selected_pareto) if selected_pareto else True) &
+    (data["location_id"].isin(selected_location) if selected_location else True) &
+    (data["business_tagging"].isin(selected_business_tag) if selected_business_tag else True)
 ]
 
 # ✅ Group by Ship Date and Logic to get total inbound quantity after filtering
