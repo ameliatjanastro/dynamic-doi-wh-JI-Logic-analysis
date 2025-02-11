@@ -53,10 +53,10 @@ elif view_option == "Vendor":
     selected_data = data[data["vendor_id"].astype(str).str.strip() == selected_vendor_id]
 
     # Debugging: Check if selected_data has rows and expected columns
-    if selected_data.empty:
-        st.warning("No data available for this vendor. Please select a different vendor.")
-    else:
-        st.write("Selected Data Preview:", selected_data.head())
+    #if selected_data.empty:
+        #st.warning("No data available for this vendor. Please select a different vendor.")
+    #else:
+        #st.write("Selected Data Preview:", selected_data.head())
 
         if "coverage" in selected_data.columns:
             selected_data["coverage"] = pd.to_datetime(selected_data["coverage"], errors="coerce")
@@ -65,7 +65,7 @@ elif view_option == "Vendor":
         agg_dict = {
             "New RL Qty": "sum",
             "New RL Value": "sum",
-            "coverage": "max",  # Max date for coverage
+            "coverage": "first",  # Max date for coverage
             "New DOI Policy WH": "mean",
             "Landed DOI": "mean"
         }
@@ -74,8 +74,8 @@ elif view_option == "Vendor":
         existing_agg_cols = {k: v for k, v in agg_dict.items() if k in selected_data.columns}
         
         # Debug: Print available columns before aggregation
-        st.write("Available Columns Before Aggregation:", selected_data.columns.tolist())
-        st.write("Columns to Aggregate:", existing_agg_cols)
+        #st.write("Available Columns Before Aggregation:", selected_data.columns.tolist())
+        #st.write("Columns to Aggregate:", existing_agg_cols)
 
         # Convert numeric columns to appropriate types
         for col in existing_agg_cols.keys():
