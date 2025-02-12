@@ -208,6 +208,7 @@ elif page == "Inbound Quantity Simulation":
    # ✅ Manually add scatter traces for text labels
 
     visible_logic = inbound_data["Logic"].unique()
+    jitter_map = {logic: (i - len(visible_logic)/2) * 2 for i, logic in enumerate(visible_logic)}
     for logic in visible_logic:
         logic_df = inbound_data[inbound_data["Logic"] == logic]  # Filter data per logic
         
@@ -223,13 +224,15 @@ elif page == "Inbound Quantity Simulation":
         ))
     
     # ✅ Improve layout
+    y_min = inbound_data["New RL Qty"].min() * 0.95  # 5% padding below
+    y_max = inbound_data["New RL Qty"].max() * 1.05
     fig2.update_layout(
         xaxis_title="Ship Date",
         yaxis_title="Total Inbound Quantity",
         xaxis=dict(showgrid=True),
-        yaxis=dict(showgrid=True),
-        width=1500,  # Increase graph width
-        height=500,  # Increase graph height
+        yaxis=dict(showgrid=True, range=[y_min, y_max]),
+        width=1000,  # Increase graph width
+        height=600,  # Increase graph height
         autosize=False,
         margin=dict(l=10, r=10, t=50, b=50),
         showlegend=True
@@ -237,4 +240,4 @@ elif page == "Inbound Quantity Simulation":
     
     # ✅ Display in Streamlit
     st.write("### Inbound Quantity Trend by Ship Date")
-    st.plotly_chart(fig2)
+    st.plotly_chart(fig2, use_container_width=True)
