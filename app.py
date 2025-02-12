@@ -255,8 +255,12 @@ elif page == "Inbound Quantity Simulation":
         x="Ship Date", 
         y="New RL Qty", 
         color="Logic",  # Different colors per logic
-        textfont=dict(size=12),  # 🔥 Auto display text labels inside bars
+        inbound_data["New RL Qty"].astype(str),  # 🔥 Auto display text labels inside bars
         title="Bar Chart"
+    )
+
+     fig3.update_traces(
+        textfont=dict(size=12)
     )
 
     # ✅ Improve layout
