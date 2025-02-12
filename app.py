@@ -244,7 +244,7 @@ if page == "OOS Projection WH":
         fig.add_annotation(
             x=row["Logic"],
             y=row["Landed DOI - JI"] + 0.5,  # ✅ Offset to avoid overlap
-            text=f"{drop_value:.1f}",
+            text=f"{drop_value}",
             showarrow=False,
             font=dict(color="black", size=12),
             bgcolor="yellow",  # ✅ Background color for better visibility
