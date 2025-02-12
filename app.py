@@ -4,7 +4,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 pareto_order = ["X", "A", "B", "C", "D", "New SKU A", "New SKU B", "New SKU C", "New SKU D", "No Sales L3M"]
-custom_colors = ["#20639B", "#3CAEA3", "#9F6D55C", "#ED553B"]  # Light Blue & Gray Tones
+custom_colors = ["#20639B", "#3CAEA3", "#F6D55C", "#ED553B"]  # Light Blue & Gray Tones
 st.set_page_config(layout="wide")
 
 # Define file paths
