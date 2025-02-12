@@ -239,7 +239,6 @@ if page == "OOS Projection WH":
     
     # ✅ Improve layout
     fig.update_layout(
-        barmode="group",  # ✅ Ensure bars are side by side
         xaxis_title="Logic",
         yaxis_title="Days",
         xaxis=dict(
