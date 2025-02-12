@@ -220,7 +220,7 @@ if page == "OOS Projection WH":
             name=f"{logic_label} - Landed DOI - JI",
             marker=dict(color=row["color"], opacity=0.6),  # Lighter color for distinction
             width=bar_width,
-            offset=-offset,  # Shift left to center
+            offset=offset,  # Shift left to center
         ))
     
         # ✅ Calculate the drop
