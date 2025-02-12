@@ -221,16 +221,16 @@ if page == "OOS Projection WH":
         # ✅ Calculate the drop
         drop_value = round(landed_doi - landed_doi_ji, 1)  # 1 decimal place
 
-    fig.add_trace(go.Scatter(
-        x=selected_data["Logic"],  # Align with bars
-        y=selected_data["Landed DOI"],  # Start from Landed DOI
-        mode="lines+text",
-        line=dict(color="red", width=2, dash="solid"),  # Solid red line
-        name="Drop Line",
-        yaxis="y2",  # ✅ Use secondary y-axis to place it on top
-        text=[f"{diff:.1f}" for diff in (selected_data["Landed DOI"] - selected_data["Landed DOI - JI"])],
-        textposition="top center",
-     ))
+        fig.add_trace(go.Scatter(
+            x=selected_data["Logic"],  # Align with bars
+            y=selected_data["Landed DOI"],  # Start from Landed DOI
+            mode="lines+text",
+            line=dict(color="red", width=2, dash="solid"),  # Solid red line
+            name="Drop Line",
+            yaxis="y2",  # ✅ Use secondary y-axis to place it on top
+            text=[f"{diff:.1f}" for diff in (selected_data["Landed DOI"] - selected_data["Landed DOI - JI"])],
+            textposition="top center",
+         ))
     
     # ✅ Improve layout
     fig.update_layout(
@@ -243,10 +243,17 @@ if page == "OOS Projection WH":
             showgrid=True,
         ),
         yaxis=dict(showgrid=True),
-        width=700,  # ✅ Adjust width (half page size)
-        height=500,  # ✅ Adjust height
+        yaxis2=dict(  # ✅ Create secondary y-axis
+            overlaying="y",  # ✅ Places drop line on top
+            showgrid=False,  # ✅ Prevents double grid lines
+            zeroline=False,  
+            visible=False  # ✅ Hide extra axis
+        ),
+        width=700,  # ✅ Adjust width (half page)
+        height=500,
         showlegend=False
     )
+    
     # ✅ Display graph in Streamlit
     st.write("### DOI Movement Comparison Graph")
     st.plotly_chart(fig, use_container_width=True)
