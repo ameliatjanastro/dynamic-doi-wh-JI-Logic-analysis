@@ -233,8 +233,10 @@ if page == "OOS Projection WH":
             line=dict(color="red", width=2, dash="solid"),  # Dashed black line
             yaxis="y2",  # ✅ Use secondary y-axis to place it on top
             name=f"Drop {row['Logic']}",
-            text=[None, f"{drop_value}"],  # Show drop value
+            text=[f"<span style='background-color:yellow; padding:2px'>{drop_value}</span>"],  
             textposition="middle right",
+            textfont=dict(color="black"),  # ✅ Black text for visibility
+            hoverinfo="text",  # ✅ Ensure hover shows exact value
          ))
     
     # ✅ Improve layout
