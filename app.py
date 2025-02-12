@@ -183,8 +183,9 @@ elif page == "Inbound Quantity Simulation":
     st.markdown(
         """
         <style>
-        body {
-            overflow-y: hidden !important;  /* Disable vertical scrolling */
+        html, body, [class*="st-emotion-cache"] {
+            overflow-y: hidden !important;  /* ✅ Completely disable vertical scrolling */
+            height: 100vh !important;  /* ✅ Force full viewport height */
         }
         </style>
         """,
