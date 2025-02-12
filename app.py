@@ -167,13 +167,18 @@ if page == "OOS Projection WH":
         color = "background-color: red; color: white;" if row["Verdict"] == "Tidak Aman" else ""
         return [color] * len(row)
 
-    styled_df = selected_data[table_columns].sort_values(
+    formatted_df = selected_data[table_columns].sort_values(
         by="Logic", 
         key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})
-    ).style.apply(highlight_verdict, axis=1)
+    ).style.format({
+        "New RL Value": "{:,.0f}",  # Adds comma separator (1,000s, no decimals)
+        "New DOI Policy WH": "{:.2f}",  # 2 decimal places
+        "Landed DOI": "{:.2f}",  # 2 decimal places
+        "Landed DOI - JI": "{:.2f}",  # 2 decimal places
+    })
 
     selected_data = selected_data.astype(original_dtypes)
-    st.dataframe(styled_df, hide_index=True, use_container_width=True)
+    st.dataframe(formatted_df, hide_index=True, use_container_width=True)
 
     st.markdown(
     """
