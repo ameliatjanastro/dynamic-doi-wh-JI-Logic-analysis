@@ -206,7 +206,7 @@ elif page == "Inbound Quantity Simulation":
         logic_name = trace.name  # Get the name of the Logic
         logic_df = inbound_data[inbound_data["Logic"] == logic_name]  # Filter data for that Logic
         
-        trace.text = logic_df["New RL Qty"].astype(str)  # Convert inbound quantity to text
+        trace.text = list(logic_df["New RL Qty"].astype(str))  # Convert inbound quantity to text
         trace.textposition = "top center"  # Position text above markers
         trace.textfont = dict(
             size=10,
