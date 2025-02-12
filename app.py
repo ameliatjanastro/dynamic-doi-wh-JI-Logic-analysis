@@ -192,7 +192,7 @@ if page == "OOS Projection WH":
     # ✅ Create bar chart
     fig = go.Figure()
     
-    bar_width = 0.2  # Adjust for spacing
+    #bar_width = 0.2  # Adjust for spacing
 
     # ✅ Convert Logic column to categorical type for correct alignment
     logic_labels = selected_data["Logic"].tolist()
@@ -223,7 +223,7 @@ if page == "OOS Projection WH":
 
         # ✅ Add a diagonal line between the bars
         fig.add_trace(go.Scatter(
-            x=[logic_label - bar_width, logic_label + bar_width],  # ✅ Align x-values to category
+            x=[logic_label, logic_label],  # ✅ Align x-values to category
             y=[landed_doi, landed_doi_ji],  # Connect the bars
             mode="lines+text",
             line=dict(color="red", width=2, dash="solid"),  # ✅ Solid red line
