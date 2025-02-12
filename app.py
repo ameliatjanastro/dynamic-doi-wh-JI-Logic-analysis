@@ -255,7 +255,7 @@ elif page == "Inbound Quantity Simulation":
         x="Ship Date", 
         y="New RL Qty", 
         color="Logic",  # Different colors per logic
-        inbound_data["New RL Qty"].astype(str),  # 🔥 Auto display text labels inside bars
+        text=inbound_data["New RL Qty"].astype(str),  # 🔥 Auto display text labels inside bars
         title="Bar Chart"
     )
 
