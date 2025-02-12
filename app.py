@@ -104,7 +104,8 @@ if page == "OOS Projection WH":
                 "coverage": "max",  # Max date for coverage
                 "New DOI Policy WH": "mean",
                 "Landed DOI": "mean",
-                "Landed DOI - JI": "mean"
+                "Landed DOI - JI": "mean",
+                "Jarak Inbound": "min"
         }
     
         # Only aggregate existing columns
@@ -207,22 +208,35 @@ if page == "OOS Projection WH":
             name=f"{row['Logic']} - Landed DOI - JI",
             marker=dict(color=row["color"], opacity=0.6),  # Lighter color for distinction
         ))
+
+        # ✅ Add a diagonal line between the two bars
+        fig.add_trace(go.Scatter(
+            x=[row["Logic"], row["Logic"]],  # Same x-axis position
+            y=[row["Landed DOI"], row["Landed DOI - Jarak Inbound"]],  # Connect the bars
+            mode="lines+text",
+            line=dict(color="red", width=2, dash="dash"),  # Dashed black line
+            name=f"Drop {row['Logic']}",
+            text=[None, f"{row['Landed DOI'] - row['Landed DOI - Jarak Inbound']}"],  # Show drop value
+            textposition="middle right",
+        ))
     
     # ✅ Add horizontal line at 2 (Safe threshold)
     fig.add_hline(y=2, line_dash="dash", line_color="red", annotation_text="Minimum Safe Level (2)", annotation_position="top right")
     
     # ✅ Graph layout settings
     fig.update_layout(
-        title=f"Landed DOI Comparison Across Logics",
         xaxis_title="Logic",
-        yaxis_title="Landed DOI",
-        width=500,
+        yaxis_title="Days",
+        xaxis=dict(showgrid=True),
+        yaxis=dict(showgrid=True),
+        width=700,  # ✅ Adjust width (half page size)
+        height=500,  # ✅ Adjust height
         showlegend=False
     )
     
     # ✅ Display graph in Streamlit
-    st.write("### Landed DOI Comparison Graph")
-    st.plotly_chart(fig)
+    st.write("### DOI Movement Comparison Graph")
+    st.plotly_chart(fig, use_container_width=False)
 
 elif page == "Inbound Quantity Simulation":
 
