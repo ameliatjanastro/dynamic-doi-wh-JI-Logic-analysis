@@ -3,6 +3,8 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 
+st.set_page_config(layout="wide")
+
 # Define file paths
 file_paths = {
     "Logic A": "logic a.csv",
@@ -174,7 +176,7 @@ if page == "OOS Projection WH":
     st.plotly_chart(fig)
 
 elif page == "Inbound Quantity Simulation":
-    st.set_page_config(layout="wide")
+
     
     data["Ship Date"] = pd.to_datetime(data["Ship Date"], errors="coerce")
     
