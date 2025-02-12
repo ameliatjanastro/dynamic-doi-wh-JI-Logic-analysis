@@ -4,7 +4,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 pareto_order = ["X", "A", "B", "C", "D", "New SKU A", "New SKU B", "New SKU C", "New SKU D", "No Sales L3M"]
-custom_colors = ["#AEC6CF", "#B0BEC5", "#90A4AE", "#78909C", "#607D8B"]  # Light Blue & Gray Tones
+custom_colors = ["#20639B", "#3CAEA3", "#9F6D55C", "#ED553B"]  # Light Blue & Gray Tones
 st.set_page_config(layout="wide")
 
 # Define file paths
@@ -135,7 +135,7 @@ if page == "OOS Projection WH":
     # Show table with only logic columns
     st.write("### Comparison Table")
     table_columns = ["Logic", "coverage", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI"]
-    st.dataframe(selected_data[table_columns].sort_values(by="Logic", key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})), hide_index=True)
+    st.dataframe(selected_data[table_columns].sort_values(by="Logic", key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})), hide_index=True, use_container_width=True)
 
     st.markdown(
     """
