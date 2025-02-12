@@ -218,7 +218,7 @@ elif page == "Inbound Quantity Simulation":
             mode="text",  # Only text, no lines or markers
             text=logic_df["New RL Qty"].astype(str),  # Convert to text
             textposition="top center",  # Position text above markers
-            textfont=dict(size=10, color='black', weight='bold'),
+            textfont=dict(size=12, color='logic', weight='bold'),
             showlegend=False,  # Hide extra legend entries
             visible=True if logic in visible_logic else "legendonly"
         ))
