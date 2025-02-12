@@ -47,8 +47,8 @@ ji_dry = pd.read_csv("JI Dry new.csv")  # Replace with actual file name
 if "product_id" in data.columns and "product_id" in ji_dry.columns:
     
     # ✅ Convert "product_id" to integer (handle errors gracefully)
-    data["product_id"] = pd.to_numeric(data["product_id"], errors="coerce").fillna(0).astype(int)
-    ji_dry["product_id"] = pd.to_numeric(ji_dry["product_id"], errors="coerce").fillna(0).astype(int)
+    data["product_id"] = data["product_id"].astype(str)
+    ji_dry["product_id"] = ji_dry["product_id"].astype(str)
     ji_dry["Jarak Inbound"] = pd.to_numeric(ji_dry["Jarak Inbound"], errors="coerce").fillna(0).astype(int)
     
     # ✅ Merge with default Jarak Inbound = 7 if missing
