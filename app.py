@@ -354,7 +354,6 @@ elif page == "Inbound Quantity Simulation":
             markers=True,  # Enable markers
             color_discrete_sequence=custom_colors,  # ✅ Apply custom colors
             title="<b><span style='font-size:20px; color:#20639B;'>Line Chart</span></b>"
-            )
         )
     
        # ✅ Manually add scatter traces for text labels
