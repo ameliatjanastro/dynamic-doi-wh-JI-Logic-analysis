@@ -40,11 +40,11 @@ data["coverage"] = pd.to_datetime(data["coverage"], errors="coerce").dt.date
 data["New RL Value"] = data["New RL Value"].astype(str).str.replace(",", "", regex=True).astype(float)
 
 #JI Dry Data
-ji_dry = pd.read_csv("JI Dry.csv")  # Replace with actual file name
+ji_dry = pd.read_csv("JI Dry new.csv")  # Replace with actual file name
 
 # ✅ Ensure columns are correctly named
 ji_dry = ["product_id", "Jarak Inbound"]
-data = data.merge(ji_dry, on="primary_vendor_name", how="left").fillna({"Jarak Inbound": 7})
+data = data.merge(ji_dry, on="product_id", how="left").fillna({"Jarak Inbound": 7})
 data["Landed DOI - JI"] = data["Landed DOI"] - data["Jarak Inbound"]
 
 # Create a navigation between pages
