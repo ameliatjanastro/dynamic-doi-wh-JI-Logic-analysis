@@ -222,7 +222,7 @@ if page == "OOS Projection WH":
         drop_value = round(landed_doi - landed_doi_ji, 1)  # 1 decimal place
 
         # ✅ Add a diagonal line between the bars
-        for _, row in selected_data.iterrows():
+        for _, row in logic_labels.iterrows():
             fig.add_trace(go.Scatter(
                 x=[logic_label, logic_label],  # ✅ Align x-values to category
                 y=[landed_doi, landed_doi_ji],  # Connect the bars
