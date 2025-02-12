@@ -201,7 +201,7 @@ elif page == "Inbound Quantity Simulation":
         x="Ship Date", 
         y="New RL Qty", 
         color="Logic",  # Different colors per logic
-        markers=True  # Enable markers
+        markers=True,  # Enable markers
         title="Line Chart"
     )
 
