@@ -206,6 +206,8 @@ elif page == "Inbound Quantity Simulation":
     )
 
    # ✅ Manually add scatter traces for text labels
+    
+    logic_colors = {trace.name: trace.line.color for trace in fig2.data}
 
     visible_logic = inbound_data["Logic"].unique()
     jitter_map = {logic: (i - len(visible_logic)/2) * 2 for i, logic in enumerate(visible_logic)}
