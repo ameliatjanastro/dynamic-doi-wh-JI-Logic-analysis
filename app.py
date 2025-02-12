@@ -332,7 +332,7 @@ if page == "OOS Projection WH":
 
 elif page == "Inbound Quantity Simulation":
 
-    st.title("Inbound Quantity Trend by Ship Date")
+    st.title("Inbound Quantities Simulation by Ship Date")
 
     st.markdown(
         """
