@@ -8,24 +8,6 @@ pareto_order = ["X", "A", "B", "C", "D", "New SKU A", "New SKU B", "New SKU C", 
 custom_colors = ["#20639B", "#3CAEA3", "#F6D55C", "#ED553B"]  # Light Blue & Gray Tones
 st.set_page_config(layout="wide")
 
-# ✅ Add Note Above Table
-st.write("**📝 Note:** All logics assume LDP LBH per 10 Feb 2025 → LDP+LBH 85% SOH, thus SOH might not be entirely accurate 🙂")
-
-# ✅ Define Logic Details Data
-logic_details = {
-    "Logic Name": ["LOGIC A", "LOGIC B", "LOGIC C", "LOGIC D"],
-    "Logic Details": [
-        "cov sesuai RL everyday, dynamic DOI 50% * JI",
-        "cov sesuai RL everyday, dynamic DOI JI",
-        "cov sesuai RL everyday, dynamic DOI JI + FR Add Cov Days",
-        "cov 14 Days, DOI Policy 5"
-    ]
-}
-
-# ✅ Convert to DataFrame & Display Table
-logic_df = pd.DataFrame(logic_details)
-st.write("### Logic Details")
-st.dataframe(logic_df, hide_index=True, use_container_width=True)
 
 # Define file paths
 file_paths = {
@@ -326,6 +308,25 @@ if page == "OOS Projection WH":
     st.write("### DOI Movement Comparison Graph")
     st.plotly_chart(fig, use_container_width=False)
 
+    # ✅ Add Note Above Table
+    st.write("**📝 Note:** All logics assume LDP LBH per 10 Feb 2025 → LDP+LBH 85% SOH, thus SOH might not be entirely accurate 🙂")
+    
+    # ✅ Define Logic Details Data
+    logic_details = {
+        "Logic Name": ["Logic A", "Logic B", "Logic C", "Logic D"],
+        "Logic Details": [
+            "cov sesuai RL everyday, dynamic DOI 50% * JI",
+            "cov sesuai RL everyday, dynamic DOI JI",
+            "cov sesuai RL everyday, dynamic DOI JI + FR Add Cov Days",
+            "cov 14 Days, DOI Policy 5"
+        ]
+    }
+    
+    # ✅ Convert to DataFrame & Display Table
+    logic_df = pd.DataFrame(logic_details)
+    st.dataframe(logic_df, hide_index=True, use_container_width=True)
+
+
 elif page == "Inbound Quantity Simulation":
 
     st.title("Inbound Quantity Trend by Ship Date")
@@ -452,3 +453,21 @@ elif page == "Inbound Quantity Simulation":
     # ✅ Display in Streamlit
     #st.write("### Inbound Quantity Trend by Ship Date")
     st.plotly_chart(fig2, use_container_width=True)
+
+    # ✅ Add Note Above Table
+    st.write("**📝 Note:** All logics assume LDP LBH per 10 Feb 2025 → LDP+LBH 85% SOH, thus SOH might not be entirely accurate 🙂")
+    
+    # ✅ Define Logic Details Data
+    logic_details = {
+        "Logic Name": ["Logic A", "Logic B", "Logic C", "Logic D"],
+        "Logic Details": [
+            "cov sesuai RL everyday, dynamic DOI 50% * JI",
+            "cov sesuai RL everyday, dynamic DOI JI",
+            "cov sesuai RL everyday, dynamic DOI JI + FR Add Cov Days",
+            "cov 14 Days, DOI Policy 5"
+        ]
+    }
+    
+    # ✅ Convert to DataFrame & Display Table
+    logic_df = pd.DataFrame(logic_details)
+    st.dataframe(logic_df, hide_index=True, use_container_width=True)
