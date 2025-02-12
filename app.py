@@ -161,6 +161,7 @@ if page == "OOS Projection WH":
     st.write("### Comparison Table")
     table_columns = ["Logic", "coverage", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI", "Landed DOI - JI", "Verdict"]
 
+    original_dtypes = selected_data.dtypes
     def highlight_verdict(row):
         color = "background-color: red; color: white;" if row["Verdict"] == "Tidak Aman" else ""
         return [color] * len(row)
@@ -169,7 +170,8 @@ if page == "OOS Projection WH":
         by="Logic", 
         key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})
     ).style.apply(highlight_verdict, axis=1)
-    
+
+    selected_data = selected_data.astype(original_dtypes)
     st.dataframe(styled_df, hide_index=True, use_container_width=True)
 
     st.markdown(
