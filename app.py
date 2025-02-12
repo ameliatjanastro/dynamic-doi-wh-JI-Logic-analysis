@@ -174,6 +174,7 @@ if page == "OOS Projection WH":
     st.plotly_chart(fig)
 
 elif page == "Inbound Quantity Simulation":
+    st.set_page_config(layout="wide")
     
     data["Ship Date"] = pd.to_datetime(data["Ship Date"], errors="coerce")
     
