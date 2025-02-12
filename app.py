@@ -60,8 +60,6 @@ if "product_id" in data.columns and "product_id" in ji_dry.columns:
     # ✅ Calculate new column
     data["Landed DOI - JI"] = data["Landed DOI"] - data["Jarak Inbound"]
 
-data["Verdict"] = data.apply(lambda row: "Tidak Aman" if row["Landed DOI - JI"] < 2 else "Aman", axis=1)
-
 # Create a navigation between pages
 page = st.sidebar.selectbox("Choose a page", ["Inbound Quantity Simulation", "OOS Projection WH"])
 
@@ -158,6 +156,7 @@ if page == "OOS Projection WH":
 #]
 
     # Show table with only logic columns
+    selected_data["Verdict"] = selectted_data.apply(lambda row: "Tidak Aman" if row["Landed DOI - JI"] < 2 else "Aman", axis=1)
     st.write("### Comparison Table")
     table_columns = ["Logic", "coverage", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI", "Landed DOI - JI", "Verdict"]
 
