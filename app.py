@@ -212,11 +212,11 @@ if page == "OOS Projection WH":
         # ✅ Add a diagonal line between the two bars
         fig.add_trace(go.Scatter(
             x=[row["Logic"], row["Logic"]],  # Same x-axis position
-            y=[row["Landed DOI"], row["Landed DOI - Jarak Inbound"]],  # Connect the bars
+            y=[row["Landed DOI"], row["Landed DOI - JI"]],  # Connect the bars
             mode="lines+text",
             line=dict(color="red", width=2, dash="dash"),  # Dashed black line
             name=f"Drop {row['Logic']}",
-            text=[None, f"{row['Landed DOI'] - row['Landed DOI - Jarak Inbound']}"],  # Show drop value
+            text=[None, f"{row['Landed DOI'] - row['Landed DOI - JI']}"],  # Show drop value
             textposition="middle right",
         ))
     
