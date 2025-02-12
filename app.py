@@ -190,6 +190,9 @@ elif page == "Inbound Quantity Simulation":
     
     # ✅ Group by Ship Date and Logic to get total inbound quantity after filtering
     inbound_data = filtered_data.groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum()
+
+    for logic in inbound_data["Logic"].unique():
+        logic_df = inbound_data[inbound_data["Logic"] == logic]
     
     # Plotly Line Graph
     fig2 = px.line(
@@ -207,11 +210,10 @@ elif page == "Inbound Quantity Simulation":
             size=8,  # Size of the markers
             symbol='circle',  # Circle-shaped markers
         ),
-        text=inbound_data["New RL Qty"].astype(str),  # Add the value as text
+        text=logic_df["New RL Qty"].astype(str),  # Add the value as text
         textposition='top center',  # Position of the text
         textfont=dict(
             size=12,  # Font size
-            family="Arial",  # Font family
             color='black',  # Text color is set to black
             weight='bold'  # Make the text bold
         )
@@ -223,7 +225,7 @@ elif page == "Inbound Quantity Simulation":
         yaxis_title="Total Inbound Quantity",
         xaxis=dict(showgrid=True),
         yaxis=dict(showgrid=True),
-        width=1000,  # Increase graph width
+        width=1500,  # Increase graph width
         height=600,  # Increase graph height
         showlegend=True
     )
