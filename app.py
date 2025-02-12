@@ -414,8 +414,8 @@ elif page == "Inbound Quantity Simulation":
             yaxis_title="Total Inbound Quantity",
             xaxis=dict(showgrid=True),
             yaxis=dict(showgrid=True),
-            width=800,  # Increase graph width
-            height=600,  # Increase graph height
+            width=1000,  # Increase graph width
+            height=500,  # Increase graph height
             autosize=False,
             margin=dict(l=20, r=20, t=50, b=50),
             showlegend=True
@@ -442,8 +442,8 @@ elif page == "Inbound Quantity Simulation":
             yaxis_title="Total Inbound Quantity",
             xaxis=dict(showgrid=True),
             yaxis=dict(showgrid=True),
-            width=800,  # Increase graph width
-            height=600,  # Increase graph height
+            width=1000,  # Increase graph width
+            height=500,  # Increase graph height
             autosize=False,
             margin=dict(l=20, r=20, t=50, b=50),
             showlegend=True
