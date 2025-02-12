@@ -177,6 +177,16 @@ if page == "OOS Projection WH":
 
 elif page == "Inbound Quantity Simulation":
 
+    st.markdown(
+        """
+        <style>
+        body {
+            overflow-y: hidden !important;  /* Disable vertical scrolling */
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
     
     data["Ship Date"] = pd.to_datetime(data["Ship Date"], errors="coerce")
     
@@ -184,7 +194,9 @@ elif page == "Inbound Quantity Simulation":
     selected_location = st.sidebar.selectbox("Select Location ID", data["location_id"].dropna().unique())
     selected_pareto = st.sidebar.multiselect("Select Pareto", data["Pareto"].dropna().unique())
     selected_business_tag = st.sidebar.multiselect("Select Business Tag", data["business_tagging"].dropna().unique())
-    
+
+    chart_type = st.sidebar.radio("Select Chart Type", ["Line Chart", "Bar Chart"])
+
     # Apply filters to data (only for this graph)
     filtered_data = data[
         (data["Pareto"].isin(selected_pareto) if selected_pareto else True) &
@@ -196,88 +208,88 @@ elif page == "Inbound Quantity Simulation":
     inbound_data = filtered_data.groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum()
     
     # ✅ Create the line graph using Plotly Express
-    fig2 = px.line(
-        inbound_data, 
-        x="Ship Date", 
-        y="New RL Qty", 
-        color="Logic",  # Different colors per logic
-        markers=True,  # Enable markers
-        title="Line Chart"
-    )
-
-   # ✅ Manually add scatter traces for text labels
+    if chart_type == "Line Chart":
+        fig2 = px.line(
+            inbound_data, 
+            x="Ship Date", 
+            y="New RL Qty", 
+            color="Logic",  # Different colors per logic
+            markers=True,  # Enable markers
+            title="Line Chart"
+        )
     
-    logic_colors = {trace.name: trace.line.color for trace in fig2.data}
-
-    visible_logic = inbound_data["Logic"].unique()
-    jitter_map = {logic: (i - len(visible_logic)/2) * 2 for i, logic in enumerate(visible_logic)}
-    for logic in visible_logic:
-        logic_df = inbound_data[inbound_data["Logic"] == logic]  # Filter data per logic
-
-        # 🔹 Determine text position dynamically
-        text_positions = []
-        prev_value = None
-        for value in logic_df["New RL Qty"]:
-            if prev_value is None:
-                text_positions.append("top center")  # Default for first point
-            elif value > prev_value:
-                text_positions.append("top right")  # Text above for increasing trend
-            else:
-                text_positions.append("bottom right")  # Text below for decreasing trend
-            prev_value = value
+       # ✅ Manually add scatter traces for text labels
         
-        fig2.add_trace(go.Scatter(
-            x=logic_df["Ship Date"],
-            y=logic_df["New RL Qty"],
-            mode="text",  # Only text, no lines or markers
-            text=logic_df["New RL Qty"].astype(str),  # Convert to text
-            textposition=text_positions,  # Position text above markers
-            textfont=dict(size=12, color=logic_colors.get(logic, "black"), weight='bold'),
-            showlegend=False,  # Hide extra legend entries
-            visible=True if logic in visible_logic else "legendonly"
-        ))
+        logic_colors = {trace.name: trace.line.color for trace in fig2.data}
     
-    # ✅ Improve layout
-    fig2.update_layout(
-        xaxis_title="Ship Date",
-        yaxis_title="Total Inbound Quantity",
-        xaxis=dict(showgrid=True),
-        yaxis=dict(showgrid=True),
-        width=1000,  # Increase graph width
-        height=600,  # Increase graph height
-        autosize=False,
-        margin=dict(l=10, r=10, t=50, b=50),
-        showlegend=True
-    )
-
-    fig3 = px.bar(
-        inbound_data, 
-        x="Ship Date", 
-        y="New RL Qty", 
-        color="Logic",  # Different colors per logic
-        text=inbound_data["New RL Qty"].astype(str),  # 🔥 Auto display text labels inside bars
-        title="Bar Chart"
-    )
-
-    fig3.update_traces(
-        textfont=dict(size=12)
-    )
-
-    # ✅ Improve layout
-    fig3.update_layout(
-        xaxis_title="Ship Date",
-        yaxis_title="Total Inbound Quantity",
-        xaxis=dict(showgrid=True),
-        yaxis=dict(showgrid=True),
-        width=1000,  # Increase graph width
-        height=600,  # Increase graph height
-        autosize=False,
-        margin=dict(l=10, r=10, t=50, b=50),
-        showlegend=True
-    )
-      
+        visible_logic = inbound_data["Logic"].unique()
+        jitter_map = {logic: (i - len(visible_logic)/2) * 2 for i, logic in enumerate(visible_logic)}
+        for logic in visible_logic:
+            logic_df = inbound_data[inbound_data["Logic"] == logic]  # Filter data per logic
     
+            # 🔹 Determine text position dynamically
+            text_positions = []
+            prev_value = None
+            for value in logic_df["New RL Qty"]:
+                if prev_value is None:
+                    text_positions.append("top center")  # Default for first point
+                elif value > prev_value:
+                    text_positions.append("top right")  # Text above for increasing trend
+                else:
+                    text_positions.append("bottom right")  # Text below for decreasing trend
+                prev_value = value
+            
+            fig2.add_trace(go.Scatter(
+                x=logic_df["Ship Date"],
+                y=logic_df["New RL Qty"],
+                mode="text",  # Only text, no lines or markers
+                text=logic_df["New RL Qty"].astype(str),  # Convert to text
+                textposition=text_positions,  # Position text above markers
+                textfont=dict(size=12, color=logic_colors.get(logic, "black"), weight='bold'),
+                showlegend=False,  # Hide extra legend entries
+                visible=True if logic in visible_logic else "legendonly"
+            ))
+        
+        # ✅ Improve layout
+        fig2.update_layout(
+            xaxis_title="Ship Date",
+            yaxis_title="Total Inbound Quantity",
+            xaxis=dict(showgrid=True),
+            yaxis=dict(showgrid=True),
+            width=800,  # Increase graph width
+            height=600,  # Increase graph height
+            autosize=False,
+            margin=dict(l=10, r=10, t=50, b=50),
+            showlegend=True
+        )
+    else:  # Bar Chart
+        fig2 = px.bar(
+            inbound_data, 
+            x="Ship Date", 
+            y="New RL Qty", 
+            color="Logic",  # Different colors per logic
+            text=inbound_data["New RL Qty"].astype(str),  # 🔥 Auto display text labels inside bars
+            title="Bar Chart"
+        )
+    
+        fig2.update_traces(
+            textfont=dict(size=12, weight='bold')
+        )
+    
+        # ✅ Improve layout
+        fig2.update_layout(
+            xaxis_title="Ship Date",
+            yaxis_title="Total Inbound Quantity",
+            xaxis=dict(showgrid=True),
+            yaxis=dict(showgrid=True),
+            width=800,  # Increase graph width
+            height=600,  # Increase graph height
+            autosize=False,
+            margin=dict(l=10, r=10, t=50, b=50),
+            showlegend=True
+        )
+          
+        
     # ✅ Display in Streamlit
     st.write("### Inbound Quantity Trend by Ship Date")
     st.plotly_chart(fig2, use_container_width=True)
-    st.plotly_chart(fig3, use_container_width=True)
