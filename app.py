@@ -248,8 +248,7 @@ if page == "OOS Projection WH":
             showarrow=False,
             font=dict(color="black", size=12),
             bgcolor="yellow",  # ✅ Background color for better visibility
-            borderpad=4,
-            yaxis="y2"# ✅ Padding inside the box
+            borderpad=4 ✅ Padding inside the box
         )
        
     # ✅ Improve layout
