@@ -81,7 +81,7 @@ if page == "OOS Projection WH":
     elif view_option == "Vendor":
         # Create vendor display selection
         data["vendor_display"] = data["vendor_id"].astype(str) + " - " + data["primary_vendor_name"]
-        selected_vendor = st.sidebar.selectbox("Select Vendor", data["vendor_display"].unique())
+        selected_vendor = st.sidebar.selectbox("Select Vendor", data.sort_values(by="vendor_id")["vendor_display"].unique())
     
         # Ensure vendor filtering is correct
         selected_vendor_id = selected_vendor.split(" - ")[0].strip()
