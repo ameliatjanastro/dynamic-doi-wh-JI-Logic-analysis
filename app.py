@@ -190,34 +190,28 @@ elif page == "Inbound Quantity Simulation":
     
     # ✅ Group by Ship Date and Logic to get total inbound quantity after filtering
     inbound_data = filtered_data.groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum()
-
-    for logic in inbound_data["Logic"].unique():
-        logic_df = inbound_data[inbound_data["Logic"] == logic]
     
-    # Plotly Line Graph
+    # ✅ Create the line graph using Plotly Express
     fig2 = px.line(
         inbound_data, 
         x="Ship Date", 
         y="New RL Qty", 
-        color="Logic",  # Different line colors per logic
+        color="Logic",  # Different colors per logic
+        markers=True,  # Enable markers
         title="Total Inbound Quantity Per Ship Date"
     )
 
-        # Add circle markers with logic color and black text for values
-    fig2.update_traces(
-        mode='lines+markers+text',  # Display both lines and markers
-        marker=dict(
-            size=8,  # Size of the markers
-            symbol='circle',  # Circle-shaped markers
-        ),
-        text=logic_df["New RL Qty"].astype(str),  # Add the value as text
-        textposition='top center',  # Position of the text
-        textfont=dict(
-            size=12,  # Font size
-            color='black',  # Text color is set to black
-            weight='bold'  # Make the text bold
+    # ✅ Add text labels for each data point
+    for trace in fig2.data:
+        logic_name = trace.name  # Get the name of the Logic
+        logic_df = inbound_data[inbound_data["Logic"] == logic_name]  # Filter data for that Logic
+        
+        trace.text = logic_df["New RL Qty"].astype(str)  # Convert inbound quantity to text
+        trace.textposition = "top center"  # Position text above markers
+        trace.textfont = dict(
+            size=10,
+            color='black'
         )
-    )
     
     # ✅ Improve layout
     fig2.update_layout(
