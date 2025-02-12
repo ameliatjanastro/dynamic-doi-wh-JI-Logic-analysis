@@ -3,7 +3,8 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 
-#st.set_page_config(layout="wide")
+pareto_order = ["X", "A", "B", "C", "D", "New SKU A", "New SKU B", "New SKU C", "New SKU D", "No Sales L3M"]
+st.set_page_config(layout="wide")
 
 # Define file paths
 file_paths = {
@@ -193,8 +194,10 @@ elif page == "Inbound Quantity Simulation":
     data["Ship Date"] = pd.to_datetime(data["Ship Date"], errors="coerce")
     
    # Sidebar filters for Inbound Quantity Trend
+    pareto_options = [p for p in pareto_order if p in data["Pareto"].dropna().unique()]
+
     selected_location = st.sidebar.selectbox("Select Location ID", data["location_id"].dropna().unique())
-    selected_pareto = st.sidebar.multiselect("Select Pareto", data["Pareto"].dropna().unique())
+    selected_pareto = st.sidebar.multiselect("Select Pareto", pareto_options, default=pareto_options)
     selected_business_tag = st.sidebar.multiselect("Select Business Tag", data["business_tagging"].dropna().unique())
 
     chart_type = st.sidebar.radio("Select Chart Type", ["Line Chart", "Bar Chart"])
