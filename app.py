@@ -211,7 +211,7 @@ if page == "OOS Projection WH":
             marker=dict(color=row["color"], opacity=0.6),  # Lighter color for distinction
         ))
 
-        drop_value = round(row["Landed DOI"] - row["Landed DOI - Jarak Inbound"], 1)  # 1 decimal place
+        drop_value = round(row["Landed DOI"] - row["Landed DOI - JI"], 1)  # 1 decimal place
         # ✅ Add a diagonal line between the two bars
         fig.add_trace(go.Scatter(
             x=[row["Logic"] - bar_width, row["Logic"] + bar_width],  # Same x-axis position
