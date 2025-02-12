@@ -192,49 +192,60 @@ if page == "OOS Projection WH":
     # ✅ Create bar chart
     fig = go.Figure()
     
+    bar_width = 0.2  # Adjust for spacing
+
+    # ✅ Convert Logic column to categorical type for correct alignment
+    logic_labels = selected_data["Logic"].tolist()
+
     for index, row in selected_data.iterrows():
+        logic_label = row["Logic"]  # Keep the label for x-axis
+        landed_doi = row["Landed DOI"]
+        landed_doi_ji = row["Landed DOI - JI"]
+    
         # ✅ First Bar: Landed DOI
         fig.add_trace(go.Bar(
-            x=[row["Logic"]],
-            y=[row["Landed DOI"]],
-            name=f"{row['Logic']} - Landed DOI",
+            x=[logic_label],
+            y=[landed_doi],
+            name=f"{logic_label} - Landed DOI",
             marker=dict(color=row["color"]),
         ))
     
         # ✅ Second Bar: Landed DOI - JI
         fig.add_trace(go.Bar(
-            x=[row["Logic"]],
-            y=[row["Landed DOI - JI"]],
-            name=f"{row['Logic']} - Landed DOI - JI",
+            x=[logic_label],
+            y=[landed_doi_ji],
+            name=f"{logic_label} - Landed DOI - JI",
             marker=dict(color=row["color"], opacity=0.6),  # Lighter color for distinction
         ))
+    
+        # ✅ Calculate the drop
+        drop_value = round(landed_doi - landed_doi_ji, 1)  # 1 decimal place
 
-        drop_value = round(row["Landed DOI"] - row["Landed DOI - JI"], 1)  # 1 decimal place
-        # ✅ Add a diagonal line between the two bars
+        # ✅ Add a diagonal line between the bars
         fig.add_trace(go.Scatter(
-            x=[row["Logic"], row["Logic"]],  # Same x-axis position
-            y=[row["Landed DOI"], row["Landed DOI - JI"]],  # Connect the bars
+            x=[logic_label, logic_label],  # ✅ Align x-values to category
+            y=[landed_doi, landed_doi_ji],  # Connect the bars
             mode="lines+text",
-            line=dict(color="red", width=1, dash="solid"),  # Dashed black line
-            name=f"Drop {row['Logic']}",
-            text=[None, f"{drop_value}"],  # Show drop value
+            line=dict(color="red", width=2, dash="solid"),  # ✅ Solid red line
+            name=f"Drop {logic_label}",
+            text=[None, f"{drop_value}"],  # ✅ Text with 1 decimal place
             textposition="middle right",
         ))
-    
-    # ✅ Add horizontal line at 2 (Safe threshold)
-    fig.add_hline(y=2, line_dash="dash", line_color="red", annotation_text="Minimum Safe Level (2)", annotation_position="top right")
-    
-    # ✅ Graph layout settings
+
+    # ✅ Improve layout
     fig.update_layout(
+        title="Landed DOI vs Landed DOI - JI",
+        barmode="group",  # ✅ Ensure bars are side by side
         xaxis_title="Logic",
         yaxis_title="Days",
-        xaxis=dict(showgrid=True),
+        xaxis=dict(
+            type="category",  # ✅ Ensure correct categorical alignment
+            showgrid=True,
+        ),
         yaxis=dict(showgrid=True),
         width=700,  # ✅ Adjust width (half page size)
         height=500,  # ✅ Adjust height
-        showlegend=False
     )
-    
     # ✅ Display graph in Streamlit
     st.write("### DOI Movement Comparison Graph")
     st.plotly_chart(fig, use_container_width=False)
