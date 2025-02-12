@@ -228,7 +228,7 @@ if page == "OOS Projection WH":
 
         # ✅ Add Drop Line (Scatter, Placed in Center)
         fig.add_trace(go.Scatter(
-            x=[row["Logic"], row["Logic"]]
+            x=[row["Logic"], row["Logic"]],
             y=[row["Landed DOI"], row["Landed DOI - JI"]],
             mode="lines+text",
             line=dict(color="red", width=2, dash="solid"),  # Solid red line
