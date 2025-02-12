@@ -202,7 +202,7 @@ elif page == "Inbound Quantity Simulation":
         y="New RL Qty", 
         color="Logic",  # Different colors per logic
         markers=True  # Enable markers
-        #title="Total Inbound Quantity Per Ship Date"
+        title="Line Chart"
     )
 
    # ✅ Manually add scatter traces for text labels
@@ -255,8 +255,8 @@ elif page == "Inbound Quantity Simulation":
         x="Ship Date", 
         y="New RL Qty", 
         color="Logic",  # Different colors per logic
-        text_auto=True,  # 🔥 Auto display text labels inside bars
-        title="Total Inbound Quantity Per Ship Date"
+        textfont=dict(size=12),  # 🔥 Auto display text labels inside bars
+        title="Bar Chart"
     )
 
     # ✅ Improve layout
@@ -265,8 +265,13 @@ elif page == "Inbound Quantity Simulation":
         yaxis_title="Total Inbound Quantity",
         xaxis=dict(showgrid=True),
         yaxis=dict(showgrid=True),
+        width=1000,  # Increase graph width
+        height=600,  # Increase graph height
+        autosize=False,
+        margin=dict(l=10, r=10, t=50, b=50),
         showlegend=True
     )
+      
     
     # ✅ Display in Streamlit
     st.write("### Inbound Quantity Trend by Ship Date")
