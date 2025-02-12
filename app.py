@@ -192,7 +192,8 @@ if page == "OOS Projection WH":
     # ✅ Create bar chart
     fig = go.Figure()
     
-    #bar_width = 0.2  # Adjust for spacing
+    bar_width = 0.3  # Adjust as needed
+    offset = bar_width / 2  # Offset bars slightly
 
     # ✅ Convert Logic column to categorical type for correct alignment
     logic_labels = selected_data["Logic"].tolist()
@@ -208,6 +209,8 @@ if page == "OOS Projection WH":
             y=[landed_doi],
             name=f"{logic_label} - Landed DOI",
             marker=dict(color=row["color"]),
+            width=bar_width,
+            offset=-offset,  # Shift left to center
         ))
     
         # ✅ Second Bar: Landed DOI - JI
@@ -216,6 +219,8 @@ if page == "OOS Projection WH":
             y=[landed_doi_ji],
             name=f"{logic_label} - Landed DOI - JI",
             marker=dict(color=row["color"], opacity=0.6),  # Lighter color for distinction
+            width=bar_width,
+            offset=-offset,  # Shift left to center
         ))
     
         # ✅ Calculate the drop
@@ -244,6 +249,7 @@ if page == "OOS Projection WH":
         yaxis=dict(showgrid=True),
         width=1000,  # ✅ Adjust width (half page)
         height=500,
+        bargap=0.1, 
         showlegend=False
     )
 
