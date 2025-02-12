@@ -120,13 +120,13 @@ if page == "OOS Projection WH":
             if col != "coverage":  
                 selected_data[col] = pd.to_numeric(selected_data[col], errors="coerce")  # Force invalid to NaN
         
-        selected_data["Verdict"] = selected_data.apply(lambda row: "Tidak Aman" if row["Landed DOI - JI"] < 2 else "Aman", axis=1)
+        
         selected_data = selected_data.groupby(["vendor_id", "primary_vendor_name", "Logic"], as_index=False).agg(existing_agg_cols)
     
         # Sort by logic order (A -> D)
         logic_order = {"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4}
         selected_data = selected_data.sort_values(by="Logic", key=lambda x: x.map(logic_order))
-        
+        selected_data["Verdict"] = selected_data.apply(lambda row: "Tidak Aman" if row["Landed DOI - JI"] < 2 else "Aman", axis=1)
     
             # Debugging: Check the output of aggregation
             #st.write("Aggregated Data Preview:", selected_data)
