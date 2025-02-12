@@ -222,8 +222,8 @@ if page == "OOS Projection WH":
             width=bar_width,
             offset=offset,  # Shift left to center
         ))
-
-        drop_value = round(landed_doi - landed_doi_ji, 1)  # 1 decimal place
+    for index, row in selected_data.iterrows():
+        drop_value = round(row["Landed DOI"] - row["Landed DOI - JI"], 2)  # 1 decimal place
         #center_x = [str(logic) for logic in selected_data["Logic"]]  # Use same x values for alignment
 
         # ✅ Add Drop Line (Scatter, Placed in Center)
