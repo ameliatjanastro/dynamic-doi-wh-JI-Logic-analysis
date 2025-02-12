@@ -191,6 +191,8 @@ if page == "OOS Projection WH":
     
     # ✅ Create bar chart
     fig = go.Figure()
+
+    bar_width = 0.2
     
     for index, row in selected_data.iterrows():
         # ✅ First Bar: Landed DOI
@@ -209,14 +211,15 @@ if page == "OOS Projection WH":
             marker=dict(color=row["color"], opacity=0.6),  # Lighter color for distinction
         ))
 
+        drop_value = round(row["Landed DOI"] - row["Landed DOI - Jarak Inbound"], 1)  # 1 decimal place
         # ✅ Add a diagonal line between the two bars
         fig.add_trace(go.Scatter(
-            x=[row["Logic"], row["Logic"]],  # Same x-axis position
+            x=[row["Logic"] - bar_width, row["Logic"] + bar_width],  # Same x-axis position
             y=[row["Landed DOI"], row["Landed DOI - JI"]],  # Connect the bars
             mode="lines+text",
-            line=dict(color="red", width=2, dash="dash"),  # Dashed black line
+            line=dict(color="red", width=1, dash="solid"),  # Dashed black line
             name=f"Drop {row['Logic']}",
-            text=[None, f"{row['Landed DOI'] - row['Landed DOI - JI']}"],  # Show drop value
+            text=[None, f"{drop_value}"],  # Show drop value
             textposition="middle right",
         ))
     
