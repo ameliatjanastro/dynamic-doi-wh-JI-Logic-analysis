@@ -222,10 +222,11 @@ if page == "OOS Projection WH":
         drop_value = round(landed_doi - landed_doi_ji, 1)  # 1 decimal place
 
         fig.add_trace(go.Scatter(
-           x=[row["Logic"], row["Logic"]],  # Same x-axis position
+            x=[row["Logic"], row["Logic"]],  # Same x-axis position
             y=[row["Landed DOI"], row["Landed DOI - JI"]],  # Connect the bars
             mode="lines+text",
-            line=dict(color="red", width=1, dash="solid"),  # Dashed black line
+            line=dict(color="red", width=2, dash="solid"),  # Dashed black line
+            yaxis="y2",  # ✅ Use secondary y-axis to place it on top
             name=f"Drop {row['Logic']}",
             text=[None, f"{drop_value}"],  # Show drop value
             textposition="middle right",
@@ -233,7 +234,6 @@ if page == "OOS Projection WH":
     
     # ✅ Improve layout
     fig.update_layout(
-        title="Landed DOI vs Landed DOI - JI",
         barmode="group",  # ✅ Ensure bars are side by side
         xaxis_title="Logic",
         yaxis_title="Days",
@@ -242,7 +242,14 @@ if page == "OOS Projection WH":
             showgrid=True,
         ),
         yaxis=dict(showgrid=True),
-        yaxis2=dict(  # ✅ Create secondary y-axis
+        width=1000,  # ✅ Adjust width (half page)
+        height=500,
+        showlegend=False
+    )
+
+    # ✅ Update layout for scatter line (Secondary Y-Axis)
+    fig.update_layout(
+        yaxis2=dict(  # ✅ Create secondary y-axis for drop line
             overlaying="y",  # ✅ Places drop line on top
             showgrid=False,  # ✅ Prevents double grid lines
             zeroline=False,  
