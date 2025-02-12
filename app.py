@@ -183,18 +183,27 @@ if page == "OOS Projection WH":
     
     # ✅ Fill NaN values with 0 (or another safe default)
     selected_data["Landed DOI"].fillna(0, inplace=True)
-    selected_data["color"] = selected_data["Landed DOI"].apply(lambda x: "lightgreen" if x >= 2 else "red")
+    selected_data["color"] = selected_data["Landed DOI"].apply(lambda x: "lightgreen" if x >= selected_data["Jarak Inbound"] else "red")
     
     # ✅ Create bar chart
     fig = go.Figure()
     
     for index, row in selected_data.iterrows():
-        fig.add_trace(go.Bar(
-            x=[row["Logic"]],
-            y=[row["Landed DOI"]],
-            name=row["Logic"],
-            marker=dict(color=row["color"]),
-        ))
+    # ✅ First Bar: Landed DOI
+    fig.add_trace(go.Bar(
+        x=[row["Logic"]],
+        y=[row["Landed DOI"]],
+        name=f"{row['Logic']} - Landed DOI",
+        marker=dict(color=row["color"]),
+    ))
+
+    # ✅ Second Bar: Landed DOI - JI
+    fig.add_trace(go.Bar(
+        x=[row["Logic"]],
+        y=[row["Landed DOI - JI"]],
+        name=f"{row['Logic']} - Landed DOI - JI",
+        marker=dict(color=row["color"], opacity=0.6),  # Lighter color for distinction
+    ))
     
     # ✅ Add horizontal line at 2 (Safe threshold)
     fig.add_hline(y=2, line_dash="dash", line_color="red", annotation_text="Minimum Safe Level (2)", annotation_position="top right")
@@ -204,6 +213,7 @@ if page == "OOS Projection WH":
         title=f"Landed DOI Comparison Across Logics",
         xaxis_title="Logic",
         yaxis_title="Landed DOI",
+        width=500,
         showlegend=False
     )
     
