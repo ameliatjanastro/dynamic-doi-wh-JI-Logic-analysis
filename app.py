@@ -36,8 +36,16 @@ for key in ["Logic A", "Logic B", "Logic C", "Logic D"]:
 # Merge data
 data = pd.concat(dfs, ignore_index=True).sort_values(by=["product_id", "Logic"], key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4}))
 # Convert 'New RL Value' to numeric (remove commas)
+data["coverage"] = pd.to_datetime(selected_data["coverage"], errors="coerce").dt.date
 data["New RL Value"] = data["New RL Value"].astype(str).str.replace(",", "", regex=True).astype(float)
 
+#JI Dry Data
+ji_dry = pd.read_csv("JI Dry.csv")  # Replace with actual file name
+
+# ✅ Ensure columns are correctly named
+ji_dry = ["primary_vendor_name", "Jarak Inbound"]
+data = data.merge(ji_dry, on="primary_vendor_name", how="left").fillna({"Jarak Inbound": 7})
+data["Landed DOI - JI"] = data["Landed DOI"] - data["Jarak Inbound"]
 
 # Create a navigation between pages
 page = st.sidebar.selectbox("Choose a page", ["Inbound Quantity Simulation", "OOS Projection WH"])
@@ -82,7 +90,8 @@ if page == "OOS Projection WH":
                 "New RL Value": "sum",
                 "coverage": "max",  # Max date for coverage
                 "New DOI Policy WH": "mean",
-                "Landed DOI": "mean"
+                "Landed DOI": "mean",
+                "Landed DOI - JI": "mean"
         }
     
         # Only aggregate existing columns
@@ -134,7 +143,7 @@ if page == "OOS Projection WH":
 
     # Show table with only logic columns
     st.write("### Comparison Table")
-    table_columns = ["Logic", "coverage", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI"]
+    table_columns = ["Logic", "coverage", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI", "Landed DOI - JI"]
     st.dataframe(selected_data[table_columns].sort_values(by="Logic", key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})), hide_index=True, use_container_width=True)
 
     st.markdown(
