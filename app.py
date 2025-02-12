@@ -238,7 +238,7 @@ if page == "OOS Projection WH":
             #textposition="top center",
             #textfont=dict(color="black"),  # ✅ Black text for visibility
             hoverinfo="skip",
-            show_legend = False# ✅ Ensure hover shows exact value
+            showlegend = False# ✅ Ensure hover shows exact value
         ))
 
         fig.add_annotation(
