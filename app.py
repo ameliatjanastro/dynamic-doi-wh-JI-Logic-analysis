@@ -221,18 +221,16 @@ if page == "OOS Projection WH":
         # ✅ Calculate the drop
         drop_value = round(landed_doi - landed_doi_ji, 1)  # 1 decimal place
 
-        # ✅ Add a diagonal line between the bars
-    fig.add_trace(go.Scatter(
-        x=[val for val in selected_data["Logic"] for _ in range(2)],  # Repeat each Logic twice
-        y=selected_data[["Landed DOI", "Landed DOI - JI"]].values.flatten(),  # Flatten y-values
-        mode="lines+text",
-        line=dict(color="red", width=2, dash="solid"),  # Solid red line
-        name="Drop Line",
-        text=[None if i % 2 == 0 else f"{diff:.1f}" for i, diff in enumerate(
-            (selected_data["Landed DOI"] - selected_data["Landed DOI - JI"]).repeat(2)
-        )],  # Format text with 1 decimal
-        textposition="middle right",
-    ))
+        for _, row in selected_data.iterrows():
+            fig.add_trace(go.Scatter(
+                x=[row["Logic"], row["Logic"]],  # ✅ Same x position as bars
+                y=[row["Landed DOI"], row["Landed DOI - JI"]],  # ✅ Connect top of bars
+                mode="lines+text",
+                line=dict(color="red", width=2, dash="solid"),  # ✅ Solid red line
+                name=f"Drop {row['Logic']}",
+                text=[None, f"{row['Landed DOI'] - row['Landed DOI - JI']:.1f}"],  # ✅ 1 decimal
+                textposition="middle right",  # ✅ Position label properly
+            ))
 
     # ✅ Improve layout
     fig.update_layout(
