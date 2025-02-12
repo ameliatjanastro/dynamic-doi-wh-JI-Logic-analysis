@@ -455,7 +455,7 @@ elif page == "Inbound Quantity Simulation":
         
     # ✅ Display in Streamlit
     #st.write("### Inbound Quantity Trend by Ship Date")
-    st.plotly_chart(fig2, use_container_width=False)
+    st.plotly_chart(fig2, use_container_width=True)
 
     # ✅ Add Note Above Table
     st.write("**📝 Note:** All logics assume LDP LBH per 10 Feb 2025 → LDP+LBH 85% SOH, thus SOH might not be entirely accurate 🙂")
