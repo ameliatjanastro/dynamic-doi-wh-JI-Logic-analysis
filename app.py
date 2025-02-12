@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 import numpy as np
 
 pareto_order = ["X", "A", "B", "C", "D", "New SKU A", "New SKU B", "New SKU C", "New SKU D", "No Sales L3M"]
-custom_colors = ["00674F", "#A8DCAB", "#88E788", "#CD5C5C"]  # Light Blue & Gray Tones
+custom_colors = ["#2C5F34", "#A8DCAB", "#88E788", "#CD5C5C"]  # Light Blue & Gray Tones
 st.set_page_config(layout="wide")
 
 
