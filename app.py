@@ -259,7 +259,7 @@ elif page == "Inbound Quantity Simulation":
         title="Bar Chart"
     )
 
-     fig3.update_traces(
+    fig3.update_traces(
         textfont=dict(size=12)
     )
 
