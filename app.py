@@ -41,7 +41,7 @@ data["New RL Value"] = data["New RL Value"].astype(str).str.replace(",", "", reg
 
 #JI Dry Data
 ji_dry = pd.read_csv("JI Dry.csv")  # Replace with actual file name
-st.write("JI Dry Columns:", ji_dry.columns)
+st.write("JI Dry Columns:", data.columns)
 # ✅ Ensure columns are correctly named
 ji_dry = ["primary_vendor_name", "Jarak Inbound"]
 data = data.merge(ji_dry, on="primary_vendor_name", how="left").fillna({"Jarak Inbound": 7})
