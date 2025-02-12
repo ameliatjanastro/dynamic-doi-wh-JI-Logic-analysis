@@ -4,6 +4,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 pareto_order = ["X", "A", "B", "C", "D", "New SKU A", "New SKU B", "New SKU C", "New SKU D", "No Sales L3M"]
+custom_colors = ["#AEC6CF", "#B0BEC5", "#90A4AE", "#78909C", "#607D8B"]  # Light Blue & Gray Tones
 st.set_page_config(layout="wide")
 
 # Define file paths
@@ -135,6 +136,19 @@ if page == "OOS Projection WH":
     st.write("### Comparison Table")
     table_columns = ["Logic", "coverage", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI"]
     st.dataframe(selected_data[table_columns].sort_values(by="Logic", key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})), hide_index=True)
+
+    st.markdown(
+    """
+    <style>
+    div[data-testid="stTable"] table {
+        table-layout: fixed !important;  /* ✅ Fix column width */
+        width: 100% !important;  /* ✅ Ensure full width */
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+    )
+
     
     # Comparison Graph
     #st.write("### Comparison Graph")
@@ -221,6 +235,7 @@ elif page == "Inbound Quantity Simulation":
             y="New RL Qty", 
             color="Logic",  # Different colors per logic
             markers=True,  # Enable markers
+            color_discrete_sequence=custom_colors,  # ✅ Apply custom colors
             title="Line Chart"
         )
     
@@ -275,6 +290,7 @@ elif page == "Inbound Quantity Simulation":
             y="New RL Qty", 
             color="Logic",  # Different colors per logic
             text=inbound_data["New RL Qty"].astype(str),  # 🔥 Auto display text labels inside bars
+            color_discrete_sequence=custom_colors,  # ✅ Apply custom colors
             title="Bar Chart"
         )
     
