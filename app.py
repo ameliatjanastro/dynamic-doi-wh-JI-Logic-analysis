@@ -202,7 +202,7 @@ elif page == "Inbound Quantity Simulation":
 
         # Add circle markers with logic color and black text for values
     fig2.update_traces(
-        mode='lines+markers',  # Display both lines and markers
+        mode='lines+markers+text',  # Display both lines and markers
         marker=dict(
             size=8,  # Size of the markers
             symbol='circle',  # Circle-shaped markers
@@ -223,7 +223,9 @@ elif page == "Inbound Quantity Simulation":
         yaxis_title="Total Inbound Quantity",
         xaxis=dict(showgrid=True),
         yaxis=dict(showgrid=True),
-        showlegend=True 
+        width=1000,  # Increase graph width
+        height=600,  # Increase graph height
+        showlegend=True
     )
     
     # ✅ Display in Streamlit
