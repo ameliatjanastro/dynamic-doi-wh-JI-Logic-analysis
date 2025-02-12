@@ -230,14 +230,12 @@ if page == "OOS Projection WH":
         yaxis_title="Days",
         xaxis=dict(showgrid=True),
         yaxis=dict(showgrid=True),
-        width=700,  # ✅ Adjust width (half page size)
-        height=500,  # ✅ Adjust height
         showlegend=False
     )
     
     # ✅ Display graph in Streamlit
     st.write("### DOI Movement Comparison Graph")
-    st.plotly_chart(fig, use_container_width=False)
+    st.plotly_chart(fig)
 
 elif page == "Inbound Quantity Simulation":
 
