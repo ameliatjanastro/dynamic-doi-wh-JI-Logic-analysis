@@ -224,20 +224,20 @@ if page == "OOS Projection WH":
         ))
 
         drop_value = round(landed_doi - landed_doi_ji, 1)  # 1 decimal place
-        center_x = [str(logic) for logic in selected_data["Logic"]]  # Use same x values for alignment
+        #center_x = [str(logic) for logic in selected_data["Logic"]]  # Use same x values for alignment
 
         # ✅ Add Drop Line (Scatter, Placed in Center)
         fig.add_trace(go.Scatter(
-            x=center_x,  # Centered drop line
-            y=selected_data["Landed DOI"],
+            x=[row["Logic"], row["Logic"]]
+            y=[row["Landed DOI"], row["Landed DOI - JI"]],
             mode="lines+text",
             line=dict(color="red", width=2, dash="solid"),  # Solid red line
-            name="Drop Line",
+            name=f"Drop {row['Logic']}",
             yaxis="y2",  # ✅ Use secondary y-axis to place it on top
-            text=[f"<span style='background-color:yellow; padding:2px'>{drop_value}</span>"],  
+            text=[f"<span style='background-color:yellow; padding:2px'>{drop_value:.1f}</span>"],  
             textposition="middle right",
             textfont=dict(color="black"),  # ✅ Black text for visibility
-            hoverinfo="text",  # ✅ Ensure hover shows exact value
+            hoverinfo="text" # ✅ Ensure hover shows exact value
         ))
        
     # ✅ Improve layout
