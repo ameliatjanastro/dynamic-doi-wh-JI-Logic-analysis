@@ -162,8 +162,8 @@ if page == "OOS Projection WH":
     table_columns = ["Logic", "coverage", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI", "Landed DOI - JI", "Verdict"]
 
     def highlight_verdict(row):
-    color = "background-color: red; color: white;" if row["Verdict"] == "Tidak Aman" else ""
-    return [color] * len(row)
+        color = "background-color: red; color: white;" if row["Verdict"] == "Tidak Aman" else ""
+        return [color] * len(row)
 
     styled_df = selected_data[table_columns].sort_values(
         by="Logic", 
