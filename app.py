@@ -232,26 +232,43 @@ elif page == "Inbound Quantity Simulation":
             mode="text",  # Only text, no lines or markers
             text=logic_df["New RL Qty"].astype(str),  # Convert to text
             textposition=text_positions,  # Position text above markers
-            textfont=dict(size=11, color=logic_colors.get(logic, "black"), weight='bold'),
+            textfont=dict(size=12, color=logic_colors.get(logic, "black"), weight='bold'),
             showlegend=False,  # Hide extra legend entries
             visible=True if logic in visible_logic else "legendonly"
         ))
     
     # ✅ Improve layout
-    y_min = inbound_data["New RL Qty"].min() * 0.95  # 5% padding below
-    y_max = inbound_data["New RL Qty"].max() * 1.05
     fig2.update_layout(
         xaxis_title="Ship Date",
         yaxis_title="Total Inbound Quantity",
         xaxis=dict(showgrid=True),
-        yaxis=dict(showgrid=True, range=[y_min, y_max]),
+        yaxis=dict(showgrid=True),
         width=1000,  # Increase graph width
         height=600,  # Increase graph height
         autosize=False,
         margin=dict(l=10, r=10, t=50, b=50),
         showlegend=True
     )
+
+    fig3 = px.bar(
+        inbound_data, 
+        x="Ship Date", 
+        y="New RL Qty", 
+        color="Logic",  # Different colors per logic
+        text_auto=True,  # 🔥 Auto display text labels inside bars
+        title="Total Inbound Quantity Per Ship Date"
+    )
+
+    # ✅ Improve layout
+    fig3.update_layout(
+        xaxis_title="Ship Date",
+        yaxis_title="Total Inbound Quantity",
+        xaxis=dict(showgrid=True),
+        yaxis=dict(showgrid=True),
+        showlegend=True
+    )
     
     # ✅ Display in Streamlit
     st.write("### Inbound Quantity Trend by Ship Date")
     st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig3, use_container_width=True)
