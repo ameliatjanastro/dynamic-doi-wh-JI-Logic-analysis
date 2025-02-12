@@ -126,7 +126,7 @@ if page == "OOS Projection WH":
         # Sort by logic order (A -> D)
         logic_order = {"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4}
         selected_data = selected_data.sort_values(by="Logic", key=lambda x: x.map(logic_order))
-        selected_data["Verdict"] = selected_data.apply(lambda row: "Tidak Aman" if row["Landed DOI - JI"] < 2 else "Aman", axis=1)
+      
     
             # Debugging: Check the output of aggregation
             #st.write("Aggregated Data Preview:", selected_data)
@@ -159,6 +159,7 @@ if page == "OOS Projection WH":
 
     # Show table with only logic columns
 
+    selected_data["Verdict"] = selected_data.apply(lambda row: "Tidak Aman" if row["Landed DOI - JI"] < 2 else "Aman", axis=1)
     st.write("### Comparison Table")
     table_columns = ["Logic", "coverage", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI", "Landed DOI - JI", "Verdict"]
     original_dtypes = selected_data.dtypes
