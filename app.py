@@ -203,7 +203,9 @@ elif page == "Inbound Quantity Simulation":
     )
 
    # ✅ Manually add scatter traces for text labels
-    for logic in inbound_data["Logic"].unique():
+
+    visible_logic = inbound_data["Logic"].unique()
+    for logic in visible_logic:
         logic_df = inbound_data[inbound_data["Logic"] == logic]  # Filter data per logic
         
         fig2.add_trace(go.Scatter(
