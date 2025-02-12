@@ -223,7 +223,7 @@ if page == "OOS Projection WH":
 
         fig.add_trace(go.Scatter(
             x=selected_data["Logic"],  # Align with bars
-            y=selected_data["Landed DOI"],  # Start from Landed DOI
+            y=elected_data[["Landed DOI", "Landed DOI - JI"]].values.flatten(),  # Start from Landed DOI
             mode="lines+text",
             line=dict(color="red", width=2, dash="solid"),  # Solid red line
             name="Drop Line",
