@@ -224,6 +224,7 @@ elif page == "Inbound Quantity Simulation":
         yaxis=dict(showgrid=True),
         width=2000,  # Increase graph width
         height=600,  # Increase graph height
+        autosize=False,
         showlegend=True
     )
     
