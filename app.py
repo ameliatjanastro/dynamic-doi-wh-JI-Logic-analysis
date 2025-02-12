@@ -53,7 +53,7 @@ if "product_id" in data.columns and "product_id" in ji_dry.columns:
     
     # ✅ Merge with default Jarak Inbound = 7 if missing
     data = data.merge(ji_dry, on="product_id", how="left").fillna({"Jarak Inbound": 7})
-
+    st.write("Data Columns:", data.columns)
     # ✅ Calculate new column
     data["Landed DOI - JI"] = data["Landed DOI"] - data["Jarak Inbound"]
 
