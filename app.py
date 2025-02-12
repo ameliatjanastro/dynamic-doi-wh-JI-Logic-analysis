@@ -45,6 +45,7 @@ ji_dry = pd.read_csv("JI Dry new.csv")  # Replace with actual file name
 
 # ✅ Ensure columns are correctly named
 #ji_dry = ["product_id", "Jarak Inbound"]
+
 if "product_id" in data.columns and "product_id" in ji_dry.columns:
     
     # ✅ Convert "product_id" to integer (handle errors gracefully)
@@ -59,6 +60,7 @@ if "product_id" in data.columns and "product_id" in ji_dry.columns:
     # ✅ Calculate new column
     data["Landed DOI - JI"] = data["Landed DOI"] - data["Jarak Inbound"]
 
+data["Verdict"] = data.apply(lambda row: "Tidak Aman" if row["Landed DOI - JI"] < 2 else "Aman", axis=1)
 
 # Create a navigation between pages
 page = st.sidebar.selectbox("Choose a page", ["Inbound Quantity Simulation", "OOS Projection WH"])
@@ -157,8 +159,18 @@ if page == "OOS Projection WH":
 
     # Show table with only logic columns
     st.write("### Comparison Table")
-    table_columns = ["Logic", "coverage", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI", "Landed DOI - JI"]
-    st.dataframe(selected_data[table_columns].sort_values(by="Logic", key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})), hide_index=True, use_container_width=True)
+    table_columns = ["Logic", "coverage", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI", "Landed DOI - JI", "Verdict"]
+
+    def highlight_verdict(row):
+    color = "background-color: red; color: white;" if row["Verdict"] == "Tidak Aman" else ""
+    return [color] * len(row)
+
+    styled_df = selected_data[table_columns].sort_values(
+        by="Logic", 
+        key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})
+    ).style.apply(highlight_verdict, axis=1)
+    
+    st.dataframe(styled_df, hide_index=True, use_container_width=True)
 
     st.markdown(
     """
