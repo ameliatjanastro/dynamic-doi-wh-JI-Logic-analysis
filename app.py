@@ -213,13 +213,25 @@ elif page == "Inbound Quantity Simulation":
     jitter_map = {logic: (i - len(visible_logic)/2) * 2 for i, logic in enumerate(visible_logic)}
     for logic in visible_logic:
         logic_df = inbound_data[inbound_data["Logic"] == logic]  # Filter data per logic
+
+        # 🔹 Determine text position dynamically
+        text_positions = []
+        prev_value = None
+        for value in logic_df["New RL Qty"]:
+            if prev_value is None:
+                text_positions.append("top center")  # Default for first point
+            elif value > prev_value:
+                text_positions.append("top right")  # Text above for increasing trend
+            else:
+                text_positions.append("bottom right")  # Text below for decreasing trend
+            prev_value = value
         
         fig2.add_trace(go.Scatter(
             x=logic_df["Ship Date"],
             y=logic_df["New RL Qty"],
             mode="text",  # Only text, no lines or markers
             text=logic_df["New RL Qty"].astype(str),  # Convert to text
-            textposition="top center",  # Position text above markers
+            textposition=text_positions,  # Position text above markers
             textfont=dict(size=11, color=logic_colors.get(logic, "black"), weight='bold'),
             showlegend=False,  # Hide extra legend entries
             visible=True if logic in visible_logic else "legendonly"
