@@ -201,17 +201,19 @@ elif page == "Inbound Quantity Simulation":
         title="Total Inbound Quantity Per Ship Date"
     )
 
-    # ✅ Add text labels for each data point
-    for trace in fig2.data:
-        logic_name = trace.name  # Get the name of the Logic
-        logic_df = inbound_data[inbound_data["Logic"] == logic_name]  # Filter data for that Logic
+   # ✅ Manually add scatter traces for text labels
+    for logic in inbound_data["Logic"].unique():
+        logic_df = inbound_data[inbound_data["Logic"] == logic]  # Filter data per logic
         
-        trace.text = list(logic_df["New RL Qty"].astype(str))  # Convert inbound quantity to text
-        trace.textposition = "top center"  # Position text above markers
-        trace.textfont = dict(
-            size=10,
-            color='black'
-        )
+        fig2.add_trace(go.Scatter(
+            x=logic_df["Ship Date"],
+            y=logic_df["New RL Qty"],
+            mode="text",  # Only text, no lines or markers
+            text=logic_df["New RL Qty"].astype(str),  # Convert to text
+            textposition="top center",  # Position text above markers
+            textfont=dict(size=10, color='black', weight='bold'),
+            showlegend=False  # Hide extra legend entries
+        ))
     
     # ✅ Improve layout
     fig2.update_layout(
