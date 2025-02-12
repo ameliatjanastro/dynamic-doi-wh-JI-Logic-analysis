@@ -225,10 +225,10 @@ elif page == "Inbound Quantity Simulation":
         yaxis_title="Total Inbound Quantity",
         xaxis=dict(showgrid=True),
         yaxis=dict(showgrid=True),
-        width=2000,  # Increase graph width
-        height=400,  # Increase graph height
+        width=1500,  # Increase graph width
+        height=500,  # Increase graph height
         autosize=False,
-        margin=dict(l=50, r=50, t=50, b=50),
+        margin=dict(l=10, r=10, t=50, b=50),
         showlegend=True
     )
     
