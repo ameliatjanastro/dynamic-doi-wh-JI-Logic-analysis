@@ -353,11 +353,7 @@ elif page == "Inbound Quantity Simulation":
             color="Logic",  # Different colors per logic
             markers=True,  # Enable markers
             color_discrete_sequence=custom_colors,  # ✅ Apply custom colors
-            title=dict(
-                text="<b>Line Chart</b>",  # Bold title
-                font=dict(size=18),  # Adjust font size
-                x=0.5,  # Center title
-                xanchor="center"
+            title="<b><span style='font-size:20px; color:#20639B;'>Line Chart</span></b>"
             )
         )
     
@@ -413,12 +409,8 @@ elif page == "Inbound Quantity Simulation":
             color="Logic",  # Different colors per logic
             text=inbound_data["New RL Qty"].astype(str),  # 🔥 Auto display text labels inside bars
             color_discrete_sequence=custom_colors,  # ✅ Apply custom colors
-            title=dict(
-                text="<b>Bar Chart</b>",  # Bold title
-                font=dict(size=18),  # Adjust font size
-                x=0.5,  # Center title
-                xanchor="center"
-            )
+            title="<b><span style='font-size:20px; color:#20639B;'>Bar Chart</span></b>"
+        
         )
     
         fig2.update_traces(
