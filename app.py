@@ -214,6 +214,7 @@ elif page == "Inbound Quantity Simulation":
             textposition="top center",  # Position text above markers
             textfont=dict(size=10, color='black', weight='bold'),
             showlegend=False  # Hide extra legend entries
+             visible=True if logic in visible_logic else "legendonly"
         ))
     
     # ✅ Improve layout
@@ -223,8 +224,9 @@ elif page == "Inbound Quantity Simulation":
         xaxis=dict(showgrid=True),
         yaxis=dict(showgrid=True),
         width=2000,  # Increase graph width
-        height=600,  # Increase graph height
+        height=400,  # Increase graph height
         autosize=False,
+        margin=dict(l=50, r=50, t=50, b=50),
         showlegend=True
     )
     
