@@ -177,6 +177,8 @@ if page == "OOS Projection WH":
 
 elif page == "Inbound Quantity Simulation":
 
+    st.title("Inbound Quantity Trend by Ship Date")
+
     st.markdown(
         """
         <style>
@@ -259,7 +261,7 @@ elif page == "Inbound Quantity Simulation":
             width=800,  # Increase graph width
             height=600,  # Increase graph height
             autosize=False,
-            margin=dict(l=10, r=10, t=50, b=50),
+            margin=dict(l=20, r=20, t=50, b=50),
             showlegend=True
         )
     else:  # Bar Chart
@@ -285,11 +287,11 @@ elif page == "Inbound Quantity Simulation":
             width=800,  # Increase graph width
             height=600,  # Increase graph height
             autosize=False,
-            margin=dict(l=10, r=10, t=50, b=50),
+            margin=dict(l=20, r=20, t=50, b=50),
             showlegend=True
         )
           
         
     # ✅ Display in Streamlit
-    st.write("### Inbound Quantity Trend by Ship Date")
+    #st.write("### Inbound Quantity Trend by Ship Date")
     st.plotly_chart(fig2, use_container_width=True)
