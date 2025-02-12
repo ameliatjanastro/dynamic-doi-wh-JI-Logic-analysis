@@ -223,7 +223,7 @@ if page == "OOS Projection WH":
 
         # ✅ Add a diagonal line between the bars
         fig.add_trace(go.Scatter(
-            x=[logic_label, logic_label],  # ✅ Align x-values to category
+            x=[logic_label - bar_width, logic_label + bar_width],  # ✅ Align x-values to category
             y=[landed_doi, landed_doi_ji],  # Connect the bars
             mode="lines+text",
             line=dict(color="red", width=2, dash="solid"),  # ✅ Solid red line
@@ -245,10 +245,11 @@ if page == "OOS Projection WH":
         yaxis=dict(showgrid=True),
         width=700,  # ✅ Adjust width (half page size)
         height=500,  # ✅ Adjust height
+        showlegend=False
     )
     # ✅ Display graph in Streamlit
     st.write("### DOI Movement Comparison Graph")
-    st.plotly_chart(fig, use_container_width=False)
+    st.plotly_chart(fig, use_container_width=True)
 
 elif page == "Inbound Quantity Simulation":
 
