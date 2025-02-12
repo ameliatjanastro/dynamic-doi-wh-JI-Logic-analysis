@@ -70,7 +70,7 @@ if page == "OOS Projection WH":
     st.title("Comparison of RL Quantity Logics")
     
     # Sidebar filters
-    st.sidebar.header("Filters")
+    #st.sidebar.header("Filters")
     view_option = st.sidebar.radio("View by", ["Product ID", "Vendor"])
     
     if view_option == "Product ID":
@@ -349,13 +349,14 @@ elif page == "Inbound Quantity Simulation":
     data["Ship Date"] = pd.to_datetime(data["Ship Date"], errors="coerce")
     
    # Sidebar filters for Inbound Quantity Trend
+    chart_type = st.sidebar.radio("Select Chart Type", ["Line Chart", "Bar Chart"])
     pareto_options = [p for p in pareto_order if p in data["Pareto"].dropna().unique()]
 
     selected_location = st.sidebar.selectbox("Select Location ID", data["location_id"].dropna().unique())
     selected_pareto = st.sidebar.multiselect("Select Pareto", pareto_options, default=[])
     selected_business_tag = st.sidebar.multiselect("Select Business Tag", data["business_tagging"].dropna().unique())
 
-    chart_type = st.sidebar.radio("Select Chart Type", ["Line Chart", "Bar Chart"])
+    
 
     # Apply filters to data (only for this graph)
     filtered_data = data[
