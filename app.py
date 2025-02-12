@@ -230,15 +230,27 @@ if page == "OOS Projection WH":
         fig.add_trace(go.Scatter(
             x=[row["Logic"], row["Logic"]],
             y=[row["Landed DOI"], row["Landed DOI - JI"]],
-            mode="lines+text",
+            mode="lines",
             line=dict(color="red", width=2, dash="solid"),  # Solid red line
             name=f"Drop {row['Logic']}",
             yaxis="y2",  # ✅ Use secondary y-axis to place it on top
-            text=[f"<span style='background-color:yellow; padding:2px'>{drop_value:.1f}</span>"],  
-            textposition="middle right",
-            textfont=dict(color="black"),  # ✅ Black text for visibility
-            hoverinfo="text" # ✅ Ensure hover shows exact value
+            #text=[f"<span style='background-color:yellow; padding:2px'>{drop_value:.1f}</span>"],  
+            #textposition="top center",
+            #textfont=dict(color="black"),  # ✅ Black text for visibility
+            hoverinfo="skip",
+            show_legend = False# ✅ Ensure hover shows exact value
         ))
+
+        fig.add_annotation(
+            x=row["Logic"],
+            y=row["Landed DOI - Jarak Inbound"] + 0.5,  # ✅ Offset to avoid overlap
+            text=f"{drop_value:.1f}",
+            showarrow=False,
+            font=dict(color="black", size=12),
+            bgcolor="yellow",  # ✅ Background color for better visibility
+            borderpad=4,
+            yaxis="y2"# ✅ Padding inside the box
+        )
        
     # ✅ Improve layout
     fig.update_layout(
