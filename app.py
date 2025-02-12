@@ -223,6 +223,7 @@ if page == "OOS Projection WH":
             offset=offset,  # Shift left to center
         ))
 
+        drop_value = round(landed_doi - landed_doi_ji, 1)  # 1 decimal place
         center_x = [str(logic) for logic in selected_data["Logic"]]  # Use same x values for alignment
 
         # ✅ Add Drop Line (Scatter, Placed in Center)
@@ -233,8 +234,7 @@ if page == "OOS Projection WH":
             line=dict(color="red", width=2, dash="solid"),  # Solid red line
             name="Drop Line",
             yaxis="y2",  # ✅ Use secondary y-axis to place it on top
-            text=[f"<span style='background-color:yellow; padding:2px'>{diff:.1f}</span>"  
-                  for diff in (selected_data["Landed DOI"] - selected_data["Landed DOI - JI"])],
+            text=[f"<span style='background-color:yellow; padding:2px'>{drop_value}</span>"],  
             textposition="middle right",
             textfont=dict(color="black"),  # ✅ Black text for visibility
             hoverinfo="text",  # ✅ Ensure hover shows exact value
