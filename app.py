@@ -248,14 +248,14 @@ if page == "OOS Projection WH":
             zeroline=False,  
             visible=False  # ✅ Hide extra axis
         ),
-        width=700,  # ✅ Adjust width (half page)
+        width=1000,  # ✅ Adjust width (half page)
         height=500,
         showlegend=False
     )
     
     # ✅ Display graph in Streamlit
     st.write("### DOI Movement Comparison Graph")
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=False)
 
 elif page == "Inbound Quantity Simulation":
 
