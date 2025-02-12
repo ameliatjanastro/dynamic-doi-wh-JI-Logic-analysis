@@ -198,8 +198,8 @@ elif page == "Inbound Quantity Simulation":
         x="Ship Date", 
         y="New RL Qty", 
         color="Logic",  # Different colors per logic
-        markers=True,  # Enable markers
-        title="Total Inbound Quantity Per Ship Date"
+        markers=True  # Enable markers
+        #title="Total Inbound Quantity Per Ship Date"
     )
 
    # ✅ Manually add scatter traces for text labels
@@ -222,11 +222,11 @@ elif page == "Inbound Quantity Simulation":
         yaxis_title="Total Inbound Quantity",
         xaxis=dict(showgrid=True),
         yaxis=dict(showgrid=True),
-        width=1500,  # Increase graph width
+        width=2000,  # Increase graph width
         height=600,  # Increase graph height
         showlegend=True
     )
     
     # ✅ Display in Streamlit
-    st.write("### Inbound Quantity Trend Over Time")
+    st.write("### Inbound Quantity Trend by Ship Date")
     st.plotly_chart(fig2)
