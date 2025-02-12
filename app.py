@@ -189,21 +189,21 @@ if page == "OOS Projection WH":
     fig = go.Figure()
     
     for index, row in selected_data.iterrows():
-    # ✅ First Bar: Landed DOI
-    fig.add_trace(go.Bar(
-        x=[row["Logic"]],
-        y=[row["Landed DOI"]],
-        name=f"{row['Logic']} - Landed DOI",
-        marker=dict(color=row["color"]),
-    ))
-
-    # ✅ Second Bar: Landed DOI - JI
-    fig.add_trace(go.Bar(
-        x=[row["Logic"]],
-        y=[row["Landed DOI - JI"]],
-        name=f"{row['Logic']} - Landed DOI - JI",
-        marker=dict(color=row["color"], opacity=0.6),  # Lighter color for distinction
-    ))
+        # ✅ First Bar: Landed DOI
+        fig.add_trace(go.Bar(
+            x=[row["Logic"]],
+            y=[row["Landed DOI"]],
+            name=f"{row['Logic']} - Landed DOI",
+            marker=dict(color=row["color"]),
+        ))
+    
+        # ✅ Second Bar: Landed DOI - JI
+        fig.add_trace(go.Bar(
+            x=[row["Logic"]],
+            y=[row["Landed DOI - JI"]],
+            name=f"{row['Logic']} - Landed DOI - JI",
+            marker=dict(color=row["color"], opacity=0.6),  # Lighter color for distinction
+        ))
     
     # ✅ Add horizontal line at 2 (Safe threshold)
     fig.add_hline(y=2, line_dash="dash", line_color="red", annotation_text="Minimum Safe Level (2)", annotation_position="top right")
