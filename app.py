@@ -403,7 +403,7 @@ elif page == "Inbound Quantity Simulation":
     table_tidakaman = ["Logic", "product_id","product_name","Pareto", "primary_vendor_name","New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI"]
     #original_dtypes = selected_data.dtypes
     tidakaman_df = filtered_logic_data[(filtered_logic_data["Landed DOI"] < 5) & (filtered_logic_data["Logic"] == selected_logic)][table_tidakaman]
-    tidakaman_df = filtered_logic_data[table_tidakaman].sort_values(by="Logic", key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4}))
+    #tidakaman_df = filtered_logic_data[table_tidakaman].sort_values(by="Logic", key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4}))
     #selected_data = selected_data.astype(original_dtypes)
     
     #tidakaman_df1 = pd.DataFrame(tidakaman_df)
