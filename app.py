@@ -413,6 +413,10 @@ elif page == "Inbound Quantity Simulation":
 
     # Compute sum based on selected Logic
     inbound_data_week = filtered_logic_data.loc[filtered_logic_data["Logic"] == selected_logic, "New RL Qty"].sum()
+    filtered_logic_data["Verdict"] = filtered_logic_data.apply(lambda row: "Tidak Aman" if row["Landed DOI"] < 5 else "Aman", axis=1)
+    tidakaman = filtered_logic_data.loc[(filtered_logic_data["Logic"] == selected_logic) & filtered_logic_data.loc(filtered_logic_data["Verdict"] == "Tidak Aman"), "New RL Qty"].count()
+
+    st.write(f"#### Total Tidak Aman for {selected_logic1}: {tidakaman}")
     
     # Display the result
     st.write(f"#### Total RL Qty for {selected_logic}: {inbound_data_week}")
