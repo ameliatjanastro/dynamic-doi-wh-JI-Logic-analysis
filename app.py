@@ -400,7 +400,7 @@ elif page == "Inbound Quantity Simulation":
         unsafe_allow_html=True)
 
 
-    table_tidakaman = ["Logic", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI"]
+    table_tidakaman = ["Logic", "product_id","product_name","Pareto", "primary_vendor_name","New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI"]
     #original_dtypes = selected_data.dtypes
     tidakaman_df = filtered_logic_data[table_tidakaman].sort_values(
     by="Logic", 
