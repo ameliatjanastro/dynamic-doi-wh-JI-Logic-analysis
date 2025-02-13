@@ -414,7 +414,7 @@ elif page == "Inbound Quantity Simulation":
 
     #selected_data = selected_data.astype(original_dtypes)
     
-    tidakaman_df1 = pd.dataframe(tidakaman_df)
+    tidakaman_df1 = pd.DataFrame(tidakaman_df)
     csv = tidakaman_df1.to_csv(index=False)
 
     # Export Button (Without Displaying DataFrame)
