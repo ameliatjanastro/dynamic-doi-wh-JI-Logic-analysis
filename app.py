@@ -162,10 +162,6 @@ if page == "OOS Projection WH":
 
     selected_data["Verdict"] = selected_data.apply(lambda row: "Tidak Aman" if row["Landed DOI"] < 5 else "Aman", axis=1)
     
-    def highlight_cells(val):
-        color = 'background-color: lightcoral' if val == "Tidak Aman" else ''
-        return color
-    
     st.markdown("<b><span style='font-size:26px; color:#20639B;'>Comparison Table</span></b>", unsafe_allow_html=True)
     #st.write("### Comparison Table")
     table_columns = ["Logic", "coverage", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI", "Verdict"] #"Landed DOI - JI", 
@@ -175,21 +171,49 @@ if page == "OOS Projection WH":
         color = "background-color: red; color: white;" if row["Verdict"] == "Tidak Aman" else ""
         return [color] * len(row)
         
-    formatted_df = selected_data.style.applymap(highlight_cells, subset=["Verdict"])
-    formatted_df = selected_data[table_columns].sort_values(
-        by="Logic", 
-        key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})
-    ).style.format({
-        "New RL Value": "{:,.0f}",  # Adds comma separator (1,000s, no decimals)
-        "New DOI Policy WH": "{:.2f}",  # 2 decimal places
-        "Landed DOI": "{:.2f}",  # 2 decimal places
+    #formatted_df = selected_data.style.applymap(highlight_cells, subset=["Verdict"])
+    #formatted_df = selected_data[table_columns].sort_values(
+        #by="Logic", 
+        #key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})
+    #).style.format({
+        #"New RL Value": "{:,.0f}",  # Adds comma separator (1,000s, no decimals)
+        #"New DOI Policy WH": "{:.2f}",  # 2 decimal places
+        #"Landed DOI": "{:.2f}",  # 2 decimal places
         #"Landed DOI - JI": "{:.2f}",  # 2 decimal places
-    })
+    #})
 
-    selected_data = selected_data.astype(original_dtypes)
+    #selected_data = selected_data.astype(original_dtypes)
     
-    st.dataframe(formatted_df, hide_index=True, use_container_width=True)
+    #st.dataframe(formatted_df, hide_index=True, use_container_width=True)
 
+    selected_data = selected_data[table_columns].sort_values(
+        by="Logic",
+        key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4}),
+    )
+
+    def highlight_cells(val):
+        if val == "Tidak Aman":
+            return "background-color: red; color: white;"  # Red background, white text
+        return ""
+
+    # Define column formatting
+    column_config = {
+        "New RL Value": st.column_config.NumberColumn(format="%.0f"),  # No decimals
+        "New DOI Policy WH": st.column_config.NumberColumn(format="%.2f"),  # 2 decimal places
+        "Landed DOI": st.column_config.NumberColumn(format="%.2f"),  # 2 decimal places
+    }
+
+    # Use `st.data_editor` for interactive table + styling
+    st.data_editor(
+        selected_data,
+        column_config=column_config,
+        hide_index=True,
+        use_container_width=True,
+        row_styles=[{"if": {"filter_query": '{Verdict} == "Tidak Aman"'}, "backgroundColor": "red", "color": "white"}],
+    )
+
+    st.dataframe(selected_data, hide_index=True, use_container_width=True)
+    
     st.markdown(
     """
     <style>
