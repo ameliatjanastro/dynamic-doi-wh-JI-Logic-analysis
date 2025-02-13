@@ -368,7 +368,20 @@ elif page == "Inbound Quantity Simulation":
     # ✅ Group by Ship Date and Logic to get total inbound quantity after filtering
     inbound_data = (filtered_data[filtered_data["primary_vendor_name"] != "0"].groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum())
 
-    inbound_data_week = filtered_data.loc[filtered_data["primary_vendor_name"] != "0", "New RL Qty"].sum()
+    filtered_logic_data = filtered_data[filtered_data["primary_vendor_name"] != "0"]
+    logic_options = filtered_logic_data["Logic"].unique()
+    # Default value
+    selected_logic = None
+    
+    # Create buttons for each Logic
+    for logic in logic_options:
+        if st.button(f"Show for {logic}"):
+            selected_logic = logic
+    
+    # Compute the sum based on the selected Logic
+    if selected_logic:
+        inbound_data_week = filtered_logic_data.loc[filtered_data["Logic"] == selected_logic, "New RL Qty"].sum()
+
     
     # ✅ Create the line graph using Plotly Express
     if chart_type == "Line Chart":
