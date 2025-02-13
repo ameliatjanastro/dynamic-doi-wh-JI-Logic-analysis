@@ -187,7 +187,7 @@ if page == "OOS Projection WH":
     })
 
     selected_data = selected_data.astype(original_dtypes)
-    formatted_df = formatted_df.style.applymap(highlight_cells, subset=["Verdict"])
+    formatted_df = selected_data.style.applymap(highlight_cells, subset=["Verdict"])
     st.dataframe(formatted_df, hide_index=True, use_container_width=True)
 
     st.markdown(
