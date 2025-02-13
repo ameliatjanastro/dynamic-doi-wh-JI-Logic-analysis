@@ -180,7 +180,7 @@ if page == "OOS Projection WH":
         "New RL Value": "{:,.0f}",  # Adds comma separator (1,000s, no decimals)
         "New DOI Policy WH": "{:.2f}",  # 2 decimal places
         "Landed DOI": "{:.2f}",  # 2 decimal places
-        "Landed DOI - JI": "{:.2f}",  # 2 decimal places
+        #"Landed DOI - JI": "{:.2f}",  # 2 decimal places
     })
 
     #selected_data = selected_data.astype(original_dtypes)
@@ -198,30 +198,6 @@ if page == "OOS Projection WH":
     """,
     unsafe_allow_html=True
     )
-    
-    filtered_logic_data1 = selected_data[selected_data["primary_vendor_name"] != "0"]
-    logic_options1 = filtered_logic_data1["Logic"].unique()
-
-    st.markdown(
-    """
-    <style>
-    div[data-testid="stSelectbox"] {
-        width: auto !important;
-        display: inline-block !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-    )
-
-    selected_logic1 = st.selectbox("Select Logic:", logic_options1, key="logic_dropdown")
-
-    # Compute sum based on selected Logic
-    tidakaman = filtered_logic_data1.loc[(filtered_logic_data1["Logic"] == selected_logic1) & (filtered_logic_data1["Verdict"] == "Tidak Aman"), "New RL Qty"].count()
-
-
-    # Display the result
-    st.write(f"#### Total Tidak Aman for {selected_logic1}: {tidakaman}")
     
     # Comparison Graph
     #st.write("### Comparison Graph")
