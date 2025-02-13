@@ -397,7 +397,7 @@ elif page == "Inbound Quantity Simulation":
     "New RL Qty"
         ].count()  # ✅ Count matching rows
 
-    st.write(f"#### Total Tidak Aman for {selected_logic1}: {tidakaman}")
+    st.write(f"#### Total Tidak Aman for {selected_logic}: {tidakaman}")
     
     # Display the result
     st.write(f"#### Total RL Qty for {selected_logic}: {inbound_data_week}")
