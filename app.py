@@ -373,17 +373,15 @@ elif page == "Inbound Quantity Simulation":
     
     cols = st.columns(len(logic_options))
     for i, logic in enumerate(logic_options):
-    if cols[i].button(logic):  
-        selected_logic = logic
+        if cols[i].button(logic):  
+            selected_logic = logic
         
-    # Default value
-    selected_logic = None
-    
-
-    # Compute the sum based on the selected Logic
+    # Compute sum based on selected Logic
     if selected_logic:
-        inbound_data_week = filtered_logic_data.loc[filtered_data["Logic"] == selected_logic, "New RL Qty"].sum()
-        st.write(f"## Total RL Qty for {selected_logic}: {inbound_data_week}") 
+        inbound_data_week = filtered_logic_data.loc[filtered_logic_data["Logic"] == selected_logic, "New RL Qty"].sum()
+        st.write(f"## Total RL Qty for {selected_logic}: {inbound_data_week}")
+    else:
+        st.write("## Select a Logic to display the total RL Qty")
     
     # ✅ Create the line graph using Plotly Express
     if chart_type == "Line Chart":
