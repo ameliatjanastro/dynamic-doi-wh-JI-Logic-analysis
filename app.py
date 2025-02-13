@@ -402,20 +402,13 @@ elif page == "Inbound Quantity Simulation":
 
     table_tidakaman = ["Logic", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI"]
     #original_dtypes = selected_data.dtypes
-
     tidakaman_df = filtered_logic_data[table_tidakaman].sort_values(
-        by="Logic", 
-        key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})
-    ).style.format({
-        "New RL Value": "{:,.0f}",  # Adds comma separator (1,000s, no decimals)
-        "New DOI Policy WH": "{:.2f}",  # 2 decimal places
-        "Landed DOI": "{:.2f}",  # 2 decimal places
-    })
-
+    by="Logic", 
+    key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4}))
     #selected_data = selected_data.astype(original_dtypes)
     
     tidakaman_df1 = pd.DataFrame(tidakaman_df)
-    csv = tidakaman_df1.to_csv(index=False)
+    csv = tidakaman_df.to_csv(index=False)
 
     # Export Button (Without Displaying DataFrame)
     st.download_button(
