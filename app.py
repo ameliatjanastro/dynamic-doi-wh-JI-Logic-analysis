@@ -494,7 +494,7 @@ elif page == "Inbound Quantity Simulation":
     unsafe_allow_html=True
     )
 
-    selected_logic = st.selectbox "Select Logic:", logic_options, key="logic_dropdown", label_visibility="collapsed")
+    selected_logic = st.selectbox ("Select Logic:", logic_options, key="logic_dropdown", label_visibility="collapsed")
 
     # Compute sum based on selected Logic
     inbound_data_week = filtered_logic_data.loc[filtered_logic_data["Logic"] == selected_logic, "New RL Qty"].sum()
