@@ -174,7 +174,8 @@ if page == "OOS Projection WH":
     def highlight_verdict(row):
         color = "background-color: red; color: white;" if row["Verdict"] == "Tidak Aman" else ""
         return [color] * len(row)
-
+        
+    formatted_df = selected_data.style.applymap(highlight_cells, subset=["Verdict"])
     formatted_df = selected_data[table_columns].sort_values(
         by="Logic", 
         key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})
@@ -184,8 +185,6 @@ if page == "OOS Projection WH":
         "Landed DOI": "{:.2f}",  # 2 decimal places
         #"Landed DOI - JI": "{:.2f}",  # 2 decimal places
     })
-
-    formatted_df = selected_data.style.applymap(highlight_cells, subset=["Verdict"])
 
     selected_data = selected_data.astype(original_dtypes)
     st.dataframe(formatted_df, hide_index=True, use_container_width=True)
