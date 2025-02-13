@@ -370,6 +370,41 @@ elif page == "Inbound Quantity Simulation":
     # ✅ Group by Ship Date and Logic to get total inbound quantity after filtering
     inbound_data = (filtered_data[filtered_data["primary_vendor_name"] != "0"].groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum())
 
+    filtered_logic_data = filtered_data[filtered_data["primary_vendor_name"] != "0"]
+    logic_options = filtered_logic_data["Logic"].unique()
+
+    st.markdown(
+    """
+    <style>
+    div[data-testid="stSelectbox"] {
+        width: auto !important;
+        display: inline-block !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+    )
+
+    # Select Logic first
+    selected_logic = st.selectbox("", logic_options, key="logic_dropdown", label_visibility="collapsed")
+    
+    # Compute values based on selected_logic
+    inbound_data_week = filtered_logic_data.loc[filtered_logic_data["Logic"] == selected_logic, "New RL Qty"].sum()
+    tidakaman = filtered_logic_data.loc[
+        (filtered_logic_data["Logic"] == selected_logic) & 
+        (filtered_logic_data["Landed DOI"] < 5), 
+        "New RL Qty"
+    ].count()
+    
+    col1, col2 = st.columns([0.5, 4])  # Make first column as small as possible
+    
+    with col1:
+        selected_logic = st.selectbox("", logic_options, key="logic_dropdown", label_visibility="collapsed")  # Dropdown inside col1
+    
+    with col2:
+        st.markdown(f"##### Total RL Qty for **{selected_logic}**: {inbound_data_week} | Total Tidak Aman: {tidakaman}")
+
+    
     # ✅ Create the line graph using Plotly Express
     if chart_type == "Line Chart":
         fig2 = px.line(
@@ -478,38 +513,4 @@ elif page == "Inbound Quantity Simulation":
     logic_df = pd.DataFrame(logic_details)
     st.dataframe(logic_df, hide_index=True, use_container_width=True)
 
-    filtered_logic_data = filtered_data[filtered_data["primary_vendor_name"] != "0"]
-    logic_options = filtered_logic_data["Logic"].unique()
-
-    st.markdown(
-    """
-    <style>
-    div[data-testid="stSelectbox"] {
-        width: auto !important;
-        display: inline-block !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-    )
-
-    # Select Logic first
-    selected_logic = st.selectbox("", logic_options, key="logic_dropdown", label_visibility="collapsed")
-    
-    # Compute values based on selected_logic
-    inbound_data_week = filtered_logic_data.loc[filtered_logic_data["Logic"] == selected_logic, "New RL Qty"].sum()
-    tidakaman = filtered_logic_data.loc[
-        (filtered_logic_data["Logic"] == selected_logic) & 
-        (filtered_logic_data["Landed DOI"] < 5), 
-        "New RL Qty"
-    ].count()
-    
-    # Display Selectbox and Text Side by Side with minimal gap
-    col1, col2 = st.columns([0.6, 4])  # Reduce first column width for minimal spacing
-    
-    with col1:
-        st.write("")  # Empty string to maintain alignment
-        selected_logic  # Dropdown appears here
-    
-    with col2:
-        st.write(f"##### Total RL Qty: {inbound_data_week} | Total Tidak Aman: {tidakaman}")
+ 
