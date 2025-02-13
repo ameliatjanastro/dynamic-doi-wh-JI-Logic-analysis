@@ -370,6 +370,7 @@ elif page == "Inbound Quantity Simulation":
     # ✅ Group by Ship Date and Logic to get total inbound quantity after filtering
     inbound_data = (filtered_data[filtered_data["primary_vendor_name"] != "0"].groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum())
 
+    filtered_data["Landed DOI"] = pd.to_numeric(filtered_data["Landed DOI"], errors="coerce")
     filtered_logic_data = filtered_data[filtered_data["primary_vendor_name"] != "0"]
     logic_options = filtered_logic_data["Logic"].unique()
 
@@ -403,10 +404,8 @@ elif page == "Inbound Quantity Simulation":
     table_tidakaman = ["Logic", "product_id","product_name","Pareto", "primary_vendor_name","New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI"]
     #original_dtypes = selected_data.dtypes
     tidakaman_df = filtered_logic_data[(filtered_logic_data["Landed DOI"] < 5) & (filtered_logic_data["Logic"] == selected_logic)][table_tidakaman]
-    #tidakaman_df = filtered_logic_data[table_tidakaman].sort_values(by="Logic", key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4}))
-    #selected_data = selected_data.astype(original_dtypes)
-    
-    #tidakaman_df1 = pd.DataFrame(tidakaman_df)
+    tidakaman_df = tidakaman_df.sort_values(by="Logic", key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4}))
+
     csv = tidakaman_df.to_csv(index=False)
 
     # Export Button (Without Displaying DataFrame)
