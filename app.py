@@ -493,17 +493,23 @@ elif page == "Inbound Quantity Simulation":
     unsafe_allow_html=True
     )
 
-    selected_logic = st.selectbox ("Select Logic:", logic_options, key="logic_dropdown", label_visibility="collapsed")
-
-    # Compute sum based on selected Logic
-    inbound_data_week = filtered_logic_data.loc[filtered_logic_data["Logic"] == selected_logic, "New RL Qty"].sum()
-    tidakaman = filtered_logic_data.loc[(filtered_logic_data["Logic"] == selected_logic) & (filtered_logic_data["Landed DOI"] < 5), "New RL Qty"].count()
+    # Select Logic first
+    selected_logic = st.selectbox("", logic_options, key="logic_dropdown", label_visibility="collapsed")
     
-    col1, col2 = st.columns([1, 3])
+    # Compute values based on selected_logic
+    inbound_data_week = filtered_logic_data.loc[filtered_logic_data["Logic"] == selected_logic, "New RL Qty"].sum()
+    tidakaman = filtered_logic_data.loc[
+        (filtered_logic_data["Logic"] == selected_logic) & 
+        (filtered_logic_data["Landed DOI"] < 5), 
+        "New RL Qty"
+    ].count()
+    
+    # Display Selectbox and Text Side by Side with minimal gap
+    col1, col2 = st.columns([0.6, 4])  # Reduce first column width for minimal spacing
     
     with col1:
-        selected_logic
+        st.write("")  # Empty string to maintain alignment
+        selected_logic  # Dropdown appears here
     
     with col2:
-        st.write(f"##### Total RL Qty for {selected_logic}: {inbound_data_week} | Total Tidak Aman for {selected_logic}: {tidakaman}")
-        #st.write(f"##### Total RL Qty: {inbound_data_week} | Total SKU Tidak Aman: {tidakaman}")
+        st.write(f"##### Total RL Qty: {inbound_data_week} | Total Tidak Aman: {tidakaman}")
