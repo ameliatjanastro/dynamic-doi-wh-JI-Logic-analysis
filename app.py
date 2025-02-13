@@ -396,13 +396,7 @@ elif page == "Inbound Quantity Simulation":
         "New RL Qty"
     ].count()
     
-    col1, col2 = st.columns([0.5, 4])  # Make first column as small as possible
-    
-    with col1:
-        selected_logic = st.selectbox("", logic_options, key="logic_dropdown", label_visibility="collapsed")  # Dropdown inside col1
-    
-    with col2:
-        st.markdown(f"##### Total RL Qty for **{selected_logic}**: {inbound_data_week} | Total Tidak Aman: {tidakaman}")
+    st.markdown(f"##### Total RL Qty for **{selected_logic}**: {inbound_data_week} | Total Tidak Aman: {tidakaman}")
 
     
     # ✅ Create the line graph using Plotly Express
