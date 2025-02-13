@@ -370,14 +370,26 @@ elif page == "Inbound Quantity Simulation":
 
     filtered_logic_data = filtered_data[filtered_data["primary_vendor_name"] != "0"]
     logic_options = filtered_logic_data["Logic"].unique()
-    
-    selected_logic = st.selectbox("Select Logic:", logic_options)
+
+    st.markdown(
+    """
+    <style>
+    div[data-testid="stSelectbox"] {
+        width: auto !important;
+        display: inline-block !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+    )
+
+    selected_logic = st.selectbox(logic_options)
 
     # Compute sum based on selected Logic
     inbound_data_week = filtered_logic_data.loc[filtered_logic_data["Logic"] == selected_logic, "New RL Qty"].sum()
     
     # Display the result
-    st.write(f"## Total RL Qty for {selected_logic}: {inbound_data_week}")
+    st.write(f"#### Total RL Qty for {selected_logic}: {inbound_data_week}")
     
     # ✅ Create the line graph using Plotly Express
     if chart_type == "Line Chart":
