@@ -371,7 +371,7 @@ elif page == "Inbound Quantity Simulation":
     filtered_logic_data = filtered_data[filtered_data["primary_vendor_name"] != "0"]
     logic_options = filtered_logic_data["Logic"].unique()
     
-    cols = st.columns(len(logic_options))
+    cols = st.columns([0.2] * len(logic_options))
     # Initialize selection
     selected_logic = None
     
