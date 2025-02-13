@@ -381,7 +381,7 @@ elif page == "Inbound Quantity Simulation":
     # Compute the sum based on the selected Logic
     if selected_logic:
         inbound_data_week = filtered_logic_data.loc[filtered_data["Logic"] == selected_logic, "New RL Qty"].sum()
-
+        st.write(f"## Total RL Qty for {selected_logic}: {inbound_data_week}")
     
     # ✅ Create the line graph using Plotly Express
     if chart_type == "Line Chart":
@@ -471,7 +471,6 @@ elif page == "Inbound Quantity Simulation":
         
     # ✅ Display in Streamlit
     #st.write("### Inbound Quantity Trend by Ship Date")
-    st.write(f"## {inbound_data_week}")
     st.plotly_chart(fig2, use_container_width=True)
 
     # ✅ Add Note Above Table
