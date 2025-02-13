@@ -314,7 +314,7 @@ if page == "OOS Projection WH":
     st.plotly_chart(fig, use_container_width=False)
 
     # ✅ Add Note Above Table
-    st.write("**📝 Note:** All logics assume LDP LBH per 10 Feb 2025 → LDP+LBH 85% SOH, thus SOH might not be entirely accurate 🙂")
+    st.write("**📝 Note:** All logics assume LDP LBH per 10 Feb 2025 → LDP+LBH 85% are added to SOH, thus SOH might not be entirely accurate 🙂")
     
     # ✅ Define Logic Details Data
     logic_details = {
@@ -396,7 +396,8 @@ elif page == "Inbound Quantity Simulation":
         "New RL Qty"
     ].count()
     
-    st.markdown(f"##### Total RL Qty for **{selected_logic}**: {inbound_data_week} | Total Tidak Aman: {tidakaman}")
+    st.markdown(f"##### Total RL Qty for **{selected_logic}**: {inbound_data_week} | Total SKU Tidak Aman (Landed DOI < 5): <span style='color:red; font-weight:bold;'>{tidakaman}</span>", 
+        unsafe_allow_html=True)
 
     st.markdown("---")
     
@@ -491,7 +492,7 @@ elif page == "Inbound Quantity Simulation":
     st.plotly_chart(fig2, use_container_width=True)
 
     # ✅ Add Note Above Table
-    st.write("**📝 Note:** All logics assume LDP LBH per 10 Feb 2025 → LDP+LBH 85% SOH, thus SOH might not be entirely accurate 🙂")
+    st.write("**📝 Note:** All logics assume LDP LBH per 10 Feb 2025 → LDP+LBH 85% are added to SOH, thus SOH might not be entirely accurate 🙂")
     
     # ✅ Define Logic Details Data
     logic_details = {
