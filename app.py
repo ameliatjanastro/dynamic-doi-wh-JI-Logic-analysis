@@ -396,16 +396,9 @@ elif page == "Inbound Quantity Simulation":
         "New RL Qty"
     ].count()
     
-    #st.markdown(f"##### Total RL Qty for **{selected_logic}**: {inbound_data_week} | Total Tidak Aman: {tidakaman}")
+    st.markdown(f"##### Total RL Qty for **{selected_logic}**: {inbound_data_week} | Total Tidak Aman: {tidakaman}")
 
-    # Display Selectbox and Sentence on the Same Row
-    col1, col2 = st.columns([0.5, 4])  # Make the first column smaller
-    
-    with col1:
-        st.write("")  # Keeps alignment correct
-    
-    with col2:
-        st.markdown(f"##### Total RL Qty for **{selected_logic}**: {inbound_data_week} | Total Tidak Aman: {tidakaman}")
+    st.markdown("---")
     
     # ✅ Create the line graph using Plotly Express
     if chart_type == "Line Chart":
