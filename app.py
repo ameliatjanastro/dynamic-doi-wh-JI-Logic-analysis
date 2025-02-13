@@ -176,7 +176,7 @@ if page == "OOS Projection WH":
     formatted_df = selected_data[table_columns].sort_values(
         by="Logic", 
         key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})
-    ).style..style.applymap(highlight_cells, subset=["Verdict"]).format({
+    ).style.applymap(highlight_cells, subset=["Verdict"]).format({
         "New RL Value": "{:,.0f}",  # Adds comma separator (1,000s, no decimals)
         "New DOI Policy WH": "{:.2f}",  # 2 decimal places
         "Landed DOI": "{:.2f}",  # 2 decimal places
