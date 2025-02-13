@@ -497,5 +497,13 @@ elif page == "Inbound Quantity Simulation":
 
     # Compute sum based on selected Logic
     inbound_data_week = filtered_logic_data.loc[filtered_logic_data["Logic"] == selected_logic, "New RL Qty"].sum()
-    tidakaman = filtered_logic_data.loc[(filtered_logic_data["Logic"] == selected_logic) & (filtered_logic_data["Landed DOI"] < 5), "New RL Qty"].count() 
-    st.write(f"##### Total RL Qty for {selected_logic}: {inbound_data_week} | Total Tidak Aman for {selected_logic}: {tidakaman}")
+    tidakaman = filtered_logic_data.loc[(filtered_logic_data["Logic"] == selected_logic) & (filtered_logic_data["Landed DOI"] < 5), "New RL Qty"].count()
+    
+    col1, col2 = st.columns([1, 3])
+    
+    with col1:
+        selected_logic
+    
+    with col2:
+        st.write(f"##### Total RL Qty for {selected_logic}: {inbound_data_week} | Total Tidak Aman for {selected_logic}: {tidakaman}")
+        #st.write(f"##### Total RL Qty: {inbound_data_week} | Total SKU Tidak Aman: {tidakaman}")
