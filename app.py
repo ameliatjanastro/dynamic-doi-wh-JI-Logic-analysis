@@ -217,10 +217,11 @@ if page == "OOS Projection WH":
     selected_logic1 = st.selectbox("Select Logic:", logic_options1, key="logic_dropdown")
 
     # Compute sum based on selected Logic
-    tidakaman = filtered_logic_data1.loc[[(filtered_logic_data1["Logic"] == selected_logic1) & (filtered_logic_data1["Verdict"] == "Tidak Aman")], "product_id"].count()
+    tidakaman = filtered_logic_data1.loc[(filtered_logic_data1["Logic"] == selected_logic1) & (filtered_logic_data1["Verdict"] == "Tidak Aman"), "product_id"].count()
+
 
     # Display the result
-    st.write(f"#### Total RL Qty for {selected_logic1}: {tidakaman}")
+    st.write(f"#### Total Tidak Aman for {selected_logic1}: {tidakaman}")
     
     # Comparison Graph
     #st.write("### Comparison Graph")
