@@ -80,7 +80,7 @@ if page == "OOS Projection WH":
         selected_data = data[data["product_id"] == selected_product.split(" - ")[0]]
     elif view_option == "Vendor":
         # Create vendor display selection
-        data["vendor_display"] = data["vendor_id"].astype(str) + " - " + data["primary_vendor_name"]
+        data["vendor_display"] = np.where(data["primary_vendor_name"] == "0", data["vendor_id"].astype(str), data["vendor_id"].astype(str) + " - " + data["primary_vendor_name"])
         selected_vendor = st.sidebar.selectbox("Select Vendor", data.sort_values(by="vendor_id")["vendor_display"].unique())
     
         # Ensure vendor filtering is correct
@@ -398,6 +398,32 @@ elif page == "Inbound Quantity Simulation":
     
     st.markdown(f"##### Total RL Qty for **{selected_logic}**: {inbound_data_week} | Total SKU Tidak Aman (Landed DOI < 5): <span style='color:red; font-weight:bold;'>{tidakaman}</span>", 
         unsafe_allow_html=True)
+
+
+    table_tidakaman = ["Logic", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI"]
+    #original_dtypes = selected_data.dtypes
+
+    tidakaman_df = filtered_logic_data[table_tidakaman].sort_values(
+        by="Logic", 
+        key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})
+    ).style.format({
+        "New RL Value": "{:,.0f}",  # Adds comma separator (1,000s, no decimals)
+        "New DOI Policy WH": "{:.2f}",  # 2 decimal places
+        "Landed DOI": "{:.2f}",  # 2 decimal places
+    })
+
+    #selected_data = selected_data.astype(original_dtypes)
+    
+    tidakaman_df1 = pd.dataframe(tidakaman_df)
+    csv = tidakaman_df1.to_csv(index=False)
+
+    # Export Button (Without Displaying DataFrame)
+    st.download_button(
+        label="📥 Download Data",
+        data=csv,
+        file_name="tidakamanlist.csv",
+        mime="text/csv"
+    )
 
     st.markdown("---")
     
