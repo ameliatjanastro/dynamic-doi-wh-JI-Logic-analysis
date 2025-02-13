@@ -372,6 +372,9 @@ elif page == "Inbound Quantity Simulation":
     logic_options = filtered_logic_data["Logic"].unique()
     
     cols = st.columns(len(logic_options))
+    # Initialize selection
+    selected_logic = None
+    
     for i, logic in enumerate(logic_options):
         if cols[i].button(logic):  
             selected_logic = logic
