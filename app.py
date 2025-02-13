@@ -367,6 +367,8 @@ elif page == "Inbound Quantity Simulation":
         (data["business_tagging"].isin(selected_business_tag) if selected_business_tag else True)
     ]
     
+    # ✅ Group by Ship Date and Logic to get total inbound quantity after filtering
+    inbound_data = (filtered_data[filtered_data["primary_vendor_name"] != "0"].groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum())
 
     # ✅ Create the line graph using Plotly Express
     if chart_type == "Line Chart":
@@ -475,9 +477,6 @@ elif page == "Inbound Quantity Simulation":
     # ✅ Convert to DataFrame & Display Table
     logic_df = pd.DataFrame(logic_details)
     st.dataframe(logic_df, hide_index=True, use_container_width=True)
-
-    # ✅ Group by Ship Date and Logic to get total inbound quantity after filtering
-    inbound_data = (filtered_data[filtered_data["primary_vendor_name"] != "0"].groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum())
 
     filtered_logic_data = filtered_data[filtered_data["primary_vendor_name"] != "0"]
     logic_options = filtered_logic_data["Logic"].unique()
