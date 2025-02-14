@@ -538,29 +538,22 @@ elif page == "Inbound Quantity Simulation":
             first_ship_date = row["First_Ship_Date"]
             
             if pd.notna(first_ship_date):
-                first_ship_weekday = first_ship_date.weekday()  # Get weekday as an integer
-                
-                # Determine the next valid ship dates based on the inbound days
-                for day in row["Inbound Days"]:
-                    if day in weekday_map:
-                        # Calculate the next valid shipment date
-                        day_num = weekday_map[day]
-                        if day_num >= first_ship_weekday:
-                            ship_date = first_ship_date + pd.Timedelta(days=(day_num - first_ship_weekday))
-                        else:
-                            ship_date = first_ship_date + pd.Timedelta(days=(7 - (first_ship_weekday - day_num)))
-                        
-                        # Convert ship_date to a plain date (without timestamp)
-                        ship_date = ship_date.date()
-                        
-                        # Distribute RL Qty equally among inbound days
-                        split_qty = row["Sum_RL_Qty"] / len(row["Inbound Days"])
-                        
-                        # Append the new row with adjusted ship date
-                        expanded_rows.append([
-                            row["primary_vendor_name"], ship_date, split_qty
-                        ])
+                # Get inbound days as a list of weekday numbers (e.g., ["Mon", "Wed"] → [0, 2])
+                inbound_weekdays = sorted([weekday_map[day] for day in row["Inbound Days"] if day in weekday_map])
     
+                # Distribute RL Qty equally among inbound days
+                split_qty = row["Sum_RL_Qty"] / len(inbound_weekdays)
+    
+                # Start from the first ship date and find valid shipment days
+                current_date = first_ship_date
+    
+                for _ in range(30):  # Look ahead for ~1 month
+                    if current_date.weekday() in inbound_weekdays:
+                        expanded_rows.append([
+                            row["primary_vendor_name"], current_date, split_qty
+                        ])
+                    current_date += pd.Timedelta(days=1)  # Move to the next day
+        
     # Convert expanded rows into DataFrame
     processed_data = pd.DataFrame(expanded_rows, columns=["Vendor Name", "Ship Date", "Adjusted RL Qty"])
     st.dataframe(processed_data)
