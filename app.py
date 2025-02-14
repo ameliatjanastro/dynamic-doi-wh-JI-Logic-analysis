@@ -535,7 +535,7 @@ elif page == "Inbound Quantity Simulation":
                 x=logic_df["Ship Date"],
                 y=logic_df["New RL Qty"],
                 mode="text",  # Only text, no lines or markers
-                text=logic_df["New RL Qty"].astype(str),  # Convert to text
+                text=logic_df["New RL Qty"].astype(int).astype(str),  # Convert to text
                 textposition=text_positions,  # Position text above markers
                 textfont=dict(size=12, color=logic_colors.get(logic, "black"), weight='bold'),
                 showlegend=False,  # Hide extra legend entries
@@ -560,7 +560,7 @@ elif page == "Inbound Quantity Simulation":
             x="Ship Date", 
             y="New RL Qty", 
             color="Logic",  # Different colors per logic
-            text=inbound_data["New RL Qty"].astype(str),  # 🔥 Auto display text labels inside bars
+            text=inbound_data["New RL Qty"].astype(int).astype(str),  # 🔥 Auto display text labels inside bars
             color_discrete_sequence=custom_colors,  # ✅ Apply custom colors
             title="<b><span style='font-size:26px; color:#20639B;'>Bar Chart</span></b>"
         
