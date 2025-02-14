@@ -483,7 +483,7 @@ elif page == "Inbound Quantity Simulation":
     st.markdown("---")
 
     # Remove old frequent vendor data from filtered_data
-    filtered_data_no_freq = filtered_data[~filtered_data["primary_vendor_name"].isin(freq_vendors["Vendor Name"])]
+    filtered_data_no_freq = filtered_data[~filtered_data["primary_vendor_name"].isin(freq_vendors["primary_vendor_name"])]
     
     # Append processed_data back into filtered_data to get all vendors
     updated_filtered_data = pd.concat([filtered_data_no_freq, processed_data], ignore_index=True)
