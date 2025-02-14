@@ -420,10 +420,9 @@ elif page == "Inbound Quantity Simulation":
 
     freq_vendors = pd.read_csv("Freq vendors.csv")
     freq_vendors["Inbound Days"] = freq_vendors["Inbound Days"].str.split(", ")
-    inbound_data2 = (filtered_data[filtered_data["primary_vendor_name"] != "0"].groupby(["primary_vendor_name"], as_index=False).agg(
+    inbound_data2 = (filtered_data[filtered_data["primary_vendor_name"] != "0"].groupby(["primary_vendor_name", "Logic"], as_index=False).agg(
         Sum_RL_Qty=("New RL Qty", "sum"),
-        First_Ship_Date=("Ship Date", "min"),
-        Logic=("Logic", "first")))
+        First_Ship_Date=("Ship Date", "min")))
     inbound_data2 = inbound_data2[inbound_data2["Logic"] == selected_logic]
     
     merged_data = inbound_data2.merge(freq_vendors, left_on="primary_vendor_name", right_on="primary_vendor_name", how="right")
