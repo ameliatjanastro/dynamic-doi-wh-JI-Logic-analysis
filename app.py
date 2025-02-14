@@ -417,7 +417,71 @@ elif page == "Inbound Quantity Simulation":
     )
 
     st.markdown("---")
+
+    freq_vendors = pd.read_csv("Freq vendors.csv")
+    freq_vendors["Inbound Days"] = freq_vendors["Inbound Days"].str.split(", ")
+    inbound_data2 = filtered_data[filtered_data["primary_vendor_name"] != "0"].groupby(["primary_vendor_name"], as_index=False).agg(Sum_RL_Qty=("New RL Qty", "sum"),
+        First_Ship_Date=("Ship Date", "min"))
+
+    merged_data = inbound_data2.merge(freq_vendors, left_on="primary_vendor_name", right_on="primary_vendor_name", how="right")
+
+    merged_data["RL_Qty_per_Freq"] = merged_data["Sum_RL_Qty"] / merged_data["Freq"]
+
+
+    # Select relevant columns
+    final_table = merged_data[["primary_vendor_name", "Inbound Days", "Sum_RL_Qty", "First_Ship_Date", "RL_Qty_per_Freq"]]
+    table_freq = pd.DataFrame(final_table)
+    st.dataframe(table_freq)
+
+
+    # Create a mapping of weekday names to numbers (Monday = 0, ..., Sunday = 6)
+    weekday_map = {
+        "Mon": 0, "Tue": 1, "Wed": 2, "Thu": 3, "Fri": 4, "Sat": 5, "Sun": 6
+    }
     
+    # Expand rows based on frequency inbound days
+    expanded_rows = []
+
+    for _, row in merged_data.iterrows():
+        # **Ensure "Inbound Days" is a valid list**
+        inbound_days = row["Inbound Days"] if isinstance(row["Inbound Days"], list) else []
+    
+        if inbound_days:  # Only process vendors with valid inbound days
+            first_ship_date = row["First_Ship_Date"]
+    
+            if pd.notna(first_ship_date):
+                # **Get the week range (Monday-Sunday) for first ship date**
+                start_of_week = first_ship_date - pd.Timedelta(days=first_ship_date.weekday())  # Monday of that week
+                end_of_week = start_of_week + pd.Timedelta(days=6)  # Sunday of that week
+    
+                # Get inbound days as a list of weekday numbers
+                inbound_weekdays = sorted(
+                    [weekday_map[day] for day in inbound_days if day in weekday_map]
+                )
+    
+                if not inbound_weekdays:
+                    continue  # Skip vendors with no valid inbound days
+
+                # Distribute RL Qty equally among inbound days
+                split_qty = row["Sum_RL_Qty"] / len(inbound_weekdays)
+    
+                # Start from the first ship date and find valid shipment days
+                current_date = first_ship_date
+    
+                while current_date <= end_of_week:  # **Restrict to same week**
+                    if current_date.weekday() in inbound_weekdays:
+                        expanded_rows.append([
+                            row["primary_vendor_name"], current_date, split_qty
+                        ])
+                    current_date += pd.Timedelta(days=1)  # Move to the next day
+
+        
+    # Convert expanded rows into DataFrame
+    processed_data = pd.DataFrame(expanded_rows, columns=["Vendor Name", "Ship Date", "Adjusted RL Qty"])
+    st.dataframe(processed_data)
+
+    st.markdown("---")
+
     # ✅ Create the line graph using Plotly Express
     if chart_type == "Line Chart":
         fig2 = px.line(
@@ -509,68 +573,6 @@ elif page == "Inbound Quantity Simulation":
     st.plotly_chart(fig2, use_container_width=True)
 
     st.markdown("---")
-
-    freq_vendors = pd.read_csv("Freq vendors.csv")
-    freq_vendors["Inbound Days"] = freq_vendors["Inbound Days"].str.split(", ")
-    inbound_data2 = filtered_data[filtered_data["primary_vendor_name"] != "0"].groupby(["primary_vendor_name"], as_index=False).agg(Sum_RL_Qty=("New RL Qty", "sum"),
-        First_Ship_Date=("Ship Date", "min"))
-
-    merged_data = inbound_data2.merge(freq_vendors, left_on="primary_vendor_name", right_on="primary_vendor_name", how="right")
-
-    merged_data["RL_Qty_per_Freq"] = merged_data["Sum_RL_Qty"] / merged_data["Freq"]
-
-
-    # Select relevant columns
-    final_table = merged_data[["primary_vendor_name", "Inbound Days", "Sum_RL_Qty", "First_Ship_Date", "RL_Qty_per_Freq"]]
-    table_freq = pd.DataFrame(final_table)
-    st.dataframe(table_freq)
-
-
-    # Create a mapping of weekday names to numbers (Monday = 0, ..., Sunday = 6)
-    weekday_map = {
-        "Mon": 0, "Tue": 1, "Wed": 2, "Thu": 3, "Fri": 4, "Sat": 5, "Sun": 6
-    }
-    
-    # Expand rows based on frequency inbound days
-    expanded_rows = []
-
-    for _, row in merged_data.iterrows():
-        # **Ensure "Inbound Days" is a valid list**
-        inbound_days = row["Inbound Days"] if isinstance(row["Inbound Days"], list) else []
-    
-        if inbound_days:  # Only process vendors with valid inbound days
-            first_ship_date = row["First_Ship_Date"]
-    
-            if pd.notna(first_ship_date):
-                # **Get the week range (Monday-Sunday) for first ship date**
-                start_of_week = first_ship_date - pd.Timedelta(days=first_ship_date.weekday())  # Monday of that week
-                end_of_week = start_of_week + pd.Timedelta(days=6)  # Sunday of that week
-    
-                # Get inbound days as a list of weekday numbers
-                inbound_weekdays = sorted(
-                    [weekday_map[day] for day in inbound_days if day in weekday_map]
-                )
-    
-                if not inbound_weekdays:
-                    continue  # Skip vendors with no valid inbound days
-
-                # Distribute RL Qty equally among inbound days
-                split_qty = row["Sum_RL_Qty"] / len(inbound_weekdays)
-    
-                # Start from the first ship date and find valid shipment days
-                current_date = first_ship_date
-    
-                while current_date <= end_of_week:  # **Restrict to same week**
-                    if current_date.weekday() in inbound_weekdays:
-                        expanded_rows.append([
-                            row["primary_vendor_name"], current_date, split_qty
-                        ])
-                    current_date += pd.Timedelta(days=1)  # Move to the next day
-
-        
-    # Convert expanded rows into DataFrame
-    processed_data = pd.DataFrame(expanded_rows, columns=["Vendor Name", "Ship Date", "Adjusted RL Qty"])
-    st.dataframe(processed_data)
 
     # ✅ Add Note Above Table
     st.write("**📝 Note:** All logics assume LDP LBH per 10 Feb 2025 → LDP+LBH 85% are added to SOH, thus SOH might not be entirely accurate 🙂")
