@@ -421,17 +421,16 @@ elif page == "Inbound Quantity Simulation":
     freq_vendors = pd.read_csv("Freq vendors.csv")
     freq_vendors["Inbound Days"] = freq_vendors["Inbound Days"].str.split(", ")
     inbound_data2 = (filtered_data[filtered_data["primary_vendor_name"] != "0"].groupby(["primary_vendor_name", "Logic"], as_index=False).agg(
-        Sum_RL_Qty=("New RL Qty", "sum"),
-        First_Ship_Date=("Ship Date", "min")))
+        **{"Sum RL Qty": ("New RL Qty", "sum"), "First Ship Date": ("Ship Date", "min")}))
     inbound_data2 = inbound_data2[inbound_data2["Logic"] == selected_logic]
     
     merged_data = inbound_data2.merge(freq_vendors, left_on="primary_vendor_name", right_on="primary_vendor_name", how="right")
 
-    merged_data["RL_Qty_per_Freq"] = merged_data["Sum_RL_Qty"] / merged_data["Freq"]
+    merged_data["RL Qty per Freq"] = merged_data["Sum RL Qty"] / merged_data["Freq"]
 
 
     # Select relevant columns
-    final_table = merged_data[["primary_vendor_name", "Inbound Days", "Sum_RL_Qty", "First_Ship_Date", "RL_Qty_per_Freq"]]
+    final_table = merged_data[["primary_vendor_name", "Inbound Days", "Sum RL Qty", "First Ship Date", "RL Qty per Freq"]]
     table_freq = pd.DataFrame(final_table)
     st.dataframe(table_freq)
 
@@ -449,7 +448,7 @@ elif page == "Inbound Quantity Simulation":
         inbound_days = row["Inbound Days"] if isinstance(row["Inbound Days"], list) else []
     
         if inbound_days:  # Only process vendors with valid inbound days
-            first_ship_date = row["First_Ship_Date"]
+            first_ship_date = row["First Ship Date"]
     
             if pd.notna(first_ship_date):
                 # **Get the week range (Monday-Sunday) for first ship date**
@@ -464,8 +463,11 @@ elif page == "Inbound Quantity Simulation":
                 if not inbound_weekdays:
                     continue  # Skip vendors with no valid inbound days
 
+                total_qty = row["Sum RL Qty"]
+                num_days = len(inbound_weekdays)
+
                 # Distribute RL Qty equally among inbound days
-                split_qty = row["Sum_RL_Qty"] / len(inbound_weekdays)
+                split_qty = round(total_qty / num_days)
     
                 # Start from the first ship date and find valid shipment days
                 current_date = first_ship_date
