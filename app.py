@@ -511,6 +511,7 @@ elif page == "Inbound Quantity Simulation":
     st.markdown("---")
 
     freq_vendors = pd.read_csv("Freq vendors.csv")
+    freq_vendors["Inbound Days"] = freq_vendors["Inbound Days"].str.split(", ")
     inbound_data2 = filtered_data[filtered_data["primary_vendor_name"] != "0"].groupby(["primary_vendor_name"], as_index=False).agg(Sum_RL_Qty=("New RL Qty", "sum"),
         First_Ship_Date=("Ship Date", "min"))
 
@@ -518,14 +519,13 @@ elif page == "Inbound Quantity Simulation":
 
     merged_data["RL_Qty_per_Freq"] = merged_data["Sum_RL_Qty"] / merged_data["Freq"]
 
+
     # Select relevant columns
-    final_table = merged_data[["primary_vendor_name", "Sum_RL_Qty", "First_Ship_Date", "RL_Qty_per_Freq"]]
+    final_table = merged_data[["primary_vendor_name", "Inbound Days", "Sum_RL_Qty", "First_Ship_Date", "RL_Qty_per_Freq"]]
     table_freq = pd.DataFrame(final_table)
     st.dataframe(table_freq)
 
-    freq_vendors["Inbound Days"] = freq_vendors["Inbound Days"].str.split(", ")
 
-    
     # Create a mapping of weekday names to numbers (Monday = 0, ..., Sunday = 6)
     weekday_map = {
         "Mon": 0, "Tue": 1, "Wed": 2, "Thu": 3, "Fri": 4, "Sat": 5, "Sun": 6
