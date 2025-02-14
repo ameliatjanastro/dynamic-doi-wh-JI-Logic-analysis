@@ -422,8 +422,9 @@ elif page == "Inbound Quantity Simulation":
     freq_vendors["Inbound Days"] = freq_vendors["Inbound Days"].str.split(", ")
     inbound_data2 = filtered_data[filtered_data["primary_vendor_name"] != "0"].groupby(["primary_vendor_name"], as_index=False).agg(Sum_RL_Qty=("New RL Qty", "sum"),
         First_Ship_Date=("Ship Date", "min"))
-
-    merged_data = inbound_data.merge(freq_vendors, left_on="primary_vendor_name", right_on="primary_vendor_name", how="right")
+    inbound_data2 = inbound_data2[inbound_data2["Logic"] == selected_logic]
+    
+    merged_data = inbound_data2.merge(freq_vendors, left_on="primary_vendor_name", right_on="primary_vendor_name", how="right")
 
     merged_data["RL_Qty_per_Freq"] = merged_data["Sum_RL_Qty"] / merged_data["Freq"]
 
