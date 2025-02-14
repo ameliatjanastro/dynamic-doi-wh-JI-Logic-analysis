@@ -531,30 +531,35 @@ elif page == "Inbound Quantity Simulation":
     
     # Expand rows based on frequency inbound days
     expanded_rows = []
-    
+
     for _, row in merged_data.iterrows():
         if pd.notna(row["Inbound Days"]):  # Ensure there are valid inbound days
             # Get the first ship date and convert it to a weekday number
             first_ship_date = row["First_Ship_Date"]
-            first_ship_weekday = first_ship_date.weekday()
             
-            # Determine the next valid ship dates based on the inbound days
-            for day in row["Inbound Days"]:
-                if day in weekday_map:
-                    # Calculate the next valid shipment date
-                    day_num = weekday_map[day]
-                    if day_num >= first_ship_weekday:
-                        ship_date = first_ship_date + pd.Timedelta(days=(day_num - first_ship_weekday))
-                    else:
-                        ship_date = first_ship_date + pd.Timedelta(days=(7 - (first_ship_weekday - day_num)))
-                    
-                    # Distribute RL Qty equally among inbound days
-                    split_qty = row["Sum_RL_Qty"] / len(row["Inbound Days"])
-                    
-                    # Append the new row with adjusted ship date
-                    expanded_rows.append([
-                        row["primary_vendor_name"], ship_date, split_qty
-                    ])
+            if pd.notna(first_ship_date):
+                first_ship_weekday = first_ship_date.weekday()  # Get weekday as an integer
+                
+                # Determine the next valid ship dates based on the inbound days
+                for day in row["Inbound Days"]:
+                    if day in weekday_map:
+                        # Calculate the next valid shipment date
+                        day_num = weekday_map[day]
+                        if day_num >= first_ship_weekday:
+                            ship_date = first_ship_date + pd.Timedelta(days=(day_num - first_ship_weekday))
+                        else:
+                            ship_date = first_ship_date + pd.Timedelta(days=(7 - (first_ship_weekday - day_num)))
+                        
+                        # Convert ship_date to a plain date (without timestamp)
+                        ship_date = ship_date.date()
+                        
+                        # Distribute RL Qty equally among inbound days
+                        split_qty = row["Sum_RL_Qty"] / len(row["Inbound Days"])
+                        
+                        # Append the new row with adjusted ship date
+                        expanded_rows.append([
+                            row["primary_vendor_name"], ship_date, split_qty
+                        ])
     
     # Convert expanded rows into DataFrame
     processed_data = pd.DataFrame(expanded_rows, columns=["Vendor Name", "Ship Date", "Adjusted RL Qty"])
