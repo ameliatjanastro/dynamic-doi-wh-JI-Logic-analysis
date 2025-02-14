@@ -482,6 +482,18 @@ elif page == "Inbound Quantity Simulation":
 
     st.markdown("---")
 
+    # Remove old frequent vendor data from filtered_data
+    filtered_data_no_freq = filtered_data[~filtered_data["primary_vendor_name"].isin(freq_vendors["Vendor Name"])]
+    
+    # Append processed_data back into filtered_data to get all vendors
+    updated_filtered_data = pd.concat([filtered_data_no_freq, processed_data], ignore_index=True)
+    
+    # **Step 3: Recalculate Inbound Data with Updated Ship Dates**
+    inbound_data = (
+        updated_filtered_data[updated_filtered_data["primary_vendor_name"] != "0"]
+        .groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum()
+    )
+
     # ✅ Create the line graph using Plotly Express
     if chart_type == "Line Chart":
         fig2 = px.line(
