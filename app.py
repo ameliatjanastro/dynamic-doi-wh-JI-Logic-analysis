@@ -542,6 +542,10 @@ elif page == "Inbound Quantity Simulation":
             first_ship_date = row["First_Ship_Date"]
     
             if pd.notna(first_ship_date):
+                # **Get the week range (Monday-Sunday) for first ship date**
+                start_of_week = first_ship_date - pd.Timedelta(days=first_ship_date.weekday())  # Monday of that week
+                end_of_week = start_of_week + pd.Timedelta(days=6)  # Sunday of that week
+    
                 # Get inbound days as a list of weekday numbers
                 inbound_weekdays = sorted(
                     [weekday_map[day] for day in inbound_days if day in weekday_map]
@@ -549,7 +553,7 @@ elif page == "Inbound Quantity Simulation":
     
                 if not inbound_weekdays:
                     continue  # Skip vendors with no valid inbound days
-    
+
                 # Distribute RL Qty equally among inbound days
                 split_qty = row["Sum_RL_Qty"] / len(inbound_weekdays)
     
