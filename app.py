@@ -520,7 +520,8 @@ elif page == "Inbound Quantity Simulation":
 
     # Select relevant columns
     final_table = merged_data[["primary_vendor_name", "Sum_RL_Qty", "First_Ship_Date", "RL_Qty_per_Freq"]]
-    st.dataframe(final_table)
+    table_freq = pd.DataFrame(final_table)
+    st.dataframe(table_freq)
 
     # ✅ Add Note Above Table
     st.write("**📝 Note:** All logics assume LDP LBH per 10 Feb 2025 → LDP+LBH 85% are added to SOH, thus SOH might not be entirely accurate 🙂")
