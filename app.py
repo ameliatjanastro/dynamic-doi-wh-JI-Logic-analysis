@@ -556,12 +556,13 @@ elif page == "Inbound Quantity Simulation":
                 # Start from the first ship date and find valid shipment days
                 current_date = first_ship_date
     
-                for _ in range(30):  # Look ahead for ~1 month
+                while current_date <= end_of_week:  # **Restrict to same week**
                     if current_date.weekday() in inbound_weekdays:
                         expanded_rows.append([
                             row["primary_vendor_name"], current_date, split_qty
                         ])
                     current_date += pd.Timedelta(days=1)  # Move to the next day
+
         
     # Convert expanded rows into DataFrame
     processed_data = pd.DataFrame(expanded_rows, columns=["Vendor Name", "Ship Date", "Adjusted RL Qty"])
