@@ -523,6 +523,43 @@ elif page == "Inbound Quantity Simulation":
     table_freq = pd.DataFrame(final_table)
     st.dataframe(table_freq)
 
+    freq_vendors["Inbound Days"] = freq_vendors["Inbound Days"].str.split(", ")
+    # Create a mapping of weekday names to numbers (Monday = 0, ..., Sunday = 6)
+    weekday_map = {
+        "Mon": 0, "Tue": 1, "Wed": 2, "Thu": 3, "Fri": 4, "Sat": 5, "Sun": 6
+    }
+    
+    # Expand rows based on frequency inbound days
+    expanded_rows = []
+    
+    for _, row in merged_data.iterrows():
+        if pd.notna(row["Inbound Days"]):  # Ensure there are valid inbound days
+            # Get the first ship date and convert it to a weekday number
+            first_ship_date = row["First_Ship_Date"]
+            first_ship_weekday = first_ship_date.weekday()
+            
+            # Determine the next valid ship dates based on the inbound days
+            for day in row["Inbound Days"]:
+                if day in weekday_map:
+                    # Calculate the next valid shipment date
+                    day_num = weekday_map[day]
+                    if day_num >= first_ship_weekday:
+                        ship_date = first_ship_date + pd.Timedelta(days=(day_num - first_ship_weekday))
+                    else:
+                        ship_date = first_ship_date + pd.Timedelta(days=(7 - (first_ship_weekday - day_num)))
+                    
+                    # Distribute RL Qty equally among inbound days
+                    split_qty = row["Sum_RL_Qty"] / len(row["Inbound Days"])
+                    
+                    # Append the new row with adjusted ship date
+                    expanded_rows.append([
+                        row["primary_vendor_name"], ship_date, split_qty
+                    ])
+    
+    # Convert expanded rows into DataFrame
+    processed_data = pd.DataFrame(expanded_rows, columns=["Vendor Name", "Ship Date", "Adjusted RL Qty"])
+    st.dataframe(processed_data)
+
     # ✅ Add Note Above Table
     st.write("**📝 Note:** All logics assume LDP LBH per 10 Feb 2025 → LDP+LBH 85% are added to SOH, thus SOH might not be entirely accurate 🙂")
     
