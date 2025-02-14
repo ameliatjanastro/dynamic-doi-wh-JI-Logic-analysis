@@ -508,6 +508,20 @@ elif page == "Inbound Quantity Simulation":
     #st.write("### Inbound Quantity Trend by Ship Date")
     st.plotly_chart(fig2, use_container_width=True)
 
+    st.markdown("---")
+
+    freq_vendors = pd.read_csv("Freq vendors.csv")
+    inbound_data2 = (filtered_data[filtered_data["primary_vendor_name"] != "0"].groupby(["primary_vendor_name"], as_index=False).agg(Sum_RL_Qty=("New RL Qty", "sum"),
+        First_Ship_Date=("Ship Date", "min"))
+
+    merged_data = inbound_data2.merge(freq_vendors, left_on="primary_vendor_name", right_on="primary_vendor_name", how="right")
+
+    merged_data["RL_Qty_per_Freq"] = merged_data["Sum_RL_Qty"] / merged_data["Freq"]
+
+    # Select relevant columns
+    final_table = merged_data[["primary_vendor_name", "Sum_RL_Qty", "First_Ship_Date", "RL_Qty_per_Freq"]]
+    st.dataframe(final_table)
+
     # ✅ Add Note Above Table
     st.write("**📝 Note:** All logics assume LDP LBH per 10 Feb 2025 → LDP+LBH 85% are added to SOH, thus SOH might not be entirely accurate 🙂")
     
