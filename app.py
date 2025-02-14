@@ -348,7 +348,7 @@ elif page == "Inbound Quantity Simulation":
         unsafe_allow_html=True
     )
     
-    data["Ship Date"] = pd.to_datetime(data["Ship Date"], errors="coerce")
+    data["Ship Date"] = pd.to_datetime(data["Ship Date"], errors="coerce").dt.date
     
    # Sidebar filters for Inbound Quantity Trend
     chart_type = st.sidebar.radio("Select Chart Type", ["Line Chart", "Bar Chart"])
