@@ -11,9 +11,9 @@ st.set_page_config(layout="wide")
 
 # Define file paths
 file_paths = {
-    "Logic A": "LDP 85%.csv",
-    "Logic B": "LDP 50%.csv",
-    "Logic C": "LDP 0%.csv",
+    "Logic A": "LDP85.csv",
+    "Logic B": "LDP50.csv",
+    "Logic C": "LDP0.csv",
 }
 # Load and normalize data
 common_columns = ["product_id", "product_name", "vendor_id", "primary_vendor_name", "business_tagging", "location_id", "Pareto", "Ship Date","coverage", "New DOI Policy WH"]
