@@ -11,19 +11,18 @@ st.set_page_config(layout="wide")
 
 # Define file paths
 file_paths = {
-    "Logic A": "logic a.csv",
-    "Logic B": "logic b.csv",
-    "Logic C": "logic c new.csv",
-    "Logic D": "logic d.csv",
+    "Logic A": "LDP 0%.csv",
+    "Logic B": "LDP 50%.csv",
+    "Logic C": "LDP 85%.csv",
 }
 # Load and normalize data
-common_columns = ["product_id", "product_name", "vendor_id", "primary_vendor_name", "business_tagging", "location_id", "Pareto", "Ship Date"]
+common_columns = ["product_id", "product_name", "vendor_id", "primary_vendor_name", "business_tagging", "location_id", "Pareto", "Ship Date","coverage", "New DOI Policy WH"]
 logic_columns = [
-    'coverage', 'New DOI Policy WH', 'New RL Qty', 'New RL Value', 'Landed DOI'
+     'New RL Qty', 'Landed DOI'
 ]
 
 dfs = []
-for key in ["Logic A", "Logic B", "Logic C", "Logic D"]:
+for key in ["Logic A", "Logic B", "Logic C"]:
     path = file_paths[key]
     try:
         df = pd.read_csv(path, dtype={"product_id": str})
@@ -125,7 +124,7 @@ if page == "OOS Projection WH":
         selected_data = selected_data.groupby(["vendor_id", "primary_vendor_name", "Logic"], as_index=False).agg(existing_agg_cols)
     
         # Sort by logic order (A -> D)
-        logic_order = {"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4}
+        logic_order = {"Logic A": 1, "Logic B": 2, "Logic C": 3}
         selected_data = selected_data.sort_values(by="Logic", key=lambda x: x.map(logic_order))
       
     
@@ -133,7 +132,7 @@ if page == "OOS Projection WH":
             #st.write("Aggregated Data Preview:", selected_data)
     
             # Display Table
-            #table_columns = ["Logic", "New RL Qty", "New RL Value", "coverage", "New DOI Policy WH", "Landed DOI"]
+            #table_columns = ["Logic", "New RL Qty", "coverage", "New DOI Policy WH", "Landed DOI"]
             #st.write("### Comparison Table")
             #st.dataframe(selected_data[table_columns], hide_index=True)
     
@@ -164,7 +163,7 @@ if page == "OOS Projection WH":
     
     st.markdown("<b><span style='font-size:26px; color:#20639B;'>Comparison Table</span></b>", unsafe_allow_html=True)
     #st.write("### Comparison Table")
-    table_columns = ["Logic", "coverage", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI", "Verdict"] #"Landed DOI - JI", 
+    table_columns = ["Logic", "coverage", "New RL Qty", "New DOI Policy WH", "Landed DOI", "Verdict"] #"Landed DOI - JI", 
     original_dtypes = selected_data.dtypes
     
     def highlight_cells(val):
@@ -175,7 +174,7 @@ if page == "OOS Projection WH":
     #formatted_df = selected_data.style.applymap(highlight_cells, subset=["Verdict"])
     formatted_df = selected_data[table_columns].sort_values(
         by="Logic", 
-        key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})
+        key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3})
     ).style.applymap(highlight_cells, subset=["Verdict"]).format({
         "New RL Value": "{:,.0f}",  # Adds comma separator (1,000s, no decimals)
         "New DOI Policy WH": "{:.2f}",  # 2 decimal places
@@ -318,12 +317,12 @@ if page == "OOS Projection WH":
     
     # ✅ Define Logic Details Data
     logic_details = {
-        "Logic Name": ["Logic A", "Logic B", "Logic C", "Logic D"],
+        "Logic Name": ["Logic A", "Logic B", "Logic C"],
         "Logic Details": [
-            "cov sesuai RL everyday, dynamic DOI 50% * JI",
-            "cov sesuai RL everyday, dynamic DOI JI",
-            "cov sesuai RL everyday, dynamic DOI JI*FR Performance weight",
-            "cov 14 Days, DOI Policy 5"
+            "LDP LBH 0%",
+            "LDP LBH 50%",
+            "LDP LBH 85%"
+           
         ]
     }
     
@@ -401,10 +400,10 @@ elif page == "Inbound Quantity Simulation":
         unsafe_allow_html=True)
 
 
-    table_tidakaman = ["Logic", "product_id","product_name","Pareto", "primary_vendor_name","New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI"]
+    table_tidakaman = ["Logic", "product_id","product_name","Pareto", "primary_vendor_name","New RL Qty", "New DOI Policy WH", "Landed DOI"]
     #original_dtypes = selected_data.dtypes
     tidakaman_df = filtered_logic_data[(filtered_logic_data["Landed DOI"] < 5) & (filtered_logic_data["Logic"] == selected_logic)][table_tidakaman]
-    tidakaman_df = tidakaman_df.sort_values(by="Logic", key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4}))
+    tidakaman_df = tidakaman_df.sort_values(by="Logic", key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3}))
 
     csv = tidakaman_df.to_csv(index=False)
 
@@ -591,16 +590,15 @@ elif page == "Inbound Quantity Simulation":
     st.markdown("---")
 
     # ✅ Add Note Above Table
-    st.write("**📝 Note:** All logics assume LDP LBH per 10 Feb 2025 → LDP+LBH 85% are added to SOH, thus SOH might not be entirely accurate 🙂")
+    st.write("**📝 Note:** All logics assume LDP LBH per 17 Feb 2025 → LDP+LBH are added to SOH, thus SOH might not be entirely accurate 🙂")
     
     # ✅ Define Logic Details Data
     logic_details = {
-        "Logic Name": ["Logic A", "Logic B", "Logic C", "Logic D"],
+        "Logic Name": ["Logic A", "Logic B", "Logic C"],
         "Logic Details": [
-            "cov sesuai RL everyday, dynamic DOI 50% * JI",
-            "cov sesuai RL everyday, dynamic DOI JI",
-            "cov sesuai RL everyday, dynamic DOI JI*FR Performance weight",
-            "cov 14 Days, DOI Policy 5"
+            "LDP LBH 0%",
+            "LDP LBH 50%",
+            "LDP LBH 85%"
         ]
     }
     
