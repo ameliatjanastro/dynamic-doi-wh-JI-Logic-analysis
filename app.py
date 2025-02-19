@@ -11,9 +11,9 @@ st.set_page_config(layout="wide")
 
 # Define file paths
 file_paths = {
-    "Logic A": "LDP 0%.csv",
+    "Logic A": "LDP 85%.csv",
     "Logic B": "LDP 50%.csv",
-    "Logic C": "LDP 85%.csv",
+    "Logic C": "LDP 0%.csv",
 }
 # Load and normalize data
 common_columns = ["product_id", "product_name", "vendor_id", "primary_vendor_name", "business_tagging", "location_id", "Pareto", "Ship Date","coverage", "New DOI Policy WH"]
@@ -38,7 +38,7 @@ for key in ["Logic A", "Logic B", "Logic C"]:
 data = pd.concat(dfs, ignore_index=True).sort_values(by=["product_id", "Logic"], key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4}))
 # Convert 'New RL Value' to numeric (remove commas)
 data["coverage"] = pd.to_datetime(data["coverage"], errors="coerce").dt.date
-data["New RL Value"] = data["New RL Value"].astype(str).str.replace(",", "", regex=True).astype(float)
+#data["New RL Value"] = data["New RL Value"].astype(str).str.replace(",", "", regex=True).astype(float)
 
 #JI Dry Data
 ji_dry = pd.read_csv("JI Dry new.csv")  # Replace with actual file name
