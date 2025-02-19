@@ -371,6 +371,7 @@ elif page == "Inbound Quantity Simulation":
     inbound_data = (filtered_data[filtered_data["primary_vendor_name"] != "0"].groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum())
 
     filtered_data["Landed DOI"] = pd.to_numeric(filtered_data["Landed DOI"], errors="coerce")
+    filtered_data["New RL Qty"] = pd.to_numeric(filtered_data["New RL Qty"], errors="coerce")
     filtered_logic_data = filtered_data[filtered_data["primary_vendor_name"] != "0"]
     logic_options = filtered_logic_data["Logic"].unique()
 
