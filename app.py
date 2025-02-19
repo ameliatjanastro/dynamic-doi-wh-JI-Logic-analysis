@@ -35,7 +35,7 @@ for key in ["Logic A", "Logic B", "Logic C"]:
         st.error(f"Error reading {key}: {e}")
 
 # Merge data
-data = pd.concat(dfs, ignore_index=True).sort_values(by=["product_id", "Logic"], key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4}))
+data = pd.concat(dfs, ignore_index=True).sort_values(by=["product_id", "Logic"], key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3}))
 # Convert 'New RL Value' to numeric (remove commas)
 data["coverage"] = pd.to_datetime(data["coverage"], errors="coerce").dt.date
 #data["New RL Value"] = data["New RL Value"].astype(str).str.replace(",", "", regex=True).astype(float)
