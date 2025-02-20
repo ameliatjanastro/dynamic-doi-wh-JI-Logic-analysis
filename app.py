@@ -371,8 +371,8 @@ elif page == "Inbound Quantity Simulation":
     # ✅ Group by Ship Date and Logic to get total inbound quantity after filtering
     st.write("Filtered Data Sample:", filtered_data.head())
     st.write("Filtered Data Shape:", filtered_data.shape)
-    st.write("Total RL Qty Sum Before Processing:", filtered_data["New RL Qty"].sum())
-    inbound_data = (filtered_data[filtered_data["primary_vendor_name"] != "0"].groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum())
+    st.write("Total RL Qty Sum Before Processing:", data["New RL Qty"].sum())
+    inbound_data = (data[data["primary_vendor_name"] != "0"].groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum())
 
     filtered_data["Landed DOI"] = pd.to_numeric(filtered_data["Landed DOI"], errors="coerce")
     filtered_data["New RL Qty"] = pd.to_numeric(filtered_data["New RL Qty"], errors="coerce")
