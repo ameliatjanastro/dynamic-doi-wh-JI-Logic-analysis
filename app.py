@@ -352,7 +352,8 @@ elif page == "Inbound Quantity Simulation":
     
    # Sidebar filters for Inbound Quantity Trend
     chart_type = st.sidebar.radio("Select Chart Type", ["Line Chart", "Bar Chart"])
-    pareto_options = [p for p in pareto_order if p in data["Pareto"].dropna().unique()]
+    data['Pareto'] = data['Pareto'].fillna('Blank')
+    pareto_options = [p for p in pareto_order if p in data["Pareto"].unique()]
 
     selected_location = st.sidebar.selectbox("Select Location ID", data["location_id"].dropna().unique())
     selected_pareto = st.sidebar.multiselect("Select Pareto", pareto_options, default=pareto_options)
