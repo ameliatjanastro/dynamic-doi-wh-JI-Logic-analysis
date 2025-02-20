@@ -428,8 +428,6 @@ elif page == "Inbound Quantity Simulation":
     inbound_data2 = (filtered_data[filtered_data["primary_vendor_name"] != "0"].groupby(["primary_vendor_name", "Logic"], as_index=False).agg(
         **{"Sum RL Qty": ("New RL Qty", "sum"), "First Ship Date": ("Ship Date", "min")}))
     inbound_data2 = inbound_data2[inbound_data2["Logic"] == selected_logic]
-    excluded_vendors = filtered_data[filtered_data["primary_vendor_name"] == "0"]
-    st.write("Excluded Vendors Data:", excluded_vendors)
     merged_data = inbound_data2.merge(freq_vendors, left_on="primary_vendor_name", right_on="primary_vendor_name", how="right")
 
     merged_data["RL Qty per Freq"] = merged_data["Sum RL Qty"] / merged_data["Freq"]
