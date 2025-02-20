@@ -352,21 +352,21 @@ elif page == "Inbound Quantity Simulation":
     
    # Sidebar filters for Inbound Quantity Trend
     chart_type = st.sidebar.radio("Select Chart Type", ["Line Chart", "Bar Chart"])
-    data['Pareto'] = data['Pareto'].fillna('Blank')
-    pareto_options = [p for p in pareto_order if p in data["Pareto"].unique()]
+    #data['Pareto'] = data['Pareto'].fillna('Blank')
+    #pareto_options = [p for p in pareto_order if p in data["Pareto"].unique()]
 
     selected_location = st.sidebar.selectbox("Select Location ID", data["location_id"].dropna().unique())
-    selected_pareto = st.sidebar.multiselect("Select Pareto", pareto_options, default=pareto_options)
+    #selected_pareto = st.sidebar.multiselect("Select Pareto", pareto_options, default=pareto_options)
     selected_business_tag = st.sidebar.multiselect("Select Business Tag", data["business_tagging"].dropna().unique())
 
     
 
     # Apply filters to data (only for this graph)
     filtered_data = data[
-        (data["Pareto"].isin(selected_pareto) if selected_pareto else True) &
         (data["location_id"] == selected_location if selected_location else True) &
         (data["business_tagging"].isin(selected_business_tag) if selected_business_tag else True)
     ]
+    #(data["Pareto"].isin(selected_pareto) if selected_pareto else True) &
     
     # ✅ Group by Ship Date and Logic to get total inbound quantity after filtering
     st.write("Filtered Data Sample:", filtered_data.head())
