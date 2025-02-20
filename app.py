@@ -369,6 +369,9 @@ elif page == "Inbound Quantity Simulation":
     ]
     
     # ✅ Group by Ship Date and Logic to get total inbound quantity after filtering
+    st.write("Filtered Data Sample:", filtered_data.head())
+    st.write("Filtered Data Shape:", filtered_data.shape)
+    st.write("Total RL Qty Sum Before Processing:", filtered_data["New RL Qty"].sum())
     inbound_data = (filtered_data[filtered_data["primary_vendor_name"] != "0"].groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum())
 
     filtered_data["Landed DOI"] = pd.to_numeric(filtered_data["Landed DOI"], errors="coerce")
@@ -429,7 +432,8 @@ elif page == "Inbound Quantity Simulation":
     merged_data = inbound_data2.merge(freq_vendors, left_on="primary_vendor_name", right_on="primary_vendor_name", how="right")
 
     merged_data["RL Qty per Freq"] = merged_data["Sum RL Qty"] / merged_data["Freq"]
-
+    st.write("Inbound Data Sum Before Merge:", inbound_data2["Sum RL Qty"].sum())
+    st.write("Inbound Data Sum After Merge:", merged_data["Sum RL Qty"].sum())
 
     # Select relevant columns
     final_table = merged_data[["primary_vendor_name", "Inbound Days", "Sum RL Qty", "First Ship Date", "RL Qty per Freq"]]
