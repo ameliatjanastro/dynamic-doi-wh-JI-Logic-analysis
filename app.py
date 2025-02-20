@@ -331,17 +331,14 @@ if page == "OOS Projection WH":
     logic_df = pd.DataFrame(logic_details)
     st.dataframe(logic_df, hide_index=True, use_container_width=True)
 
-
 elif page == "Inbound Quantity Simulation":
-
     st.title("Inbound Quantities Simulation by Ship Date")
-
+    
     st.markdown(
         """
         <style>
         html,{
-            overflow-y: hidden !important;  /* ✅ Completely disable vertical scrolling */
-          
+            overflow-y: hidden !important;
         }
         </style>
         """,
@@ -350,78 +347,145 @@ elif page == "Inbound Quantity Simulation":
     
     data["Ship Date"] = pd.to_datetime(data["Ship Date"], errors="coerce").dt.date
     
-   # Sidebar filters for Inbound Quantity Trend
+    # Sidebar filters
     chart_type = st.sidebar.radio("Select Chart Type", ["Line Chart", "Bar Chart"])
+    selected_location = st.sidebar.selectbox("Select Location ID", data["location_id"].dropna().unique())
+    selected_business_tag = st.sidebar.multiselect("Select Business Tag", data["business_tagging"].dropna().unique())
+    
+    # Apply filters but keep all data available
+    filtered_data = data.copy()
+    if selected_location:
+        filtered_data = filtered_data[filtered_data["location_id"] == selected_location]
+    if selected_business_tag:
+        filtered_data = filtered_data[filtered_data["business_tagging"].isin(selected_business_tag)]
+    
+    # Display dataset details
+    st.write("Filtered Data Sample:", filtered_data.head())
+    st.write("Filtered Data Shape:", filtered_data.shape)
+    st.write("Total RL Qty Sum Before Processing:", data["New RL Qty"].sum())
+    
+    # Group data but keep logic selection separate
+    inbound_data = data[data["primary_vendor_name"] != "0"].groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum()
+    
+    # Logic selection without filtering main data
+    filtered_data["Landed DOI"] = pd.to_numeric(filtered_data["Landed DOI"], errors="coerce")
+    filtered_data["New RL Qty"] = pd.to_numeric(filtered_data["New RL Qty"], errors="coerce")
+    logic_options = filtered_data["Logic"].unique()
+    
+    selected_logic = st.selectbox("Select Logic", logic_options, key="logic_dropdown")
+    
+    # Compute values based on selected_logic
+    inbound_data_week = filtered_data[filtered_data["Logic"] == selected_logic]["New RL Qty"].sum()
+    tidakaman = filtered_data[(filtered_data["Logic"] == selected_logic) & (filtered_data["Landed DOI"] < 5)]["New RL Qty"].count()
+    
+    st.markdown(f"##### Total RL Qty for **{selected_logic}**: {inbound_data_week} | Total SKU Tidak Aman (Landed DOI < 5): <span style='color:red; font-weight:bold;'>{tidakaman}</span>", unsafe_allow_html=True)
+    
+    table_tidakaman = ["Logic", "product_id", "product_name", "Pareto", "primary_vendor_name", "New RL Qty", "New DOI Policy WH", "Landed DOI"]
+    tidakaman_df = filtered_data[(filtered_data["Landed DOI"] < 5) & (filtered_data["Logic"] == selected_logic)][table_tidakaman]
+    tidakaman_df = tidakaman_df.sort_values(by="Logic")
+    
+    csv = tidakaman_df.to_csv(index=False)
+    st.download_button(label="📥 Download SKU Tidak Aman :( ", data=csv, file_name="tidakamanlist.csv", mime="text/csv")
+    
+    # Plot chart
+    if chart_type == "Line Chart":
+        fig2 = px.line(inbound_data, x="Ship Date", y="New RL Qty", color="Logic", markers=True)
+    else:
+        fig2 = px.bar(inbound_data, x="Ship Date", y="New RL Qty", color="Logic", text=inbound_data["New RL Qty"].astype(int).astype(str))
+    
+    st.plotly_chart(fig2, use_container_width=True)
+
+
+#elif page == "Inbound Quantity Simulation":
+
+   # st.title("Inbound Quantities Simulation by Ship Date")
+
+    #st.markdown(
+        """
+     #   <style>
+     #   html,{
+     #       overflow-y: hidden !important;  /* ✅ Completely disable vertical scrolling */
+          
+     #   }
+    #    </style>
+     #   """,
+     #   unsafe_allow_html=True
+   # )
+    
+   # data["Ship Date"] = pd.to_datetime(data["Ship Date"], errors="coerce").dt.date
+    
+   # Sidebar filters for Inbound Quantity Trend
+  #  chart_type = st.sidebar.radio("Select Chart Type", ["Line Chart", "Bar Chart"])
     #data['Pareto'] = data['Pareto'].fillna('Blank')
     #pareto_options = [p for p in pareto_order if p in data["Pareto"].unique()]
 
-    selected_location = st.sidebar.selectbox("Select Location ID", data["location_id"].dropna().unique())
+   # selected_location = st.sidebar.selectbox("Select Location ID", data["location_id"].dropna().unique())
     #selected_pareto = st.sidebar.multiselect("Select Pareto", pareto_options, default=pareto_options)
-    selected_business_tag = st.sidebar.multiselect("Select Business Tag", data["business_tagging"].dropna().unique())
+  #  selected_business_tag = st.sidebar.multiselect("Select Business Tag", data["business_tagging"].dropna().unique())
 
     
 
     # Apply filters to data (only for this graph)
-    filtered_data = data[
-        (data["location_id"] == selected_location if selected_location else True) &
-        (data["business_tagging"].isin(selected_business_tag) if selected_business_tag else True)
-    ]
+  #  filtered_data = data[
+  #      (data["location_id"] == selected_location if selected_location else True) &
+  #      (data["business_tagging"].isin(selected_business_tag) if selected_business_tag else True)
+  #  ]
     #(data["Pareto"].isin(selected_pareto) if selected_pareto else True) &
     
     # ✅ Group by Ship Date and Logic to get total inbound quantity after filtering
-    st.write("Filtered Data Sample:", filtered_data.head())
-    st.write("Filtered Data Shape:", filtered_data.shape)
-    st.write("Total RL Qty Sum Before Processing:", data["New RL Qty"].sum())
-    inbound_data = (data[data["primary_vendor_name"] != "0"].groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum())
+ #   st.write("Filtered Data Sample:", filtered_data.head())
+ #   st.write("Filtered Data Shape:", filtered_data.shape)
+ #   st.write("Total RL Qty Sum Before Processing:", data["New RL Qty"].sum())
+ #   inbound_data = (data[data["primary_vendor_name"] != "0"].groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum())
 
-    filtered_data["Landed DOI"] = pd.to_numeric(filtered_data["Landed DOI"], errors="coerce")
-    filtered_data["New RL Qty"] = pd.to_numeric(filtered_data["New RL Qty"], errors="coerce")
-    filtered_logic_data = filtered_data[filtered_data["primary_vendor_name"] != "0"]
-    logic_options = filtered_logic_data["Logic"].unique()
+ #   filtered_data["Landed DOI"] = pd.to_numeric(filtered_data["Landed DOI"], errors="coerce")
+ #   filtered_data["New RL Qty"] = pd.to_numeric(filtered_data["New RL Qty"], errors="coerce")
+ #   filtered_logic_data = filtered_data[filtered_data["primary_vendor_name"] != "0"]
+ #   logic_options = filtered_logic_data["Logic"].unique()
 
-    st.markdown(
-    """
-    <style>
-    div[data-testid="stSelectbox"] {
-        width: auto !important;
-        display: inline-block !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-    )
+ #   st.markdown(
+ #   """
+#    <style>
+ #   div[data-testid="stSelectbox"] {
+ #       width: auto !important;
+ #       display: inline-block !important;
+ #   }
+ #   </style>
+ #   """,
+ #   unsafe_allow_html=True
+ #   )
 
     # Select Logic first
-    selected_logic = st.selectbox("", logic_options, key="logic_dropdown", label_visibility="collapsed")
+   # selected_logic = st.selectbox("", logic_options, key="logic_dropdown", label_visibility="collapsed")
     
     # Compute values based on selected_logic
-    inbound_data_week = filtered_logic_data.loc[filtered_logic_data["Logic"] == selected_logic, "New RL Qty"].sum()
-    tidakaman = filtered_logic_data.loc[
-        (filtered_logic_data["Logic"] == selected_logic) & 
-        (filtered_logic_data["Landed DOI"] < 5), 
-        "New RL Qty"
-    ].count()
+ #   inbound_data_week = filtered_logic_data.loc[filtered_logic_data["Logic"] == selected_logic, "New RL Qty"].sum()
+ #   tidakaman = filtered_logic_data.loc[
+ #       (filtered_logic_data["Logic"] == selected_logic) & 
+ #       (filtered_logic_data["Landed DOI"] < 5), 
+ #       "New RL Qty"
+ #   ].count()
     
-    st.markdown(f"##### Total RL Qty for **{selected_logic}**: {inbound_data_week} | Total SKU Tidak Aman (Landed DOI < 5): <span style='color:red; font-weight:bold;'>{tidakaman}</span>", 
-        unsafe_allow_html=True)
+  #  st.markdown(f"##### Total RL Qty for **{selected_logic}**: {inbound_data_week} | Total SKU Tidak Aman (Landed DOI < 5): <span style='color:red; font-weight:bold;'>{tidakaman}</span>", 
+   #     unsafe_allow_html=True)
 
 
-    table_tidakaman = ["Logic", "product_id","product_name","Pareto", "primary_vendor_name","New RL Qty", "New DOI Policy WH", "Landed DOI"]
+   # table_tidakaman = ["Logic", "product_id","product_name","Pareto", "primary_vendor_name","New RL Qty", "New DOI Policy WH", "Landed DOI"]
     #original_dtypes = selected_data.dtypes
-    tidakaman_df = filtered_logic_data[(filtered_logic_data["Landed DOI"] < 5) & (filtered_logic_data["Logic"] == selected_logic)][table_tidakaman]
-    tidakaman_df = tidakaman_df.sort_values(by="Logic", key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3}))
+ #   tidakaman_df = filtered_logic_data[(filtered_logic_data["Landed DOI"] < 5) & (filtered_logic_data["Logic"] == selected_logic)][table_tidakaman]
+  #  tidakaman_df = tidakaman_df.sort_values(by="Logic", key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3}))
 
-    csv = tidakaman_df.to_csv(index=False)
+ #   csv = tidakaman_df.to_csv(index=False)
 
     # Export Button (Without Displaying DataFrame)
-    st.download_button(
-        label="📥 Download SKU Tidak Aman :( ",
-        data=csv,
-        file_name="tidakamanlist.csv",
-        mime="text/csv"
-    )
+ #   st.download_button(
+ #       label="📥 Download SKU Tidak Aman :( ",
+ #       data=csv,
+ #       file_name="tidakamanlist.csv",
+ #       mime="text/csv"
+#    )
 
-    st.markdown("---")
+#    st.markdown("---")
 
     freq_vendors = pd.read_csv("Freq vendors.csv")
     freq_vendors["Inbound Days"] = freq_vendors["Inbound Days"].str.split(", ")
