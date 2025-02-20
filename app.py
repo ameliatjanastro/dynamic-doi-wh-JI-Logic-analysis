@@ -400,17 +400,17 @@ elif page == "Inbound Quantity Simulation":
 
    # st.title("Inbound Quantities Simulation by Ship Date")
 
-    #st.markdown(
+    st.markdown(
         """
-     #   <style>
-     #   html,{
-     #       overflow-y: hidden !important;  /* ✅ Completely disable vertical scrolling */
+        <style>
+        html,{
+            overflow-y: hidden !important;  /* ✅ Completely disable vertical scrolling */
           
-     #   }
-    #    </style>
-     #   """,
-     #   unsafe_allow_html=True
-   # )
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
     
    # data["Ship Date"] = pd.to_datetime(data["Ship Date"], errors="coerce").dt.date
     
