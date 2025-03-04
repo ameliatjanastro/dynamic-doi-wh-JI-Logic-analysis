@@ -11,18 +11,19 @@ st.set_page_config(layout="wide")
 
 # Define file paths
 file_paths = {
-    "Logic A": "LDP85.csv",
-    "Logic B": "LDP50.csv",
-    "Logic C": "LDP0.csv",
+    "Logic A": "logic a.csv",
+    "Logic B": "logic b.csv",
+    "Logic C": "logic c new.csv",
+    "Logic D": "logic d.csv",
 }
 # Load and normalize data
-common_columns = ["product_id", "product_name", "vendor_id", "primary_vendor_name", "business_tagging", "location_id", "Pareto", "Ship Date","coverage", "New DOI Policy WH"]
+common_columns = ["product_id", "product_name", "vendor_id", "primary_vendor_name", "business_tagging", "location_id", "Pareto", "Ship Date"]
 logic_columns = [
-     'New RL Qty', 'Landed DOI'
+    'coverage', 'New DOI Policy WH', 'New RL Qty', 'New RL Value', 'Landed DOI'
 ]
 
 dfs = []
-for key in ["Logic A", "Logic B", "Logic C"]:
+for key in ["Logic A", "Logic B", "Logic C", "Logic D"]:
     path = file_paths[key]
     try:
         df = pd.read_csv(path, dtype={"product_id": str})
@@ -35,10 +36,10 @@ for key in ["Logic A", "Logic B", "Logic C"]:
         st.error(f"Error reading {key}: {e}")
 
 # Merge data
-data = pd.concat(dfs, ignore_index=True).sort_values(by=["product_id", "Logic"], key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3}))
+data = pd.concat(dfs, ignore_index=True).sort_values(by=["product_id", "Logic"], key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4}))
 # Convert 'New RL Value' to numeric (remove commas)
 data["coverage"] = pd.to_datetime(data["coverage"], errors="coerce").dt.date
-#data["New RL Value"] = data["New RL Value"].astype(str).str.replace(",", "", regex=True).astype(float)
+data["New RL Value"] = data["New RL Value"].astype(str).str.replace(",", "", regex=True).astype(float)
 
 #JI Dry Data
 ji_dry = pd.read_csv("JI Dry new.csv")  # Replace with actual file name
@@ -56,7 +57,6 @@ if "product_id" in data.columns and "product_id" in ji_dry.columns:
     # ✅ Merge with default Jarak Inbound = 7 if missing
     data = data.merge(ji_dry, on="product_id", how="left").fillna({"Jarak Inbound": 7})
     data["Landed DOI"] = pd.to_numeric(data["Landed DOI"], errors="coerce").fillna(0).astype(int)
-    data["New RL Qty"] = pd.to_numeric(data["New RL Qty"], errors="coerce").fillna(0).astype(int)
     #st.write("Data Columns:", data.columns)
     # ✅ Calculate new column
     data["Landed DOI - JI"] = data["Landed DOI"] - data["Jarak Inbound"]
@@ -125,7 +125,7 @@ if page == "OOS Projection WH":
         selected_data = selected_data.groupby(["vendor_id", "primary_vendor_name", "Logic"], as_index=False).agg(existing_agg_cols)
     
         # Sort by logic order (A -> D)
-        logic_order = {"Logic A": 1, "Logic B": 2, "Logic C": 3}
+        logic_order = {"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4}
         selected_data = selected_data.sort_values(by="Logic", key=lambda x: x.map(logic_order))
       
     
@@ -133,7 +133,7 @@ if page == "OOS Projection WH":
             #st.write("Aggregated Data Preview:", selected_data)
     
             # Display Table
-            #table_columns = ["Logic", "New RL Qty", "coverage", "New DOI Policy WH", "Landed DOI"]
+            #table_columns = ["Logic", "New RL Qty", "New RL Value", "coverage", "New DOI Policy WH", "Landed DOI"]
             #st.write("### Comparison Table")
             #st.dataframe(selected_data[table_columns], hide_index=True)
     
@@ -164,7 +164,7 @@ if page == "OOS Projection WH":
     
     st.markdown("<b><span style='font-size:26px; color:#20639B;'>Comparison Table</span></b>", unsafe_allow_html=True)
     #st.write("### Comparison Table")
-    table_columns = ["Logic", "coverage", "New RL Qty", "New DOI Policy WH", "Landed DOI", "Verdict"] #"Landed DOI - JI", 
+    table_columns = ["Logic", "coverage", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI", "Verdict"] #"Landed DOI - JI", 
     original_dtypes = selected_data.dtypes
     
     def highlight_cells(val):
@@ -175,7 +175,7 @@ if page == "OOS Projection WH":
     #formatted_df = selected_data.style.applymap(highlight_cells, subset=["Verdict"])
     formatted_df = selected_data[table_columns].sort_values(
         by="Logic", 
-        key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3})
+        key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})
     ).style.applymap(highlight_cells, subset=["Verdict"]).format({
         "New RL Value": "{:,.0f}",  # Adds comma separator (1,000s, no decimals)
         "New DOI Policy WH": "{:.2f}",  # 2 decimal places
@@ -318,12 +318,12 @@ if page == "OOS Projection WH":
     
     # ✅ Define Logic Details Data
     logic_details = {
-        "Logic Name": ["Logic A", "Logic B", "Logic C"],
+        "Logic Name": ["Logic A", "Logic B", "Logic C", "Logic D"],
         "Logic Details": [
-            "LDP LBH 0%",
-            "LDP LBH 50%",
-            "LDP LBH 85%"
-           
+            "cov sesuai RL everyday, dynamic DOI 50% * JI",
+            "cov sesuai RL everyday, dynamic DOI JI",
+            "cov sesuai RL everyday, dynamic DOI JI*FR Performance weight",
+            "cov 14 Days, DOI Policy 5"
         ]
     }
     
@@ -331,74 +331,10 @@ if page == "OOS Projection WH":
     logic_df = pd.DataFrame(logic_details)
     st.dataframe(logic_df, hide_index=True, use_container_width=True)
 
+
 elif page == "Inbound Quantity Simulation":
+
     st.title("Inbound Quantities Simulation by Ship Date")
-    
-    st.markdown(
-        """
-        <style>
-        html,{
-            overflow-y: hidden !important;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
-    
-    data["Ship Date"] = pd.to_datetime(data["Ship Date"], errors="coerce").dt.date
-    
-    # Sidebar filters
-    chart_type = st.sidebar.radio("Select Chart Type", ["Line Chart", "Bar Chart"])
-    selected_location = st.sidebar.selectbox("Select Location ID", data["location_id"].dropna().unique())
-    selected_business_tag = st.sidebar.multiselect("Select Business Tag", data["business_tagging"].dropna().unique())
-    
-    # Apply filters but keep all data available
-    filtered_data = data.copy()
-    if selected_location:
-        filtered_data = filtered_data[filtered_data["location_id"] == selected_location]
-    if selected_business_tag:
-        filtered_data = filtered_data[filtered_data["business_tagging"].isin(selected_business_tag)]
-    
-    # Display dataset details
-    st.write("Filtered Data Sample:", filtered_data.head())
-    st.write("Filtered Data Shape:", filtered_data.shape)
-    st.write("Total RL Qty Sum Before Processing:", data["New RL Qty"].sum())
-    
-    # Group data but keep logic selection separate
-    inbound_data = data[data["primary_vendor_name"] != "0"].groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum()
-    
-    # Logic selection without filtering main data
-    filtered_data["Landed DOI"] = pd.to_numeric(filtered_data["Landed DOI"], errors="coerce")
-    filtered_data["New RL Qty"] = pd.to_numeric(filtered_data["New RL Qty"], errors="coerce")
-    logic_options = filtered_data["Logic"].unique()
-    
-    selected_logic = st.selectbox("Select Logic", logic_options, key="logic_dropdown")
-    
-    # Compute values based on selected_logic
-    inbound_data_week = filtered_data[filtered_data["Logic"] == selected_logic]["New RL Qty"].sum()
-    tidakaman = filtered_data[(filtered_data["Logic"] == selected_logic) & (filtered_data["Landed DOI"] < 5)]["New RL Qty"].count()
-    
-    st.markdown(f"##### Total RL Qty for **{selected_logic}**: {inbound_data_week} | Total SKU Tidak Aman (Landed DOI < 5): <span style='color:red; font-weight:bold;'>{tidakaman}</span>", unsafe_allow_html=True)
-    
-    table_tidakaman = ["Logic", "product_id", "product_name", "Pareto", "primary_vendor_name", "New RL Qty", "New DOI Policy WH", "Landed DOI"]
-    tidakaman_df = filtered_data[(filtered_data["Landed DOI"] < 5) & (filtered_data["Logic"] == selected_logic)][table_tidakaman]
-    tidakaman_df = tidakaman_df.sort_values(by="Logic")
-    
-    csv = tidakaman_df.to_csv(index=False)
-    st.download_button(label="📥 Download SKU Tidak Aman :( ", data=csv, file_name="tidakamanlist.csv", mime="text/csv")
-    
-    # Plot chart
-    if chart_type == "Line Chart":
-        fig2 = px.line(inbound_data, x="Ship Date", y="New RL Qty", color="Logic", markers=True)
-    else:
-        fig2 = px.bar(inbound_data, x="Ship Date", y="New RL Qty", color="Logic", text=inbound_data["New RL Qty"].astype(int).astype(str))
-    
-    st.plotly_chart(fig2, use_container_width=True)
-
-
-#elif page == "Inbound Quantity Simulation":
-
-   # st.title("Inbound Quantities Simulation by Ship Date")
 
     st.markdown(
         """
@@ -412,91 +348,86 @@ elif page == "Inbound Quantity Simulation":
         unsafe_allow_html=True
     )
     
-   # data["Ship Date"] = pd.to_datetime(data["Ship Date"], errors="coerce").dt.date
+    data["Ship Date"] = pd.to_datetime(data["Ship Date"], errors="coerce").dt.date
     
    # Sidebar filters for Inbound Quantity Trend
-  #  chart_type = st.sidebar.radio("Select Chart Type", ["Line Chart", "Bar Chart"])
-    #data['Pareto'] = data['Pareto'].fillna('Blank')
-    #pareto_options = [p for p in pareto_order if p in data["Pareto"].unique()]
+    chart_type = st.sidebar.radio("Select Chart Type", ["Line Chart", "Bar Chart"])
+    pareto_options = [p for p in pareto_order if p in data["Pareto"].dropna().unique()]
 
-   # selected_location = st.sidebar.selectbox("Select Location ID", data["location_id"].dropna().unique())
-    #selected_pareto = st.sidebar.multiselect("Select Pareto", pareto_options, default=pareto_options)
-  #  selected_business_tag = st.sidebar.multiselect("Select Business Tag", data["business_tagging"].dropna().unique())
+    selected_location = st.sidebar.selectbox("Select Location ID", data["location_id"].dropna().unique())
+    selected_pareto = st.sidebar.multiselect("Select Pareto", pareto_options, default=[])
+    selected_business_tag = st.sidebar.multiselect("Select Business Tag", data["business_tagging"].dropna().unique())
 
     
 
     # Apply filters to data (only for this graph)
-  #  filtered_data = data[
-  #      (data["location_id"] == selected_location if selected_location else True) &
-  #      (data["business_tagging"].isin(selected_business_tag) if selected_business_tag else True)
-  #  ]
-    #(data["Pareto"].isin(selected_pareto) if selected_pareto else True) &
+    filtered_data = data[
+        (data["Pareto"].isin(selected_pareto) if selected_pareto else True) &
+        (data["location_id"] == selected_location if selected_location else True) &
+        (data["business_tagging"].isin(selected_business_tag) if selected_business_tag else True)
+    ]
     
     # ✅ Group by Ship Date and Logic to get total inbound quantity after filtering
- #   st.write("Filtered Data Sample:", filtered_data.head())
- #   st.write("Filtered Data Shape:", filtered_data.shape)
- #   st.write("Total RL Qty Sum Before Processing:", data["New RL Qty"].sum())
- #   inbound_data = (data[data["primary_vendor_name"] != "0"].groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum())
+    inbound_data = (filtered_data[filtered_data["primary_vendor_name"] != "0"].groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum())
 
- #   filtered_data["Landed DOI"] = pd.to_numeric(filtered_data["Landed DOI"], errors="coerce")
- #   filtered_data["New RL Qty"] = pd.to_numeric(filtered_data["New RL Qty"], errors="coerce")
- #   filtered_logic_data = filtered_data[filtered_data["primary_vendor_name"] != "0"]
- #   logic_options = filtered_logic_data["Logic"].unique()
+    filtered_data["Landed DOI"] = pd.to_numeric(filtered_data["Landed DOI"], errors="coerce")
+    filtered_logic_data = filtered_data[filtered_data["primary_vendor_name"] != "0"]
+    logic_options = filtered_logic_data["Logic"].unique()
 
- #   st.markdown(
- #   """
-#    <style>
- #   div[data-testid="stSelectbox"] {
- #       width: auto !important;
- #       display: inline-block !important;
- #   }
- #   </style>
- #   """,
- #   unsafe_allow_html=True
- #   )
+    st.markdown(
+    """
+    <style>
+    div[data-testid="stSelectbox"] {
+        width: auto !important;
+        display: inline-block !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+    )
 
     # Select Logic first
-   # selected_logic = st.selectbox("", logic_options, key="logic_dropdown", label_visibility="collapsed")
+    selected_logic = st.selectbox("", logic_options, key="logic_dropdown", label_visibility="collapsed")
     
     # Compute values based on selected_logic
- #   inbound_data_week = filtered_logic_data.loc[filtered_logic_data["Logic"] == selected_logic, "New RL Qty"].sum()
- #   tidakaman = filtered_logic_data.loc[
- #       (filtered_logic_data["Logic"] == selected_logic) & 
- #       (filtered_logic_data["Landed DOI"] < 5), 
- #       "New RL Qty"
- #   ].count()
+    inbound_data_week = filtered_logic_data.loc[filtered_logic_data["Logic"] == selected_logic, "New RL Qty"].sum()
+    tidakaman = filtered_logic_data.loc[
+        (filtered_logic_data["Logic"] == selected_logic) & 
+        (filtered_logic_data["Landed DOI"] < 5), 
+        "New RL Qty"
+    ].count()
     
-  #  st.markdown(f"##### Total RL Qty for **{selected_logic}**: {inbound_data_week} | Total SKU Tidak Aman (Landed DOI < 5): <span style='color:red; font-weight:bold;'>{tidakaman}</span>", 
-   #     unsafe_allow_html=True)
+    st.markdown(f"##### Total RL Qty for **{selected_logic}**: {inbound_data_week} | Total SKU Tidak Aman (Landed DOI < 5): <span style='color:red; font-weight:bold;'>{tidakaman}</span>", 
+        unsafe_allow_html=True)
 
 
-   # table_tidakaman = ["Logic", "product_id","product_name","Pareto", "primary_vendor_name","New RL Qty", "New DOI Policy WH", "Landed DOI"]
+    table_tidakaman = ["Logic", "product_id","product_name","Pareto", "primary_vendor_name","New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI"]
     #original_dtypes = selected_data.dtypes
- #   tidakaman_df = filtered_logic_data[(filtered_logic_data["Landed DOI"] < 5) & (filtered_logic_data["Logic"] == selected_logic)][table_tidakaman]
-  #  tidakaman_df = tidakaman_df.sort_values(by="Logic", key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3}))
+    tidakaman_df = filtered_logic_data[(filtered_logic_data["Landed DOI"] < 5) & (filtered_logic_data["Logic"] == selected_logic)][table_tidakaman]
+    tidakaman_df = tidakaman_df.sort_values(by="Logic", key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4}))
 
- #   csv = tidakaman_df.to_csv(index=False)
+    csv = tidakaman_df.to_csv(index=False)
 
     # Export Button (Without Displaying DataFrame)
- #   st.download_button(
- #       label="📥 Download SKU Tidak Aman :( ",
- #       data=csv,
- #       file_name="tidakamanlist.csv",
- #       mime="text/csv"
-#    )
+    st.download_button(
+        label="📥 Download SKU Tidak Aman :( ",
+        data=csv,
+        file_name="tidakamanlist.csv",
+        mime="text/csv"
+    )
 
-#    st.markdown("---")
+    st.markdown("---")
 
     freq_vendors = pd.read_csv("Freq vendors.csv")
     freq_vendors["Inbound Days"] = freq_vendors["Inbound Days"].str.split(", ")
     inbound_data2 = (filtered_data[filtered_data["primary_vendor_name"] != "0"].groupby(["primary_vendor_name", "Logic"], as_index=False).agg(
         **{"Sum RL Qty": ("New RL Qty", "sum"), "First Ship Date": ("Ship Date", "min")}))
     inbound_data2 = inbound_data2[inbound_data2["Logic"] == selected_logic]
+    
     merged_data = inbound_data2.merge(freq_vendors, left_on="primary_vendor_name", right_on="primary_vendor_name", how="right")
 
     merged_data["RL Qty per Freq"] = merged_data["Sum RL Qty"] / merged_data["Freq"]
-    st.write("Inbound Data Sum Before Merge:", inbound_data2["Sum RL Qty"].sum())
-    st.write("Inbound Data Sum After Merge:", merged_data["Sum RL Qty"].sum())
+
 
     # Select relevant columns
     final_table = merged_data[["primary_vendor_name", "Inbound Days", "Sum RL Qty", "First Ship Date", "RL Qty per Freq"]]
@@ -660,20 +591,19 @@ elif page == "Inbound Quantity Simulation":
     st.markdown("---")
 
     # ✅ Add Note Above Table
-    st.write("**📝 Note:** All logics assume LDP LBH per 17 Feb 2025 → LDP+LBH are added to SOH, thus SOH might not be entirely accurate 🙂")
+    st.write("**📝 Note:** All logics assume LDP LBH per 10 Feb 2025 → LDP+LBH 85% are added to SOH, thus SOH might not be entirely accurate 🙂")
     
     # ✅ Define Logic Details Data
     logic_details = {
-        "Logic Name": ["Logic A", "Logic B", "Logic C"],
+        "Logic Name": ["Logic A", "Logic B", "Logic C", "Logic D"],
         "Logic Details": [
-            "LDP LBH 0%",
-            "LDP LBH 50%",
-            "LDP LBH 85%"
+            "cov sesuai RL everyday, dynamic DOI 50% * JI",
+            "cov sesuai RL everyday, dynamic DOI JI",
+            "cov sesuai RL everyday, dynamic DOI JI*FR Performance weight",
+            "cov 14 Days, DOI Policy 5"
         ]
     }
     
     # ✅ Convert to DataFrame & Display Table
     logic_df = pd.DataFrame(logic_details)
     st.dataframe(logic_df, hide_index=True, use_container_width=True)
-
- 
