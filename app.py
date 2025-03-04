@@ -308,28 +308,28 @@ if page == "OOS Projection WH":
             showlegend=False
         )
         
-    # ✅ Display graph in Streamlit
-    #st.write("### DOI Movement Comparison Graph")
-    st.markdown("<b><span style='font-size:26px; color:#20639B;'>DOI Movement Comparison Graph</span></b>", unsafe_allow_html=True)
-    st.plotly_chart(fig, use_container_width=False)
-
-    # ✅ Add Note Above Table
-    st.write("**📝 Note:** All logics assume LDP LBH per 10 Feb 2025 → LDP+LBH 85% are added to SOH, thus SOH might not be entirely accurate 🙂")
+        # ✅ Display graph in Streamlit
+        #st.write("### DOI Movement Comparison Graph")
+        st.markdown("<b><span style='font-size:26px; color:#20639B;'>DOI Movement Comparison Graph</span></b>", unsafe_allow_html=True)
+        st.plotly_chart(fig, use_container_width=False)
     
-    # ✅ Define Logic Details Data
-    logic_details = {
-        "Logic Name": ["Logic A", "Logic B", "Logic C", "Logic D"],
-        "Logic Details": [
-            "cov sesuai RL everyday, dynamic DOI 50% * JI",
-            "cov sesuai RL everyday, dynamic DOI JI",
-            "cov sesuai RL everyday, dynamic DOI JI*FR Performance weight",
-            "cov 14 Days, DOI Policy 5"
-        ]
-    }
-    
-    # ✅ Convert to DataFrame & Display Table
-    logic_df = pd.DataFrame(logic_details)
-    st.dataframe(logic_df, hide_index=True, use_container_width=True)
+        # ✅ Add Note Above Table
+        st.write("**📝 Note:** All logics assume LDP LBH per 10 Feb 2025 → LDP+LBH 85% are added to SOH, thus SOH might not be entirely accurate 🙂")
+        
+        # ✅ Define Logic Details Data
+        logic_details = {
+            "Logic Name": ["Logic A", "Logic B", "Logic C", "Logic D"],
+            "Logic Details": [
+                "cov sesuai RL everyday, dynamic DOI 50% * JI",
+                "cov sesuai RL everyday, dynamic DOI JI",
+                "cov sesuai RL everyday, dynamic DOI JI*FR Performance weight",
+                "cov 14 Days, DOI Policy 5"
+            ]
+        }
+        
+        # ✅ Convert to DataFrame & Display Table
+        logic_df = pd.DataFrame(logic_details)
+        st.dataframe(logic_df, hide_index=True, use_container_width=True)
 
 
 elif page == "Inbound Quantity Simulation":
