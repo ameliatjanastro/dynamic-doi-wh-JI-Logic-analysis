@@ -408,7 +408,7 @@ elif page == "Inbound Quantity Simulation":
     # **Plot Data**
     inbound_data = filtered_data.groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum()
     
-    fig = px.bar(inbound_data2, x="First Ship Date", y="Sum RL Qty", color="Logic", text_auto=True)
+    fig = px.bar(inbound_data2, x="First Ship Date", y="New RL Qty", color="Logic", text_auto=True)
     
     fig.update_layout(
         xaxis_title="Ship Date",
