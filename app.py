@@ -406,9 +406,9 @@ elif page == "Inbound Quantity Simulation":
     st.markdown("---")
     
     # **Plot Data**
-    inbound_data = filtered_data.groupby(["Ship Date", "Logic"], as_index=False)["RL Qty per Freq"].sum()
+    inbound_data = filtered_data.groupby(["Ship Date", "Logic"], as_index=False)["Sum RL Qty"]
     
-    fig = px.bar(inbound_data, x="Ship Date", y="RL Qty per Freq", color="Logic", text_auto=True)
+    fig = px.bar(inbound_data, x="Ship Date", y="Sum RL Qty", color="Logic", text_auto=True)
     
     fig.update_layout(
         xaxis_title="Ship Date",
