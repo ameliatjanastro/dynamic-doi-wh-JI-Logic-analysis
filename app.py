@@ -386,7 +386,7 @@ elif page == "Inbound Quantity Simulation":
     st.markdown("---")
     
     # Read frequency vendor data
-    # Read frequency vendor data
+
     freq_vendors = pd.read_csv("Freq vendors.csv")
     freq_vendors["Inbound Days"] = freq_vendors["Inbound Days"].str.split(", ")
     
@@ -398,7 +398,7 @@ elif page == "Inbound Quantity Simulation":
     
     # Merge with frequency vendors
     merged_data = inbound_data2.merge(freq_vendors, on="primary_vendor_name", how="right")
-    merged_data["Freq"] = merged_data["Freq"].fillna(1)  # Set default frequency to 1
+    merged_data["Freq"] = merged_data["Freq"].fillna(1)  # Default frequency to 1
     merged_data["RL Qty per Freq"] = (merged_data["Sum RL Qty"] / merged_data["Freq"]).fillna(0)
     
     # Ensure no NaN and cast to int
@@ -409,25 +409,20 @@ elif page == "Inbound Quantity Simulation":
     
     st.markdown("---")
     
-    # **Step 1: Filter only frequent vendors**
+    # **Step 1: Identify frequent vendors**
     freq_vendor_names = set(freq_vendors["primary_vendor_name"].unique())
-    filtered_freq_data = filtered_data[filtered_data["primary_vendor_name"].isin(freq_vendor_names)]
     
-    # **Step 2: Replace "New RL Qty" with "RL Qty per Freq" for frequent vendors**
-    filtered_freq_data = filtered_freq_data.merge(
-        merged_data[["primary_vendor_name", "RL Qty per Freq"]],
-        on="primary_vendor_name",
-        how="left"
-    )
-    filtered_freq_data["Adjusted RL Qty"] = filtered_freq_data["RL Qty per Freq"].fillna(0)
+    # **Step 2: Keep only non-frequent vendors for the chart**
+    non_freq_data = filtered_data[~filtered_data["primary_vendor_name"].isin(freq_vendor_names)]
     
-    # **Step 3: Aggregate only frequent vendors' RL Qty per Freq per Ship Date**
-    freq_inbound_data = filtered_freq_data.groupby("Ship Date", as_index=False)["Adjusted RL Qty"].sum()
+    # **Step 3: Aggregate for the bar chart**
+    inbound_data = non_freq_data.groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum()
     
-    # **Step 4: Plot the filtered data**
-    fig = px.bar(freq_inbound_data, x="Ship Date", y="Adjusted RL Qty", text_auto=True)
+    # **Step 4: Plot only non-frequent vendors' RL Qty**
+    fig = px.bar(inbound_data, x="Ship Date", y="New RL Qty", color="Logic", text_auto=True)
     
     st.plotly_chart(fig, use_container_width=True)
+
 
     
     st.markdown("---")
