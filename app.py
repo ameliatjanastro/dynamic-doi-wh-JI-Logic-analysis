@@ -418,7 +418,7 @@ elif page == "Inbound Quantity Simulation":
         if row["primary_vendor_name"] in freq_vendor_names else row["New RL Qty"],
         axis=1
     )
-    
+    st.write(filtered_data["Adjusted RL Qty"].head())
     # **Step 3: Aggregate inbound quantity correctly**
     inbound_data = filtered_data.groupby(["Ship Date", "Logic"], as_index=False)["Adjusted RL Qty"].sum()
     
