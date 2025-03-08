@@ -13,7 +13,7 @@ st.set_page_config(layout="wide")
 file_paths = {
     "Logic A": "logic a.csv",
     "Logic B": "logic b.csv",
-    "Logic C": "logic c.csv",
+    "Logic C": "logic c new.csv",
     "Logic D": "logic d.csv",
 }
 # Load and normalize data
@@ -160,11 +160,15 @@ if page == "OOS Projection WH":
 
     # Show table with only logic columns
 
-    selected_data["Verdict"] = selected_data.apply(lambda row: "Tidak Aman" if row["Landed DOI - JI"] < 2 else "Aman", axis=1)
+    selected_data["Verdict"] = selected_data.apply(lambda row: "Tidak Aman" if row["Landed DOI"] < 5 else "Aman", axis=1)
+    
+    def highlight_cells(val):
+        color = 'background-color: lightcoral' if val == "Tidak Aman" else ''
+        return color
     
     st.markdown("<b><span style='font-size:26px; color:#20639B;'>Comparison Table</span></b>", unsafe_allow_html=True)
     #st.write("### Comparison Table")
-    table_columns = ["Logic", "coverage", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI", "Landed DOI - JI", "Verdict"]
+    table_columns = ["Logic", "coverage", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI", "Verdict"] #"Landed DOI - JI", 
     original_dtypes = selected_data.dtypes
     
     def highlight_verdict(row):
@@ -178,8 +182,10 @@ if page == "OOS Projection WH":
         "New RL Value": "{:,.0f}",  # Adds comma separator (1,000s, no decimals)
         "New DOI Policy WH": "{:.2f}",  # 2 decimal places
         "Landed DOI": "{:.2f}",  # 2 decimal places
-        "Landed DOI - JI": "{:.2f}",  # 2 decimal places
+        #"Landed DOI - JI": "{:.2f}",  # 2 decimal places
     })
+
+    formatted_df = selected_data.style.applymap(highlight_cells, subset=["Verdict"])
 
     selected_data = selected_data.astype(original_dtypes)
     st.dataframe(formatted_df, hide_index=True, use_container_width=True)
@@ -320,7 +326,7 @@ if page == "OOS Projection WH":
         "Logic Details": [
             "cov sesuai RL everyday, dynamic DOI 50% * JI",
             "cov sesuai RL everyday, dynamic DOI JI",
-            "cov sesuai RL everyday, dynamic DOI JI + FR Add Cov Days",
+            "cov sesuai RL everyday, dynamic DOI JI*FR Performance weight",
             "cov 14 Days, DOI Policy 5"
         ]
     }
