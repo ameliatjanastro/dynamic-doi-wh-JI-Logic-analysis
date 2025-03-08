@@ -247,28 +247,28 @@ if page == "OOS Projection WH":
          #   marker=dict(color=row["color"], opacity=0.6),  # Lighter color for distinction
          #   width=bar_width,
          #   offset=offset,  # Shift left to center
-      #  ))
+  #    #  ))
     for index, row in selected_data.iterrows():
-        print(f"Logic: {row['Logic']}, Landed DOI: {row['Landed DOI']}, Landed DOI - JI: {row['Landed DOI - JI']}")
+       # print(f"Logic: {row['Logic']}, Landed DOI: {row['Landed DOI']}, Landed DOI - JI: {row['Landed DOI - JI']}")
 
     #for index, row in selected_data.iterrows():
     #    drop_value = round(float(row["Landed DOI"]) - float(row["Landed DOI - JI"]), 2)
     #    #center_x = [str(logic) for logic in selected_data["Logic"]]  # Use same x values for alignment
 
         # ✅ Add Drop Line (Scatter, Placed in Center)
-        fig.add_trace(go.Scatter(
-            x=[row["Logic"], row["Logic"]],
-            y=[row["Landed DOI"], row["Landed DOI - JI"]],
-            mode="lines",
-            line=dict(color="red", width=2, dash="solid"),  # Solid red line
-            name=f"Drop {row['Logic']}",
-            yaxis="y2",  # ✅ Use secondary y-axis to place it on top
+       # fig.add_trace(go.Scatter(
+       #     x=[row["Logic"], row["Logic"]],
+       #     y=[row["Landed DOI"], row["Landed DOI - JI"]],
+       #     mode="lines",
+       #     line=dict(color="red", width=2, dash="solid"),  # Solid red line
+       #     name=f"Drop {row['Logic']}",
+       #     yaxis="y2",  # ✅ Use secondary y-axis to place it on top
             #text=[f"<span style='background-color:yellow; padding:2px'>{drop_value:.1f}</span>"],  
-            #textposition="top center",
-            #textfont=dict(color="black"),  # ✅ Black text for visibility
-            hoverinfo="skip",
-            showlegend = False# ✅ Ensure hover shows exact value
-        ))
+       #     #textposition="top center",
+        #    #textfont=dict(color="black"),  # ✅ Black text for visibility
+        #    hoverinfo="skip",
+       #     showlegend = False# ✅ Ensure hover shows exact value
+      #  ))
 
      #   fig.add_annotation(
       #      x=row["Logic"],
