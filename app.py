@@ -386,6 +386,7 @@ elif page == "Inbound Quantity Simulation":
     st.markdown("---")
     
     # Read frequency vendor data
+    # Read frequency vendor data
     freq_vendors = pd.read_csv("Freq vendors.csv")
     freq_vendors["Inbound Days"] = freq_vendors["Inbound Days"].str.split(", ")
     
@@ -395,20 +396,36 @@ elif page == "Inbound Quantity Simulation":
     )
     inbound_data2 = inbound_data2[inbound_data2["Logic"] == selected_logic]
     
+    # Merge with frequency vendors
     merged_data = inbound_data2.merge(freq_vendors, on="primary_vendor_name", how="right")
-    merged_data["Freq"] = merged_data["Freq"].fillna(1)
-    merged_data["RL Qty per Freq"] = merged_data["Sum RL Qty"] / merged_data["Freq"]
-    merged_data["RL Qty per Freq"] = merged_data["RL Qty per Freq"].fillna(0).astype(int)
+    merged_data["Freq"] = merged_data["Freq"].fillna(1)  # Set default frequency to 1
+    merged_data["RL Qty per Freq"] = (merged_data["Sum RL Qty"] / merged_data["Freq"]).fillna(0)
     
-    # Display DataFrame
+    # Ensure no NaN and cast to int
+    merged_data["RL Qty per Freq"] = merged_data["RL Qty per Freq"].astype(int)
+    
+    # Display DataFrame after dropping NaN values
     st.dataframe(merged_data[["primary_vendor_name", "Inbound Days", "Sum RL Qty", "First Ship Date", "RL Qty per Freq"]].dropna())
     
     st.markdown("---")
     
-    # **Plot Data**
-    inbound_data = filtered_data.groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum()
+    # **Step 1: Identify frequent vendors**
+    freq_vendor_names = set(freq_vendors["primary_vendor_name"].unique())
     
-    fig = px.bar(inbound_data2, x="First Ship Date", y="New RL Qty", color="Logic", text_auto=True)
+    # **Step 2: Replace "New RL Qty" with "RL Qty per Freq" for frequent vendors**
+    filtered_data["Adjusted RL Qty"] = filtered_data.apply(
+        lambda row: merged_data.loc[merged_data["primary_vendor_name"] == row["primary_vendor_name"], "RL Qty per Freq"].values[0]
+        if row["primary_vendor_name"] in freq_vendor_names else row["New RL Qty"],
+        axis=1
+    )
+    
+    # **Step 3: Aggregate inbound quantity correctly**
+    inbound_data = filtered_data.groupby(["Ship Date", "Logic"], as_index=False)["Adjusted RL Qty"].sum()
+    
+    # **Step 4: Plot the corrected data**
+    fig = px.bar(inbound_data, x="Ship Date", y="Adjusted RL Qty", color="Logic", text_auto=True)
+    
+    st.plotly_chart(fig, use_container_width=True)
     
     fig.update_layout(
         xaxis_title="Ship Date",
