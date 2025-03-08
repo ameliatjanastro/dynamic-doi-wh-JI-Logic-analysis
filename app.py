@@ -331,3 +331,109 @@ if page == "OOS Projection WH":
     # ✅ Convert to DataFrame & Display Table
     logic_df = pd.DataFrame(logic_details)
     st.dataframe(logic_df, hide_index=True, use_container_width=True)
+
+elif page == "Inbound Quantity Simulation":
+
+    # Sidebar filters
+    chart_type = st.sidebar.radio("Select Chart Type", ["Line Chart", "Bar Chart"])
+    pareto_options = data["Pareto"].dropna().unique().tolist()
+    
+    selected_location = st.sidebar.selectbox("Select Location ID", data["location_id"].dropna().unique())
+    selected_pareto = st.sidebar.multiselect("Select Pareto", pareto_options, default=[])
+    selected_business_tag = st.sidebar.multiselect("Select Business Tag", data["business_tagging"].dropna().unique())
+    
+    # Apply filters
+    filtered_data = data.copy()
+    if selected_pareto:
+        filtered_data = filtered_data[filtered_data["Pareto"].isin(selected_pareto)]
+    if selected_location:
+        filtered_data = filtered_data[filtered_data["location_id"] == selected_location]
+    if selected_business_tag:
+        filtered_data = filtered_data[filtered_data["business_tagging"].isin(selected_business_tag)]
+    
+    # Ensure numeric conversion
+    filtered_data["Landed DOI"] = pd.to_numeric(filtered_data["Landed DOI"], errors="coerce")
+    
+    # Select Logic dropdown
+    logic_options = filtered_data["Logic"].dropna().unique()
+    selected_logic = st.selectbox("Select Logic", logic_options, key="logic_dropdown")
+    
+    # Compute total RL Quantity
+    inbound_data_week = filtered_data.loc[filtered_data["Logic"] == selected_logic, "New RL Qty"].sum()
+    
+    tidakaman = filtered_data.loc[
+        (filtered_data["Logic"] == selected_logic) & (filtered_data["Landed DOI"] < 5),
+        "New RL Qty"
+    ].count()
+    
+    st.markdown(f"##### Total RL Qty for **{selected_logic}**: {inbound_data_week} | Total SKU Tidak Aman (Landed DOI < 5): <span style='color:red; font-weight:bold;'>{tidakaman}</span>", 
+        unsafe_allow_html=True)
+    
+    # Create table for "Tidak Aman" SKUs
+    tidakaman_df = filtered_data[(filtered_data["Landed DOI"] < 5) & (filtered_data["Logic"] == selected_logic)][
+        ["Logic", "product_id", "product_name", "Pareto", "primary_vendor_name", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI"]
+    ]
+    
+    # Sorting with custom order
+    tidakaman_df["Logic"] = pd.Categorical(tidakaman_df["Logic"], ["Logic A", "Logic B", "Logic C", "Logic D"], ordered=True)
+    tidakaman_df = tidakaman_df.sort_values(by="Logic")
+    
+    # Download button
+    st.download_button(
+        label="📥 Download SKU Tidak Aman",
+        data=tidakaman_df.to_csv(index=False),
+        file_name="tidakamanlist.csv",
+        mime="text/csv"
+    )
+    
+    st.markdown("---")
+    
+    # Read frequency vendor data
+    freq_vendors = pd.read_csv("Freq vendors.csv")
+    freq_vendors["Inbound Days"] = freq_vendors["Inbound Days"].str.split(", ")
+    
+    # Merge vendor frequency data
+    inbound_data2 = filtered_data.groupby(["primary_vendor_name", "Logic"], as_index=False).agg(
+        **{"Sum RL Qty": ("New RL Qty", "sum"), "First Ship Date": ("Ship Date", "min")}
+    )
+    inbound_data2 = inbound_data2[inbound_data2["Logic"] == selected_logic]
+    
+    merged_data = inbound_data2.merge(freq_vendors, on="primary_vendor_name", how="right")
+    merged_data["RL Qty per Freq"] = merged_data["Sum RL Qty"] / merged_data["Freq"]
+    
+    # Display DataFrame
+    st.dataframe(merged_data[["primary_vendor_name", "Inbound Days", "Sum RL Qty", "First Ship Date", "RL Qty per Freq"]])
+    
+    st.markdown("---")
+    
+    # **Plot Data**
+    inbound_data = filtered_data.groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum()
+    
+    if chart_type == "Line Chart":
+        fig = px.line(inbound_data, x="Ship Date", y="New RL Qty", color="Logic", markers=True)
+    elif chart_type == "Bar Chart":
+        fig = px.bar(inbound_data, x="Ship Date", y="New RL Qty", color="Logic", text_auto=True)
+    
+    fig.update_layout(
+        xaxis_title="Ship Date",
+        yaxis_title="Total Inbound Quantity",
+        width=1200,
+        height=500
+    )
+    
+    st.plotly_chart(fig, use_container_width=True)
+    
+    st.markdown("---")
+    
+    # **Logic Details Table**
+    logic_details = pd.DataFrame({
+        "Logic Name": ["Logic A", "Logic B", "Logic C", "Logic D"],
+        "Logic Details": [
+            "cov sesuai RL everyday, dynamic DOI 50% * JI",
+            "cov sesuai RL everyday, dynamic DOI JI",
+            "cov sesuai RL everyday, dynamic DOI JI*FR Performance weight",
+            "cov 14 Days, DOI Policy 5"
+        ]
+    })
+    st.dataframe(logic_details, hide_index=True, use_container_width=True)
+
