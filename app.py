@@ -414,13 +414,13 @@ elif page == "Inbound Quantity Simulation":
     freq_data = merged_data[merged_data["primary_vendor_name"].isin(freq_vendor_names)]
     
     # **Step 3: Aggregate RL Qty for non-frequent vendors**
-    non_freq_agg = non_freq_data.groupby(["Ship Date"], as_index=False).agg(
+    non_freq_agg = non_freq_data.groupby(["Ship Date","Logic"], as_index=False).agg(
         {"New RL Qty": "sum"}
     )
     non_freq_agg["Logic"] = "Regular"  # Label non-frequent vendors
     
     # **Step 4: Aggregate RL Qty per Freq for frequent vendors**
-    freq_agg = freq_data.groupby(["First Ship Date"], as_index=False).agg(
+    freq_agg = freq_data.groupby(["First Ship Date","Logic"], as_index=False).agg(
         {"RL Qty per Freq": "sum"}
     )
     freq_agg = freq_agg.rename(columns={"First Ship Date": "Ship Date"})  # Rename for merging
@@ -436,7 +436,7 @@ elif page == "Inbound Quantity Simulation":
     # **Step 7: Create grouped bar chart**
     fig = px.bar(final_data, x="Ship Date", y="New RL Qty", color="Logic", text_auto=True, 
                  barmode="group", title="Total RL Quantity by Ship Date",
-                 color_discrete_map={"Regular": "blue", "Frequent": "green"})  # Blue for regular, green for frequent
+                 color_discrete_map={"Regular": "#A7C7E7", "Frequent": "green"})  # Blue for regular, green for frequent
     
     st.plotly_chart(fig, use_container_width=True)
             
