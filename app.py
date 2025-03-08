@@ -414,7 +414,7 @@ elif page == "Inbound Quantity Simulation":
     freq_data = merged_data[merged_data["primary_vendor_name"].isin(freq_vendor_names)]
     
     # **Step 3: Aggregate RL Qty for non-frequent vendors**
-    non_freq_agg = non_freq_data.groupby(["Ship Date"], as_index=False).agg(
+    non_freq_agg = non_freq_data.groupby(["First Ship Date"], as_index=False).agg(
         {"New RL Qty": "sum"}
     )
     non_freq_agg["Logic"] = "Regular"  # Label non-frequent vendors
