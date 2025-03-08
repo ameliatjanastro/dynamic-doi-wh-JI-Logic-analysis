@@ -388,7 +388,6 @@ elif page == "Inbound Quantity Simulation":
     # Read frequency vendor data
 
     # Read frequency vendor data
-    # Read frequency vendor data
     freq_vendors = pd.read_csv("Freq vendors.csv")
     freq_vendors["Inbound Days"] = freq_vendors["Inbound Days"].str.split(", ")
     
@@ -398,7 +397,7 @@ elif page == "Inbound Quantity Simulation":
     )
     
     # Merge with frequency vendors
-    merged_data = inbound_data2.merge(freq_vendors, on="primary_vendor_name", how="right")
+    merged_data = inbound_data2.merge(freq_vendors, on="primary_vendor_name", how="left")
     merged_data["Freq"] = merged_data["Freq"].fillna(1)  # Default frequency to 1
     merged_data["RL Qty per Freq"] = (merged_data["Sum RL Qty"] / merged_data["Freq"]).fillna(0).astype(int)
     
@@ -410,36 +409,37 @@ elif page == "Inbound Quantity Simulation":
     # **Step 1: Identify frequent vendors**
     freq_vendor_names = set(freq_vendors["primary_vendor_name"].unique())
     
-    # **Step 2: Split frequent & non-frequent vendors**
+    # **Step 2: Separate frequent & non-frequent vendor data**
     non_freq_data = filtered_data[~filtered_data["primary_vendor_name"].isin(freq_vendor_names)]
     freq_data = merged_data[merged_data["primary_vendor_name"].isin(freq_vendor_names)]
     
     # **Step 3: Aggregate RL Qty for non-frequent vendors**
-    non_freq_agg = non_freq_data.groupby(["Ship Date"], as_index=False)["New RL Qty"].sum()
+    non_freq_agg = non_freq_data.groupby(["Ship Date"], as_index=False).agg(
+        {"New RL Qty": "sum"}
+    )
+    non_freq_agg["Logic"] = "Regular"  # Label non-frequent vendors
     
-    # **Step 4: Aggregate RL Qty per Freq for frequent vendors (without logic filtering)**
-    freq_agg = freq_data.groupby(["First Ship Date"], as_index=False)["RL Qty per Freq"].sum()
+    # **Step 4: Aggregate RL Qty per Freq for frequent vendors**
+    freq_agg = freq_data.groupby(["First Ship Date"], as_index=False).agg(
+        {"RL Qty per Freq": "sum"}
+    )
     freq_agg = freq_agg.rename(columns={"First Ship Date": "Ship Date"})  # Rename for merging
     freq_agg["Logic"] = "Frequent"  # Set label as "Frequent"
     
-    # **Step 5: Merge both datasets**
-    final_data = pd.concat([non_freq_agg, freq_agg], ignore_index=True)
+    # **Step 5: Ensure y-values are integers**
+    non_freq_agg["New RL Qty"] = non_freq_agg["New RL Qty"].astype(int)
+    freq_agg["RL Qty per Freq"] = freq_agg["RL Qty per Freq"].astype(int)
     
-    # **Step 6: Ensure y-values are integers**
-    final_data["New RL Qty"] = final_data["New RL Qty"].astype(int, errors="ignore")
-    freq_agg["RL Qty per Freq"] = freq_agg["RL Qty per Freq"].astype(int, errors="ignore")
+    # **Step 6: Merge both datasets**
+    final_data = pd.concat([non_freq_agg, freq_agg.rename(columns={"RL Qty per Freq": "New RL Qty"})], ignore_index=True)
     
     # **Step 7: Create grouped bar chart**
     fig = px.bar(final_data, x="Ship Date", y="New RL Qty", color="Logic", text_auto=True, 
-                 barmode="group", title="Total RL Quantity by Ship Date")
-    
-    # **Step 8: Add green bar for frequent vendor RL Qty**
-    freq_bar = px.bar(freq_agg, x="Ship Date", y="RL Qty per Freq", color_discrete_sequence=["green"], text_auto=True)
-    
-    fig.add_trace(freq_bar.data[0])  # Add frequent vendor data to chart
+                 barmode="group", title="Total RL Quantity by Ship Date",
+                 color_discrete_map={"Regular": "blue", "Frequent": "green"})  # Blue for regular, green for frequent
     
     st.plotly_chart(fig, use_container_width=True)
-        
+            
     # **Logic Details Table**
     logic_details = pd.DataFrame({
         "Logic Name": ["Logic A", "Logic B", "Logic C", "Logic D"],
