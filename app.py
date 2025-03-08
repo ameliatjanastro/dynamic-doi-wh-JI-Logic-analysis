@@ -411,6 +411,7 @@ elif page == "Inbound Quantity Simulation":
     
     # **Step 1: Identify frequent vendors**
     freq_vendor_names = set(freq_vendors["primary_vendor_name"].unique())
+
     
     # **Step 2: Replace "New RL Qty" with "RL Qty per Freq" for frequent vendors**
     filtered_data["Adjusted RL Qty"] = filtered_data.apply(
