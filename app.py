@@ -173,19 +173,19 @@ if page == "OOS Projection WH":
         return ""
   
     #formatted_df = selected_data.style.applymap(highlight_cells, subset=["Verdict"])
-    formatted_df = selected_data[table_columns].sort_values(
-        by="Logic", 
-        key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})
-    ).style.applymap(highlight_cells, subset=["Verdict"]).format({
-        "New RL Value": "{:,.0f}",  # Adds comma separator (1,000s, no decimals)
-        "New DOI Policy WH": "{:.2f}",  # 2 decimal places
-        "Landed DOI": "{:.2f}",  # 2 decimal places
-        #"Landed DOI - JI": "{:.2f}",  # 2 decimal places
-    })
-
-    #selected_data = selected_data.astype(original_dtypes)
+        formatted_df = selected_data[table_columns].sort_values(
+            by="Logic", 
+            key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})
+        ).style.applymap(highlight_cells, subset=["Verdict"]).format({
+            "New RL Value": "{:,.0f}",  # Adds comma separator (1,000s, no decimals)
+            "New DOI Policy WH": "{:.2f}",  # 2 decimal places
+            "Landed DOI": "{:.2f}",  # 2 decimal places
+            #"Landed DOI - JI": "{:.2f}",  # 2 decimal places
+        })
     
-    st.dataframe(formatted_df, hide_index=True, use_container_width=True)
+        #selected_data = selected_data.astype(original_dtypes)
+        
+        st.dataframe(formatted_df, hide_index=True, use_container_width=True)
     
     st.markdown(
     """
