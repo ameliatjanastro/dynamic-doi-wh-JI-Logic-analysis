@@ -346,7 +346,7 @@ elif page == "Inbound Quantity Simulation":
     if selected_location:
         filtered_data = filtered_data[filtered_data["location_id"] == selected_location]
     if selected_business_tag:
-        filtered_data = filtered_data[filtered_data["business_tagging"] == selected_selected_business_tag]
+        filtered_data = filtered_data[filtered_data["business_tagging"] == selected_business_tag]
     
     # Ensure numeric conversion
     filtered_data["Landed DOI"] = pd.to_numeric(filtered_data["Landed DOI"], errors="coerce")
