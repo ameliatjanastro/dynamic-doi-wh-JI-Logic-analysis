@@ -242,7 +242,7 @@ elif page == "Inbound Quantity Simulation":
 
 
     logic_options = data["Logic"].dropna().unique()
-    selected_logic = st.selectbox("Select Logic", logic_options, key="logic_dropdown")
+    selected_logic = st.sidebar.selectbox("Select Logic", logic_options, key="logic_dropdown")
 
     selected_pareto = st.sidebar.multiselect("Select Pareto", pareto_order,default=[])
     selected_business_tag = st.sidebar.selectbox("Select Business Tag", data["business_tagging"].dropna().unique())
