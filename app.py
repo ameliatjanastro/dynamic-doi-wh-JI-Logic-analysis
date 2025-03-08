@@ -212,8 +212,8 @@ if page == "OOS Projection WH":
     # ✅ Fill NaN values with 0 (or another safe default)
     selected_data["Landed DOI"].fillna(0, inplace=True)
     selected_data["color"] = np.where(
-    selected_data["Landed DOI"] >= selected_data["Jarak Inbound"], "lightgreen", "red"
-    )
+    #selected_data["Landed DOI"] >= selected_data["Jarak Inbound"], "lightgreen", "red"
+    #)
     
     # ✅ Create bar chart
     fig = go.Figure()
