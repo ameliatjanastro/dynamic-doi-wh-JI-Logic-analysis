@@ -164,7 +164,7 @@ if page == "OOS Projection WH":
     
     st.markdown("<b><span style='font-size:26px; color:#20639B;'>Comparison Table</span></b>", unsafe_allow_html=True)
     #st.write("### Comparison Table")
-    table_columns = ["Logic", "coverage", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI", "Verdict"] #"Landed DOI - JI", 
+    table_columns = ["Logic", "coverage", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI", "Landed DOI - JI", "Verdict"] #"Landed DOI - JI", 
     original_dtypes = selected_data.dtypes
     
     def highlight_cells(val):
@@ -180,7 +180,7 @@ if page == "OOS Projection WH":
         "New RL Value": "{:,.0f}",  # Adds comma separator (1,000s, no decimals)
         "New DOI Policy WH": "{:.2f}",  # 2 decimal places
         "Landed DOI": "{:.2f}",  # 2 decimal places
-        "Landed DOI - JI": "{:.2f}",  # 2 decimal places
+        "Landed DOI - JI": "{:.2f}"  # 2 decimal places
     })
 
     #selected_data = selected_data.astype(original_dtypes)
