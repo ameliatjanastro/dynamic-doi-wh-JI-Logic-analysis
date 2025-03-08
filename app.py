@@ -309,11 +309,6 @@ elif page == "Inbound Quantity Simulation":
     merged_data["Freq"] = merged_data["Freq"].fillna(1)  # Default frequency to 1
     merged_data["RL Qty per Freq"] = (merged_data["Sum RL Qty"] / merged_data["Freq"]).fillna(0).astype(int)
     
-    # Display DataFrame
-    st.dataframe(merged_data[["primary_vendor_name", "Inbound Days", "Sum RL Qty", "First Ship Date", "RL Qty per Freq"]].dropna(),hide_index=True)
-    
-    st.markdown("---")
-    
     # **Step 1: Identify frequent vendors**
     freq_vendor_names = set(freq_vendors["primary_vendor_name"].unique())
     
@@ -343,6 +338,11 @@ elif page == "Inbound Quantity Simulation":
                  color_discrete_map={"Regular": "#A7C7E7", "Frequent": "green"})  # Pastel blue for regular, green for frequent
     
     st.plotly_chart(fig, use_container_width=True)
+
+    # Display DataFrame
+    st.dataframe(merged_data[["primary_vendor_name", "Inbound Days", "Sum RL Qty", "First Ship Date", "RL Qty per Freq"]].dropna(),hide_index=True)
+
+    st.markdown("----")
             
     # **Logic Details Table**
     logic_details = pd.DataFrame({
