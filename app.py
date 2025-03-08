@@ -248,7 +248,7 @@ if page == "OOS Projection WH":
          #   width=bar_width,
          #   offset=offset,  # Shift left to center
   #    #  ))
-    for index, row in selected_data.iterrows():
+   # for index, row in selected_data.iterrows():
        # print(f"Logic: {row['Logic']}, Landed DOI: {row['Landed DOI']}, Landed DOI - JI: {row['Landed DOI - JI']}")
 
     #for index, row in selected_data.iterrows():
