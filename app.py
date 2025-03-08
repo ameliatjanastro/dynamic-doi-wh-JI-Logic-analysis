@@ -432,7 +432,7 @@ elif page == "Inbound Quantity Simulation":
     # **Step 6: Plot the corrected data**
     fig = px.bar(
         inbound_data, x="Ship Date", y="Adjusted RL Qty", color="Vendor Type", 
-        text_auto=True, color_discrete_map=colors, barmode="group"")  # Side-by-side bars
+        text_auto=True, color_discrete_map=colors, barmode="group")  # Side-by-side bars
     
     fig.update_yaxes(tickformat=",d")  # Ensure integer y-axis values
     
