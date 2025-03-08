@@ -333,9 +333,6 @@ if page == "OOS Projection WH":
     st.dataframe(logic_df, hide_index=True, use_container_width=True)
 
 elif page == "Inbound Quantity Simulation":
-
-    # Sidebar filters
-    chart_type = st.sidebar.radio("Select Chart Type", ["Line Chart", "Bar Chart"])
     pareto_options = data["Pareto"].dropna().unique().tolist()
     
     selected_location = st.sidebar.selectbox("Select Location ID", data["location_id"].dropna().unique())
@@ -409,10 +406,7 @@ elif page == "Inbound Quantity Simulation":
     # **Plot Data**
     inbound_data = filtered_data.groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum()
     
-    if chart_type == "Line Chart":
-        fig = px.line(inbound_data, x="Ship Date", y="New RL Qty", color="Logic", markers=True)
-    elif chart_type == "Bar Chart":
-        fig = px.bar(inbound_data, x="Ship Date", y="New RL Qty", color="Logic", text_auto=True)
+    fig = px.bar(inbound_data, x="Ship Date", y="New RL Qty", color="Logic", text_auto=True)
     
     fig.update_layout(
         xaxis_title="Ship Date",
