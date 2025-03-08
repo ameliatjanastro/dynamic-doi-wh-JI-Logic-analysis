@@ -424,12 +424,18 @@ elif page == "Inbound Quantity Simulation":
     # **Step 5: Merge both datasets**
     final_data = pd.concat([non_freq_agg, freq_agg], ignore_index=True)
     
-    # **Step 6: Plot the updated stacked bar chart**
+    # **Step 6: Convert y-values to integers**
+    final_data["New RL Qty"] = final_data["New RL Qty"].astype(int, errors="ignore")  # Avoid issues with NaN
+    freq_agg["RL Qty per Freq"] = freq_agg["RL Qty per Freq"].astype(int, errors="ignore")
+    
+    # **Step 7: Use grouped bars instead of stacking**
     fig = px.bar(final_data, x="Ship Date", y="New RL Qty", color="Logic", text_auto=True, 
-             barmode="group", title="Total RL Quantity by Ship Date (Grouped Logic)")
-
-    # **Step 7: Add a separate bar for frequent vendor RL Qty**
-    fig.add_trace(px.bar(freq_agg, x="Ship Date", y="RL Qty per Freq", color="Logic", text_auto=True).data[0])
+                 barmode="group", title="Total RL Quantity by Ship Date (Grouped Logic)")
+    
+    # **Step 8: Add a green bar for frequent vendor RL Qty**
+    freq_bar = px.bar(freq_agg, x="Ship Date", y="RL Qty per Freq", color_discrete_sequence=["green"], text_auto=True)
+    
+    fig.add_trace(freq_bar.data[0])  # Add it to the existing figure
     
     st.plotly_chart(fig, use_container_width=True)
         
