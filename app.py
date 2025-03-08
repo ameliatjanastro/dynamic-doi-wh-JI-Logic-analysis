@@ -348,7 +348,7 @@ elif page == "Inbound Quantity Simulation":
         unsafe_allow_html=True
     )
     
-    data["Ship Date"] = pd.to_datetime(data["Ship Date"], errors="coerce").dt.date
+    data["Ship Date"] = pd.to_datetime(data["Ship Date"], errors="coerce")
     
    # Sidebar filters for Inbound Quantity Trend
     chart_type = st.sidebar.radio("Select Chart Type", ["Line Chart", "Bar Chart"])
@@ -417,87 +417,7 @@ elif page == "Inbound Quantity Simulation":
     )
 
     st.markdown("---")
-
-    freq_vendors = pd.read_csv("Freq vendors.csv")
-    freq_vendors["Inbound Days"] = freq_vendors["Inbound Days"].str.split(", ")
-    inbound_data2 = (filtered_data[filtered_data["primary_vendor_name"] != "0"].groupby(["primary_vendor_name", "Logic"], as_index=False).agg(
-        **{"Sum RL Qty": ("New RL Qty", "sum"), "First Ship Date": ("Ship Date", "min")}))
-    inbound_data2 = inbound_data2[inbound_data2["Logic"] == selected_logic]
     
-    merged_data = inbound_data2.merge(freq_vendors, left_on="primary_vendor_name", right_on="primary_vendor_name", how="right")
-
-    merged_data["RL Qty per Freq"] = merged_data["Sum RL Qty"] / merged_data["Freq"]
-
-
-    # Select relevant columns
-    final_table = merged_data[["primary_vendor_name", "Inbound Days", "Sum RL Qty", "First Ship Date", "RL Qty per Freq"]]
-    table_freq = pd.DataFrame(final_table)
-    st.dataframe(table_freq)
-
-
-    # Create a mapping of weekday names to numbers (Monday = 0, ..., Sunday = 6)
-    weekday_map = {
-        "Mon": 0, "Tue": 1, "Wed": 2, "Thu": 3, "Fri": 4, "Sat": 5, "Sun": 6
-    }
-    
-    # Expand rows based on frequency inbound days
-    expanded_rows = []
-
-    for _, row in merged_data.iterrows():
-        # **Ensure "Inbound Days" is a valid list**
-        inbound_days = row["Inbound Days"] if isinstance(row["Inbound Days"], list) else []
-    
-        if inbound_days:  # Only process vendors with valid inbound days
-            first_ship_date = row["First Ship Date"]
-    
-            if pd.notna(first_ship_date):
-                # **Get the week range (Monday-Sunday) for first ship date**
-                start_of_week = first_ship_date - pd.Timedelta(days=first_ship_date.weekday())  # Monday of that week
-                end_of_week = start_of_week + pd.Timedelta(days=6)  # Sunday of that week
-    
-                # Get inbound days as a list of weekday numbers
-                inbound_weekdays = sorted(
-                    [weekday_map[day] for day in inbound_days if day in weekday_map]
-                )
-    
-                if not inbound_weekdays:
-                    continue  # Skip vendors with no valid inbound days
-
-                total_qty = row["Sum RL Qty"]
-                num_days = len(inbound_weekdays)
-
-                # Distribute RL Qty equally among inbound days
-                split_qty = round(total_qty / num_days)
-    
-                # Start from the first ship date and find valid shipment days
-                current_date = first_ship_date
-    
-                while current_date <= end_of_week:  # **Restrict to same week**
-                    if current_date.weekday() in inbound_weekdays:
-                        expanded_rows.append([
-                            row["primary_vendor_name"], current_date, split_qty
-                        ])
-                    current_date += pd.Timedelta(days=1)  # Move to the next day
-
-        
-    # Convert expanded rows into DataFrame
-    processed_data = pd.DataFrame(expanded_rows, columns=["Vendor Name", "Ship Date", "Adjusted RL Qty"])
-    st.dataframe(processed_data)
-
-    st.markdown("---")
-
-    # Remove old frequent vendor data from filtered_data
-    filtered_data_no_freq = filtered_data[~filtered_data["primary_vendor_name"].isin(freq_vendors["primary_vendor_name"])]
-    
-    # Append processed_data back into filtered_data to get all vendors
-    updated_filtered_data = pd.concat([filtered_data_no_freq, processed_data], ignore_index=True)
-    
-    # **Step 3: Recalculate Inbound Data with Updated Ship Dates**
-    inbound_data = (
-        updated_filtered_data[updated_filtered_data["primary_vendor_name"] != "0"]
-        .groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum()
-    )
-
     # ✅ Create the line graph using Plotly Express
     if chart_type == "Line Chart":
         fig2 = px.line(
@@ -535,7 +455,7 @@ elif page == "Inbound Quantity Simulation":
                 x=logic_df["Ship Date"],
                 y=logic_df["New RL Qty"],
                 mode="text",  # Only text, no lines or markers
-                text=logic_df["New RL Qty"].astype(int).astype(str),  # Convert to text
+                text=logic_df["New RL Qty"].astype(str),  # Convert to text
                 textposition=text_positions,  # Position text above markers
                 textfont=dict(size=12, color=logic_colors.get(logic, "black"), weight='bold'),
                 showlegend=False,  # Hide extra legend entries
@@ -560,7 +480,7 @@ elif page == "Inbound Quantity Simulation":
             x="Ship Date", 
             y="New RL Qty", 
             color="Logic",  # Different colors per logic
-            text=inbound_data["New RL Qty"].astype(int).astype(str),  # 🔥 Auto display text labels inside bars
+            text=inbound_data["New RL Qty"].astype(str),  # 🔥 Auto display text labels inside bars
             color_discrete_sequence=custom_colors,  # ✅ Apply custom colors
             title="<b><span style='font-size:26px; color:#20639B;'>Bar Chart</span></b>"
         
@@ -588,8 +508,6 @@ elif page == "Inbound Quantity Simulation":
     #st.write("### Inbound Quantity Trend by Ship Date")
     st.plotly_chart(fig2, use_container_width=True)
 
-    st.markdown("---")
-
     # ✅ Add Note Above Table
     st.write("**📝 Note:** All logics assume LDP LBH per 10 Feb 2025 → LDP+LBH 85% are added to SOH, thus SOH might not be entirely accurate 🙂")
     
@@ -607,6 +525,8 @@ elif page == "Inbound Quantity Simulation":
     # ✅ Convert to DataFrame & Display Table
     logic_df = pd.DataFrame(logic_details)
     st.dataframe(logic_df, hide_index=True, use_container_width=True)
+
+ 
 
  
     st.write("### Inbound Quantity Trend Over Time")
