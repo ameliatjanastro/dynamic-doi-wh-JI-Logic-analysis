@@ -409,24 +409,26 @@ elif page == "Inbound Quantity Simulation":
     
     st.markdown("---")
     
-    # **Step 1: Identify frequent vendors**
+    # **Step 1: Filter only frequent vendors**
     freq_vendor_names = set(freq_vendors["primary_vendor_name"].unique())
-
+    filtered_freq_data = filtered_data[filtered_data["primary_vendor_name"].isin(freq_vendor_names)]
     
     # **Step 2: Replace "New RL Qty" with "RL Qty per Freq" for frequent vendors**
-    filtered_data["Adjusted RL Qty"] = filtered_data.apply(
-        lambda row: merged_data.loc[merged_data["primary_vendor_name"] == row["primary_vendor_name"], "RL Qty per Freq"].values[0]
-        if row["primary_vendor_name"] in freq_vendor_names else 0,
-        axis=1
+    filtered_freq_data = filtered_freq_data.merge(
+        merged_data[["primary_vendor_name", "RL Qty per Freq"]],
+        on="primary_vendor_name",
+        how="left"
     )
-
-    # **Step 3: Aggregate inbound quantity correctly**
-    inbound_data = filtered_data.groupby(["Ship Date", "Logic"], as_index=False)["RL Qty per Freq"].sum()
+    filtered_freq_data["Adjusted RL Qty"] = filtered_freq_data["RL Qty per Freq"].fillna(0)
     
-    # **Step 4: Plot the corrected data**
-    fig = px.bar(inbound_data, x="Ship Date", y="RL Qty per Freq", color="Logic", text_auto=True)
+    # **Step 3: Aggregate only frequent vendors' RL Qty per Freq per Ship Date**
+    freq_inbound_data = filtered_freq_data.groupby("Ship Date", as_index=False)["Adjusted RL Qty"].sum()
+    
+    # **Step 4: Plot the filtered data**
+    fig = px.bar(freq_inbound_data, x="Ship Date", y="Adjusted RL Qty", text_auto=True)
     
     st.plotly_chart(fig, use_container_width=True)
+
     
     st.markdown("---")
     
