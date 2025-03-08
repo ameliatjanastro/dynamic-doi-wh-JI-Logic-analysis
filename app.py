@@ -396,6 +396,7 @@ elif page == "Inbound Quantity Simulation":
     inbound_data2 = inbound_data2[inbound_data2["Logic"] == selected_logic]
     
     merged_data = inbound_data2.merge(freq_vendors, on="primary_vendor_name", how="right")
+    merged_data = merged_data["Freq"].fillna(1)
     merged_data["RL Qty per Freq"] = merged_data["Sum RL Qty"] / merged_data["Freq"]
     merged_data["RL Qty per Freq"] = merged_data["RL Qty per Freq"].fillna(0).astype(int)
     
@@ -405,9 +406,9 @@ elif page == "Inbound Quantity Simulation":
     st.markdown("---")
     
     # **Plot Data**
-    inbound_data = filtered_data.groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum()
+    inbound_data = filtered_data.groupby(["Ship Date", "Logic"], as_index=False)["RL Qty per Freq"].sum()
     
-    fig = px.bar(inbound_data, x="Ship Date", y="New RL Qty", color="Logic", text_auto=True)
+    fig = px.bar(inbound_data, x="Ship Date", y="RL Qty per Freq", color="Logic", text_auto=True)
     
     fig.update_layout(
         xaxis_title="Ship Date",
