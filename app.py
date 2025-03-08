@@ -388,8 +388,15 @@ elif page == "Inbound Quantity Simulation":
     # Read frequency vendor data
 
     # Read frequency vendor data
+  # Read frequency vendor data
     freq_vendors = pd.read_csv("Freq vendors.csv")
     freq_vendors["Inbound Days"] = freq_vendors["Inbound Days"].str.split(", ")
+    
+    # Select Logic
+    selected_logic = st.selectbox("Select Logic", filtered_data["Logic"].unique())
+    
+    # Filter data based on selected logic
+    filtered_data = filtered_data[filtered_data["Logic"] == selected_logic]
     
     # Merge vendor frequency data
     inbound_data2 = filtered_data.groupby(["primary_vendor_name"], as_index=False).agg(
@@ -414,15 +421,11 @@ elif page == "Inbound Quantity Simulation":
     freq_data = merged_data[merged_data["primary_vendor_name"].isin(freq_vendor_names)]
     
     # **Step 3: Aggregate RL Qty for non-frequent vendors**
-    non_freq_agg = non_freq_data.groupby(["Ship Date"], as_index=False).agg(
-        {"New RL Qty": "sum"}
-    )
+    non_freq_agg = non_freq_data.groupby(["Ship Date"], as_index=False).agg({"New RL Qty": "sum"})
     non_freq_agg["Logic"] = "Regular"  # Label non-frequent vendors
     
     # **Step 4: Aggregate RL Qty per Freq for frequent vendors**
-    freq_agg = freq_data.groupby(["First Ship Date"], as_index=False).agg(
-        {"RL Qty per Freq": "sum"}
-    )
+    freq_agg = freq_data.groupby(["First Ship Date"], as_index=False).agg({"RL Qty per Freq": "sum"})
     freq_agg = freq_agg.rename(columns={"First Ship Date": "Ship Date"})  # Rename for merging
     freq_agg["Logic"] = "Frequent"  # Set label as "Frequent"
     
@@ -433,10 +436,10 @@ elif page == "Inbound Quantity Simulation":
     # **Step 6: Merge both datasets**
     final_data = pd.concat([non_freq_agg, freq_agg.rename(columns={"RL Qty per Freq": "New RL Qty"})], ignore_index=True)
     
-    # **Step 7: Create grouped bar chart**
+    # **Step 7: Create grouped bar chart with selected logic**
     fig = px.bar(final_data, x="Ship Date", y="New RL Qty", color="Logic", text_auto=True, 
-                 barmode="group", title="Total RL Quantity by Ship Date",
-                 color_discrete_map={"Regular": "blue", "Frequent": "green"})  # Blue for regular, green for frequent
+                 barmode="group", title=f"Total RL Quantity by Ship Date ({selected_logic})",
+                 color_discrete_map={"Regular": "#A7C7E7", "Frequent": "green"})  # Pastel blue for regular, green for frequent
     
     st.plotly_chart(fig, use_container_width=True)
 
