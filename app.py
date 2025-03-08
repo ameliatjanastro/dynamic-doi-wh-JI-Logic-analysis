@@ -160,28 +160,28 @@ if page == "OOS Projection WH":
 
     # Show table with only logic columns
 
-    selected_data["Verdict"] = selected_data.apply(lambda row: "Tidak Aman" if row["Landed DOI"] < 5 else "Aman", axis=1)
-    
-    st.markdown("<b><span style='font-size:26px; color:#20639B;'>Comparison Table</span></b>", unsafe_allow_html=True)
-    #st.write("### Comparison Table")
-    table_columns = ["Logic", "coverage", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI", "Landed DOI - JI", "Verdict"] #"Landed DOI - JI", 
-    original_dtypes = selected_data.dtypes
-    
-    def highlight_cells(val):
-        if val == "Tidak Aman":
-            return "background-color: red; color: white;"  # Red background, white text
-        return ""
-  
-    #formatted_df = selected_data.style.applymap(highlight_cells, subset=["Verdict"])
-    formatted_df = selected_data[table_columns].sort_values(
-        by="Logic", 
-        key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})
-    ).style.applymap(highlight_cells, subset=["Verdict"]).format({
-        "New RL Value": "{:,.0f}",  # Adds comma separator (1,000s, no decimals)
-        "New DOI Policy WH": "{:.2f}",  # 2 decimal places
-        "Landed DOI": "{:.2f}",  # 2 decimal places
-        "Landed DOI - JI": "{:.2f}"  # 2 decimal places
-    })
+        selected_data["Verdict"] = selected_data.apply(lambda row: "Tidak Aman" if row["Landed DOI"] < 5 else "Aman", axis=1)
+        
+        st.markdown("<b><span style='font-size:26px; color:#20639B;'>Comparison Table</span></b>", unsafe_allow_html=True)
+        #st.write("### Comparison Table")
+        table_columns = ["Logic", "coverage", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI", "Landed DOI - JI", "Verdict"] #"Landed DOI - JI", 
+        original_dtypes = selected_data.dtypes
+        
+        def highlight_cells(val):
+            if val == "Tidak Aman":
+                return "background-color: red; color: white;"  # Red background, white text
+            return ""
+      
+        #formatted_df = selected_data.style.applymap(highlight_cells, subset=["Verdict"])
+        formatted_df = selected_data[table_columns].sort_values(
+            by="Logic", 
+            key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})
+        ).style.applymap(highlight_cells, subset=["Verdict"]).format({
+            "New RL Value": "{:,.0f}",  # Adds comma separator (1,000s, no decimals)
+            "New DOI Policy WH": "{:.2f}",  # 2 decimal places
+            "Landed DOI": "{:.2f}",  # 2 decimal places
+            "Landed DOI - JI": "{:.2f}"  # 2 decimal places
+        })
 
     #selected_data = selected_data.astype(original_dtypes)
     
