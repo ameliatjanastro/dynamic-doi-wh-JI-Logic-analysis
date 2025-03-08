@@ -78,6 +78,8 @@ if page == "OOS Projection WH":
         product_options['product_display'] = product_options['product_id'] + " - " + product_options['product_name']
         selected_product = st.sidebar.selectbox("Select Product", product_options['product_display'])
         selected_data = data[data["product_id"] == selected_product.split(" - ")[0]]
+        selected_data = selected_data.merge(ji_dry, on="product_id", how="left").fillna({"Jarak Inbound": 7})
+      
     elif view_option == "Vendor":
         # Create vendor display selection
         data["vendor_display"] = np.where(data["primary_vendor_name"] == "0", data["vendor_id"].astype(str), data["vendor_id"].astype(str) + " - " + data["primary_vendor_name"])
@@ -127,8 +129,7 @@ if page == "OOS Projection WH":
         # Sort by logic order (A -> D)
         logic_order = {"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4}
         selected_data = selected_data.sort_values(by="Logic", key=lambda x: x.map(logic_order))
-        selected_data = selected_data.merge(ji_dry, on="product_id", how="left").fillna({"Jarak Inbound": 7})
-      
+        
     
             # Debugging: Check the output of aggregation
             #st.write("Aggregated Data Preview:", selected_data)
