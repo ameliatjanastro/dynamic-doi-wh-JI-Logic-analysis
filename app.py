@@ -80,7 +80,7 @@ if page == "OOS Projection WH":
         selected_data = data[data["product_id"] == selected_product.split(" - ")[0]]
     elif view_option == "Vendor":
         # Create vendor display selection
-        data["vendor_display"] = data["vendor_id"].astype(str) + " - " + data["primary_vendor_name"]
+        data["vendor_display"] = np.where(data["primary_vendor_name"] == "0", data["vendor_id"].astype(str), data["vendor_id"].astype(str) + " - " + data["primary_vendor_name"])
         selected_vendor = st.sidebar.selectbox("Select Vendor", data.sort_values(by="vendor_id")["vendor_display"].unique())
     
         # Ensure vendor filtering is correct
@@ -162,34 +162,31 @@ if page == "OOS Projection WH":
 
     selected_data["Verdict"] = selected_data.apply(lambda row: "Tidak Aman" if row["Landed DOI"] < 5 else "Aman", axis=1)
     
-    def highlight_cells(val):
-        color = 'background-color: lightcoral' if val == "Tidak Aman" else ''
-        return color
-    
     st.markdown("<b><span style='font-size:26px; color:#20639B;'>Comparison Table</span></b>", unsafe_allow_html=True)
     #st.write("### Comparison Table")
     table_columns = ["Logic", "coverage", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI", "Verdict"] #"Landed DOI - JI", 
     original_dtypes = selected_data.dtypes
     
-    def highlight_verdict(row):
-        color = "background-color: red; color: white;" if row["Verdict"] == "Tidak Aman" else ""
-        return [color] * len(row)
-
+    def highlight_cells(val):
+        if val == "Tidak Aman":
+            return "background-color: red; color: white;"  # Red background, white text
+        return ""
+  
+    #formatted_df = selected_data.style.applymap(highlight_cells, subset=["Verdict"])
     formatted_df = selected_data[table_columns].sort_values(
         by="Logic", 
         key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})
-    ).style.format({
+    ).style.applymap(highlight_cells, subset=["Verdict"]).format({
         "New RL Value": "{:,.0f}",  # Adds comma separator (1,000s, no decimals)
         "New DOI Policy WH": "{:.2f}",  # 2 decimal places
         "Landed DOI": "{:.2f}",  # 2 decimal places
         #"Landed DOI - JI": "{:.2f}",  # 2 decimal places
     })
 
-    formatted_df = selected_data.style.applymap(highlight_cells, subset=["Verdict"])
-
-    selected_data = selected_data.astype(original_dtypes)
+    #selected_data = selected_data.astype(original_dtypes)
+    
     st.dataframe(formatted_df, hide_index=True, use_container_width=True)
-
+    
     st.markdown(
     """
     <style>
@@ -201,7 +198,6 @@ if page == "OOS Projection WH":
     """,
     unsafe_allow_html=True
     )
-
     
     # Comparison Graph
     #st.write("### Comparison Graph")
@@ -318,7 +314,7 @@ if page == "OOS Projection WH":
     st.plotly_chart(fig, use_container_width=False)
 
     # ✅ Add Note Above Table
-    st.write("**📝 Note:** All logics assume LDP LBH per 10 Feb 2025 → LDP+LBH 85% SOH, thus SOH might not be entirely accurate 🙂")
+    st.write("**📝 Note:** All logics assume LDP LBH per 10 Feb 2025 → LDP+LBH 85% are added to SOH, thus SOH might not be entirely accurate 🙂")
     
     # ✅ Define Logic Details Data
     logic_details = {
