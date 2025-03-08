@@ -427,14 +427,14 @@ elif page == "Inbound Quantity Simulation":
     freq_agg["Logic"] = "Frequent"  # Set label as "Frequent"
     
     # **Step 5: Ensure y-values are integers**
-    non_freq_agg["New RL Qty"] = non_freq_agg["New RL Qty"].astype(int)
+    non_freq_agg["Sum RL Qty"] = non_freq_agg["Sum RL Qty"].astype(int)
     freq_agg["RL Qty per Freq"] = freq_agg["RL Qty per Freq"].astype(int)
     
     # **Step 6: Merge both datasets**
-    final_data = pd.concat([non_freq_agg, freq_agg.rename(columns={"RL Qty per Freq": "New RL Qty"})], ignore_index=True)
+    final_data = pd.concat([non_freq_agg, freq_agg.rename(columns={"RL Qty per Freq": "Sum RL Qty"})], ignore_index=True)
     
     # **Step 7: Create grouped bar chart**
-    fig = px.bar(final_data, x="Ship Date", y="New RL Qty", color="Logic", text_auto=True, 
+    fig = px.bar(final_data, x="Ship Date", y="Sum RL Qty", color="Logic", text_auto=True, 
                  barmode="group", title="Total RL Quantity by Ship Date",
                  color_discrete_map={"Regular": "#A7C7E7", "Frequent": "green"})  # Blue for regular, green for frequent
     
