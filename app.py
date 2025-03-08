@@ -80,8 +80,8 @@ if page == "OOS Projection WH":
         selected_data = data[data["product_id"] == selected_product.split(" - ")[0]]
     elif view_option == "Vendor":
         # Create vendor display selection
-
-        data["vendor_display"] = np.where(data["primary_vendor_name"] != "0", data["vendor_id"].astype(str), data["vendor_id"].astype(str) + " - " + data["primary_vendor_name"])
+        data = data[data["vendor_id"] != 0]
+        data["vendor_display"] = np.where(data["primary_vendor_name"] == "0", data["vendor_id"].astype(str), data["vendor_id"].astype(str) + " - " + data["primary_vendor_name"])
         selected_vendor = st.sidebar.selectbox("Select Vendor", data.sort_values(by="vendor_id")["vendor_display"].unique())
     
         # Ensure vendor filtering is correct
