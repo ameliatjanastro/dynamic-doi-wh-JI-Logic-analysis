@@ -227,7 +227,7 @@ if page == "OOS Projection WH":
     for index, row in selected_data.iterrows():
         logic_label = row["Logic"]  # Keep the label for x-axis
         landed_doi = row["Landed DOI"]
-        landed_doi_ji = row["Landed DOI - JI"]
+        #landed_doi_ji = row["Landed DOI - JI"]
     
         # ✅ First Bar: Landed DOI
         fig.add_trace(go.Bar(
@@ -240,20 +240,20 @@ if page == "OOS Projection WH":
         ))
     
         # ✅ Second Bar: Landed DOI - JI
-        fig.add_trace(go.Bar(
-            x=[logic_label],
-            y=[landed_doi_ji],
-            name=f"{logic_label} - Landed DOI - JI",
-            marker=dict(color=row["color"], opacity=0.6),  # Lighter color for distinction
-            width=bar_width,
-            offset=offset,  # Shift left to center
-        ))
+        #fig.add_trace(go.Bar(
+         #   x=[logic_label],
+         #   y=[landed_doi_ji],
+          #  name=f"{logic_label} - Landed DOI - JI",
+         #   marker=dict(color=row["color"], opacity=0.6),  # Lighter color for distinction
+         #   width=bar_width,
+         #   offset=offset,  # Shift left to center
+      #  ))
     for index, row in selected_data.iterrows():
         print(f"Logic: {row['Logic']}, Landed DOI: {row['Landed DOI']}, Landed DOI - JI: {row['Landed DOI - JI']}")
 
-    for index, row in selected_data.iterrows():
-        drop_value = round(float(row["Landed DOI"]) - float(row["Landed DOI - JI"]), 2)
-        #center_x = [str(logic) for logic in selected_data["Logic"]]  # Use same x values for alignment
+    #for index, row in selected_data.iterrows():
+    #    drop_value = round(float(row["Landed DOI"]) - float(row["Landed DOI - JI"]), 2)
+    #    #center_x = [str(logic) for logic in selected_data["Logic"]]  # Use same x values for alignment
 
         # ✅ Add Drop Line (Scatter, Placed in Center)
         fig.add_trace(go.Scatter(
@@ -270,15 +270,15 @@ if page == "OOS Projection WH":
             showlegend = False# ✅ Ensure hover shows exact value
         ))
 
-        fig.add_annotation(
-            x=row["Logic"],
-            y=row["Landed DOI - JI"] + 0.5,  # ✅ Offset to avoid overlap
-            text=f"{round(float(row['Landed DOI']) - float(row['Landed DOI - JI']), 2)}",
-            showarrow=False,
-            font=dict(color="black", size=12),
-            bgcolor="yellow",  # ✅ Background color for better visibility
-            borderpad=4, 
-        )
+     #   fig.add_annotation(
+      #      x=row["Logic"],
+      #      y=row["Landed DOI - JI"] + 0.5,  # ✅ Offset to avoid overlap
+      #      text=f"{round(float(row['Landed DOI']) - float(row['Landed DOI - JI']), 2)}",
+       #     showarrow=False,
+       #     font=dict(color="black", size=12),
+      #      bgcolor="yellow",  # ✅ Background color for better visibility
+      #      borderpad=4, 
+      #  )
        
     # ✅ Improve layout
     fig.update_layout(
