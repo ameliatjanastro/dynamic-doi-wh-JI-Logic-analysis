@@ -336,7 +336,7 @@ elif page == "Inbound Quantity Simulation":
     pareto_options = data["Pareto"].dropna().unique().tolist()
     
     selected_location = st.sidebar.selectbox("Select Location ID", data["location_id"].dropna().unique())
-    selected_pareto = st.sidebar.multiselect("Select Pareto", pareto_options,default=[])
+    selected_pareto = st.sidebar.multiselect("Select Pareto", pareto_order,default=[])
     selected_business_tag = st.sidebar.selectbox("Select Business Tag", data["business_tagging"].dropna().unique())
     
     # Apply filters
