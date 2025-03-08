@@ -421,10 +421,10 @@ elif page == "Inbound Quantity Simulation":
     )
 
     # **Step 3: Aggregate inbound quantity correctly**
-    inbound_data = filtered_data.groupby(["Ship Date", "Logic"], as_index=False)["Adjusted RL Qty"].sum()
+    inbound_data = filtered_data.groupby(["Ship Date", "Logic"], as_index=False)["RL Qty per Freq"].sum()
     
     # **Step 4: Plot the corrected data**
-    fig = px.bar(inbound_data, x="Ship Date", y="Adjusted RL Qty", color="Logic", text_auto=True)
+    fig = px.bar(inbound_data, x="Ship Date", y="RL Qty per Freq", color="Logic", text_auto=True)
     
     st.plotly_chart(fig, use_container_width=True)
     
