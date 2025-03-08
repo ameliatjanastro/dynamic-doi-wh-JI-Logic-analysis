@@ -387,6 +387,7 @@ elif page == "Inbound Quantity Simulation":
     
     # Read frequency vendor data
 
+    # Read frequency vendor data
     freq_vendors = pd.read_csv("Freq vendors.csv")
     freq_vendors["Inbound Days"] = freq_vendors["Inbound Days"].str.split(", ")
     
@@ -399,10 +400,7 @@ elif page == "Inbound Quantity Simulation":
     # Merge with frequency vendors
     merged_data = inbound_data2.merge(freq_vendors, on="primary_vendor_name", how="right")
     merged_data["Freq"] = merged_data["Freq"].fillna(1)  # Default frequency to 1
-    merged_data["RL Qty per Freq"] = (merged_data["Sum RL Qty"] / merged_data["Freq"]).fillna(0)
-    
-    # Ensure no NaN and cast to int
-    merged_data["RL Qty per Freq"] = merged_data["RL Qty per Freq"].astype(int)
+    merged_data["RL Qty per Freq"] = (merged_data["Sum RL Qty"] / merged_data["Freq"]).fillna(0).astype(int)
     
     # Display DataFrame after dropping NaN values
     st.dataframe(merged_data[["primary_vendor_name", "Inbound Days", "Sum RL Qty", "First Ship Date", "RL Qty per Freq"]].dropna())
@@ -412,20 +410,26 @@ elif page == "Inbound Quantity Simulation":
     # **Step 1: Identify frequent vendors**
     freq_vendor_names = set(freq_vendors["primary_vendor_name"].unique())
     
-    # **Step 2: Keep only non-frequent vendors for the chart**
+    # **Step 2: Split frequent & non-frequent vendors**
     non_freq_data = filtered_data[~filtered_data["primary_vendor_name"].isin(freq_vendor_names)]
+    freq_data = merged_data[merged_data["primary_vendor_name"].isin(freq_vendor_names)]
     
-    # **Step 3: Aggregate for the bar chart**
-    inbound_data = non_freq_data.groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum()
+    # **Step 3: Aggregate RL Qty for non-frequent vendors**
+    non_freq_agg = non_freq_data.groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum()
     
-    # **Step 4: Plot only non-frequent vendors' RL Qty**
-    fig = px.bar(inbound_data, x="Ship Date", y="New RL Qty", color="Logic", text_auto=True)
+    # **Step 4: Aggregate RL Qty per Freq for frequent vendors**
+    freq_agg = freq_data.groupby(["First Ship Date", "Logic"], as_index=False)["RL Qty per Freq"].sum()
+    freq_agg = freq_agg.rename(columns={"First Ship Date": "Ship Date"})  # Rename for merging
+    
+    # **Step 5: Merge both datasets**
+    final_data = pd.concat([non_freq_agg, freq_agg], ignore_index=True)
+    
+    # **Step 6: Plot the updated stacked bar chart**
+    fig = px.bar(final_data, x="Ship Date", y=["New RL Qty", "RL Qty per Freq"], color="Logic", text_auto=True,
+                 labels={"value": "RL Quantity", "variable": "Type"},
+                 title="Total RL Quantity by Ship Date")
     
     st.plotly_chart(fig, use_container_width=True)
-
-
-    
-    st.markdown("---")
     
     # **Logic Details Table**
     logic_details = pd.DataFrame({
