@@ -418,21 +418,12 @@ elif page == "Inbound Quantity Simulation":
         if row["primary_vendor_name"] in freq_vendor_names else 0,
         axis=1
     )
-    #st.write(filtered_data["Adjusted RL Qty"].head())
+
     # **Step 3: Aggregate inbound quantity correctly**
     inbound_data = filtered_data.groupby(["Ship Date", "Logic"], as_index=False)["Adjusted RL Qty"].sum()
     
     # **Step 4: Plot the corrected data**
     fig = px.bar(inbound_data, x="Ship Date", y="Adjusted RL Qty", color="Logic", text_auto=True)
-    
-    st.plotly_chart(fig, use_container_width=True)
-    
-    fig.update_layout(
-        xaxis_title="Ship Date",
-        yaxis_title="Total Inbound Quantity",
-        width=1200,
-        height=500
-    )
     
     st.plotly_chart(fig, use_container_width=True)
     
