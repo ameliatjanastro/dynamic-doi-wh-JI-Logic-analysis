@@ -415,10 +415,10 @@ elif page == "Inbound Quantity Simulation":
     # **Step 2: Replace "New RL Qty" with "RL Qty per Freq" for frequent vendors**
     filtered_data["Adjusted RL Qty"] = filtered_data.apply(
         lambda row: merged_data.loc[merged_data["primary_vendor_name"] == row["primary_vendor_name"], "RL Qty per Freq"].values[0]
-        if row["primary_vendor_name"] in freq_vendor_names else row["New RL Qty"],
+        if row["primary_vendor_name"] in freq_vendor_names else 0,
         axis=1
     )
-    st.write(filtered_data["Adjusted RL Qty"].head())
+    #st.write(filtered_data["Adjusted RL Qty"].head())
     # **Step 3: Aggregate inbound quantity correctly**
     inbound_data = filtered_data.groupby(["Ship Date", "Logic"], as_index=False)["Adjusted RL Qty"].sum()
     
