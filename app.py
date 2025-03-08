@@ -180,7 +180,7 @@ if page == "OOS Projection WH":
         "New RL Value": "{:,.0f}",  # Adds comma separator (1,000s, no decimals)
         "New DOI Policy WH": "{:.2f}",  # 2 decimal places
         "Landed DOI": "{:.2f}",  # 2 decimal places
-        #"Landed DOI - JI": "{:.2f}",  # 2 decimal places
+        "Landed DOI - JI": "{:.2f}",  # 2 decimal places
     })
 
     #selected_data = selected_data.astype(original_dtypes)
@@ -211,9 +211,9 @@ if page == "OOS Projection WH":
     
     # ✅ Fill NaN values with 0 (or another safe default)
     selected_data["Landed DOI"].fillna(0, inplace=True)
-    selected_data["color"] = np.where(
-        selected_data["Landed DOI"] >= selected_data["Jarak Inbound"], "lightgreen", "red"
-    )
+    #selected_data["color"] = np.where(
+        #selected_data["Landed DOI"] >= selected_data["Jarak Inbound"], "lightgreen", "red"
+    #)
     
     # ✅ Create bar chart
     fig = go.Figure()
