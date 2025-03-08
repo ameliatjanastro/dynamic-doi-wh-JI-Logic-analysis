@@ -161,7 +161,7 @@ if page == "OOS Projection WH":
     # Show table with only logic columns
 
         selected_data["Verdict"] = selected_data.apply(lambda row: "Tidak Aman" if row["Landed DOI"] < 5 else "Aman", axis=1)
-        
+        print(selected_data.columns)
         st.markdown("<b><span style='font-size:26px; color:#20639B;'>Comparison Table</span></b>", unsafe_allow_html=True)
         #st.write("### Comparison Table")
         table_columns = ["Logic", "coverage", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI", "Landed DOI - JI", "Verdict"] #"Landed DOI - JI", 
