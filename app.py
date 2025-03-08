@@ -185,7 +185,7 @@ if page == "OOS Projection WH":
     
         #selected_data = selected_data.astype(original_dtypes)
     
-    st.dataframe(formatted_df, hide_index=True, use_container_width=True)
+        st.dataframe(formatted_df, hide_index=True, use_container_width=True)
     
     st.markdown(
     """
