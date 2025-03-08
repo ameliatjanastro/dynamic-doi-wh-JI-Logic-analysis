@@ -25,7 +25,7 @@ logic_columns = ['coverage', 'New DOI Policy WH', 'New RL Qty', 'New RL Value', 
 dfs = []
 for key, path in file_paths.items():
     try:
-        df = pd.read_csv(path, dtype={"product_id": str})
+        df = pd.read_csv(path, dtype={"product_id": int})
         logic_cols = [col for col in df.columns if any(lc in col for lc in logic_columns)]
         df = df[common_columns + logic_cols]
         df = df.rename(columns={col: col.split(') ')[-1] for col in df.columns})
@@ -35,7 +35,7 @@ for key, path in file_paths.items():
         st.error(f"Error reading {key}: {e}")
 
 # Merge data
-data = dfs.sort_values(
+data = pd.concat(dfs, ignore_index=True).sort_values(
     by=["product_id", "Logic"], key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})
 )
 
