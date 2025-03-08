@@ -96,7 +96,7 @@ if page == "OOS Projection WH":
         if "coverage" in selected_data.columns:
             selected_data["coverage"] = pd.to_datetime(selected_data["coverage"], errors="coerce").dt.date
             selected_data = selected_data.dropna(subset=["coverage"])
-    
+        
         #selected_data = selected_data.drop_duplicates(subset=["vendor_id", "Logic"], keep="first")
             # Define aggregation dictionary
         agg_dict = {
@@ -108,7 +108,7 @@ if page == "OOS Projection WH":
                 "Landed DOI - JI": "mean",
                 "Jarak Inbound": "min"
         }
-    
+        st.write(selected_data.columns)
         # Only aggregate existing columns
         existing_agg_cols = {k: v for k, v in agg_dict.items() if k in selected_data.columns}
             
