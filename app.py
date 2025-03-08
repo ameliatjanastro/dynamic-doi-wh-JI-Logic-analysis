@@ -10,7 +10,7 @@ st.set_page_config(layout="wide")
 file_paths = {
     "Logic A": "logic a.csv",
     "Logic B": "logic b.csv",
-    "Logic C": "logic c_new.csv",
+    "Logic C": "logic c new.csv",
     "Logic D": "logic d.csv",
 }
 
