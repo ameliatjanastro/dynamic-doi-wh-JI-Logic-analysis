@@ -410,17 +410,17 @@ elif page == "Inbound Quantity Simulation":
     freq_vendor_names = set(freq_vendors["primary_vendor_name"].unique())
     
     # **Step 2: Separate frequent & non-frequent vendor data**
-    non_freq_data = filtered_data[~filtered_data["primary_vendor_name"].isin(freq_vendor_names)]
+    non_freq_data = merged_data[~merged_data["primary_vendor_name"].isin(freq_vendor_names)]
     freq_data = merged_data[merged_data["primary_vendor_name"].isin(freq_vendor_names)]
     
     # **Step 3: Aggregate RL Qty for non-frequent vendors**
-    non_freq_agg = non_freq_data.groupby(["Ship Date","Logic"], as_index=False).agg(
+    non_freq_agg = non_freq_data.groupby(["Ship Date"], as_index=False).agg(
         {"New RL Qty": "sum"}
     )
     non_freq_agg["Logic"] = "Regular"  # Label non-frequent vendors
     
     # **Step 4: Aggregate RL Qty per Freq for frequent vendors**
-    freq_agg = freq_data.groupby(["First Ship Date","Logic"], as_index=False).agg(
+    freq_agg = freq_data.groupby(["First Ship Date"], as_index=False).agg(
         {"RL Qty per Freq": "sum"}
     )
     freq_agg = freq_agg.rename(columns={"First Ship Date": "Ship Date"})  # Rename for merging
