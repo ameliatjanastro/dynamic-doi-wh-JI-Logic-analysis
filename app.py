@@ -127,6 +127,7 @@ if page == "OOS Projection WH":
         # Sort by logic order (A -> D)
         logic_order = {"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4}
         selected_data = selected_data.sort_values(by="Logic", key=lambda x: x.map(logic_order))
+        selected_data = selected_data.merge(ji_dry, on="product_id", how="left").fillna({"Jarak Inbound": 7})
       
     
             # Debugging: Check the output of aggregation
@@ -164,7 +165,7 @@ if page == "OOS Projection WH":
         st.write(selected_data.columns)
         st.markdown("<b><span style='font-size:26px; color:#20639B;'>Comparison Table</span></b>", unsafe_allow_html=True)
         #st.write("### Comparison Table")
-        table_columns = ["Logic", "coverage", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI", "Landed DOI - JI", "Verdict"] #"Landed DOI - JI", 
+        table_columns = ["Logic", "coverage", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI", "Verdict"] #"Landed DOI - JI", 
         original_dtypes = selected_data.dtypes
         
         def highlight_cells(val):
@@ -179,8 +180,8 @@ if page == "OOS Projection WH":
         ).style.applymap(highlight_cells, subset=["Verdict"]).format({
             "New RL Value": "{:,.0f}",  # Adds comma separator (1,000s, no decimals)
             "New DOI Policy WH": "{:.2f}",  # 2 decimal places
-            "Landed DOI": "{:.2f}",  # 2 decimal places
-            "Landed DOI - JI": "{:.2f}"  # 2 decimal places
+            "Landed DOI": "{:.2f}" # 2 decimal places
+            #"Landed DOI - JI": "{:.2f}"  # 2 decimal places
         })
 
     #selected_data = selected_data.astype(original_dtypes)
@@ -212,8 +213,8 @@ if page == "OOS Projection WH":
     # ✅ Fill NaN values with 0 (or another safe default)
     selected_data["Landed DOI"].fillna(0, inplace=True)
     #selected_data["color"] = np.where(
-        #selected_data["Landed DOI"] >= selected_data["Jarak Inbound"], "lightgreen", "red"
-    #)
+        selected_data["Landed DOI"] >= selected_data["Jarak Inbound"], "lightgreen", "red"
+    )
     
     # ✅ Create bar chart
     fig = go.Figure()
@@ -240,19 +241,19 @@ if page == "OOS Projection WH":
         ))
     
         # ✅ Second Bar: Landed DOI - JI
-        fig.add_trace(go.Bar(
-            x=[logic_label],
-            y=[landed_doi_ji],
-            name=f"{logic_label} - Landed DOI - JI",
-            marker=dict(color=row["color"], opacity=0.6),  # Lighter color for distinction
-            width=bar_width,
-            offset=offset,  # Shift left to center
-        ))
+        #fig.add_trace(go.Bar(
+           # x=[logic_label],
+           # y=[landed_doi_ji],
+           # name=f"{logic_label} - Landed DOI - JI",
+           # marker=dict(color=row["color"], opacity=0.6),  # Lighter color for distinction
+           # width=bar_width,
+          #  offset=offset,  # Shift left to center
+        #))
     for index, row in selected_data.iterrows():
-        print(f"Logic: {row['Logic']}, Landed DOI: {row['Landed DOI']}, Landed DOI - JI: {row['Landed DOI - JI']}")
+        print(f"Logic: {row['Logic']}, Landed DOI: {row['Landed DOI']}#, Landed DOI - JI: {row['Landed DOI - JI']}")
 
-    for index, row in selected_data.iterrows():
-        drop_value = round(float(row["Landed DOI"]) - float(row["Landed DOI - JI"]), 2)
+   # for index, row in selected_data.iterrows():
+      #  drop_value = round(float(row["Landed DOI"]) - float(row["Landed DOI - JI"]), 2)
         #center_x = [str(logic) for logic in selected_data["Logic"]]  # Use same x values for alignment
 
         # ✅ Add Drop Line (Scatter, Placed in Center)
