@@ -44,7 +44,7 @@ data["coverage"] = pd.to_datetime(data["coverage"], errors="coerce").dt.date
 data["New RL Value"] = data["New RL Value"].astype(str).str.replace(",", "", regex=True).astype(float)
 
 # Load JI Dry data
-ji_dry = pd.read_csv("JI_Dry_new.csv")
+ji_dry = pd.read_csv("JI Dry new.csv")
 if "product_id" in data.columns and "product_id" in ji_dry.columns:
     ji_dry["product_id"] = ji_dry["product_id"].astype(str)
     ji_dry["Jarak Inbound"] = pd.to_numeric(ji_dry["Jarak Inbound"], errors="coerce").fillna(0).astype(int)
