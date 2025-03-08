@@ -33,7 +33,7 @@ for key, path in file_paths.items():
         dfs.append(df)
     except Exception as e:
         st.error(f"Error reading {key}: {e}")
-
+dfs =dfs.fillna(0)
 # Merge data
 data = pd.concat(dfs, ignore_index=True).sort_values(
     by=["product_id", "Logic"], key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})
