@@ -8,7 +8,6 @@ pareto_order = ["X", "A", "B", "C", "D", "New SKU A", "New SKU B", "New SKU C", 
 custom_colors = ["#2C5F34", "#228B22", "#88E788", "#CD5C5C"]  # Light Blue & Gray Tones
 st.set_page_config(layout="wide")
 
-
 # Define file paths
 file_paths = {
     "Logic A": "logic a.csv",
@@ -44,9 +43,6 @@ data["New RL Value"] = data["New RL Value"].astype(str).str.replace(",", "", reg
 #JI Dry Data
 ji_dry = pd.read_csv("JI Dry new.csv")  # Replace with actual file name
 
-# ✅ Ensure columns are correctly named
-#ji_dry = ["product_id", "Jarak Inbound"]
-
 if "product_id" in data.columns and "product_id" in ji_dry.columns:
     
     # ✅ Convert "product_id" to integer (handle errors gracefully)
@@ -57,7 +53,7 @@ if "product_id" in data.columns and "product_id" in ji_dry.columns:
     # ✅ Merge with default Jarak Inbound = 7 if missing
     data = data.merge(ji_dry, on="product_id", how="left").fillna({"Jarak Inbound": 7})
     data["Landed DOI"] = pd.to_numeric(data["Landed DOI"], errors="coerce").fillna(0).astype(int)
-    #st.write("Data Columns:", data.columns)
+
     # ✅ Calculate new column
     data["Landed DOI - JI"] = data["Landed DOI"] - data["Jarak Inbound"]
 
@@ -66,11 +62,8 @@ page = st.sidebar.selectbox("Choose a page", ["Inbound Quantity Simulation", "OO
 
 if page == "OOS Projection WH":
     
-    # Streamlit UI
-    st.title("Comparison of RL Quantity Logics")
-    
     # Sidebar filters
-    #st.sidebar.header("Filters")
+    st.subheader("Data is based on RL Upload 10-14 Feb 2025")
     view_option = st.sidebar.radio("View by", ["Product ID", "Vendor"])
     
     if view_option == "Product ID":
@@ -91,15 +84,11 @@ if page == "OOS Projection WH":
         # Debugging: Check if selected_data has rows and expected columns
         if selected_data.empty:
             st.warning("No data available for this vendor. Please select a different vendor.")
-        #else:
-            #st.write("Selected Data Preview:", selected_data.head())
-    
+
         if "coverage" in selected_data.columns:
             selected_data["coverage"] = pd.to_datetime(selected_data["coverage"], errors="coerce").dt.date
             selected_data = selected_data.dropna(subset=["coverage"])
-    
-        #selected_data = selected_data.drop_duplicates(subset=["vendor_id", "Logic"], keep="first")
-            # Define aggregation dictionary
+
         agg_dict = {
                 "New RL Qty": "sum",
                 "New RL Value": "sum",
@@ -113,15 +102,10 @@ if page == "OOS Projection WH":
         # Only aggregate existing columns
         existing_agg_cols = {k: v for k, v in agg_dict.items() if k in selected_data.columns}
             
-            # Debug: Print available columns before aggregation
-            #st.write("Available Columns Before Aggregation:", selected_data.columns.tolist())
-            #st.write("Columns to Aggregate:", existing_agg_cols)
-    
         # Convert numeric columns to appropriate types
         for col in existing_agg_cols.keys():
             if col != "coverage":  
                 selected_data[col] = pd.to_numeric(selected_data[col], errors="coerce")  # Force invalid to NaN
-        
         
         selected_data = selected_data.groupby(["vendor_id", "primary_vendor_name", "Logic"], as_index=False).agg(existing_agg_cols)
     
@@ -129,38 +113,6 @@ if page == "OOS Projection WH":
         logic_order = {"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4}
         selected_data = selected_data.sort_values(by="Logic", key=lambda x: x.map(logic_order))
       
-    
-            # Debugging: Check the output of aggregation
-            #st.write("Aggregated Data Preview:", selected_data)
-    
-            # Display Table
-            #table_columns = ["Logic", "New RL Qty", "New RL Value", "coverage", "New DOI Policy WH", "Landed DOI"]
-            #st.write("### Comparison Table")
-            #st.dataframe(selected_data[table_columns], hide_index=True)
-    
-            #table_columns = ["Logic"] + list(existing_agg_cols.keys())  # Only show logic columns
-            #st.write("### Comparison Table")
-            #st.dataframe(selected_data[table_columns], hide_index=True)
-    
-            # Plot Comparison Graph
-            #st.write("### Comparison Graph")
-            #fig = px.bar(selected_data, x="Logic", y="New RL Qty", color="Logic", title=f"Comparison of New RL Qty Across Logics for {selected_vendor}")
-            #st.plotly_chart(fig)
-
-
-
-#selected_pareto = st.sidebar.multiselect("Select Pareto", data["Pareto"].dropna().unique())
-#selected_location = st.sidebar.multiselect("Select Location ID", data["location_id"].dropna().unique())
-#selected_business_tag = st.sidebar.multiselect("Select Business Tag", data["business_tagging"].dropna().unique())
-
-#selected_data = selected_data[
-    #(selected_data["Pareto"].isin(selected_pareto) if selected_pareto else True) &
-    #(selected_data["location_id"].isin(selected_location) if selected_location else True) &
-    #(selected_data["business_tagging"].isin(selected_business_tag) if selected_business_tag else True)
-#]
-
-    # Show table with only logic columns
-
         selected_data["Verdict"] = selected_data.apply(lambda row: "Tidak Aman" if row["Landed DOI"] < 5 else "Aman", axis=1)
         
         st.markdown("<b><span style='font-size:26px; color:#20639B;'>Comparison Table</span></b>", unsafe_allow_html=True)
@@ -181,10 +133,7 @@ if page == "OOS Projection WH":
             "New RL Value": "{:,.0f}",  # Adds comma separator (1,000s, no decimals)
             "New DOI Policy WH": "{:.2f}",  # 2 decimal places
             "Landed DOI": "{:.2f}",  # 2 decimal places
-            #"Landed DOI - JI": "{:.2f}",  # 2 decimal places
         })
-    
-        #selected_data = selected_data.astype(original_dtypes)
     
         st.dataframe(formatted_df, hide_index=True, use_container_width=True)
     
@@ -200,10 +149,6 @@ if page == "OOS Projection WH":
     unsafe_allow_html=True
     )
     
-    # Comparison Graph
-    #st.write("### Comparison Graph")
-    #fig = px.bar(selected_data, x="Logic", y="Landed DOI", color="Logic", title="Comparison of New RL Qty Across Logics")
-    #st.plotly_chart(fig)
     
     import plotly.graph_objects as go
     
@@ -240,47 +185,6 @@ if page == "OOS Projection WH":
             offset=-offset,  # Shift left to center
         ))
     
-        # ✅ Second Bar: Landed DOI - JI
-        #fig.add_trace(go.Bar(
-         #   x=[logic_label],
-         #   y=[landed_doi_ji],
-          #  name=f"{logic_label} - Landed DOI - JI",
-         #   marker=dict(color=row["color"], opacity=0.6),  # Lighter color for distinction
-         #   width=bar_width,
-         #   offset=offset,  # Shift left to center
-  #    #  ))
-   # for index, row in selected_data.iterrows():
-       # print(f"Logic: {row['Logic']}, Landed DOI: {row['Landed DOI']}, Landed DOI - JI: {row['Landed DOI - JI']}")
-
-    #for index, row in selected_data.iterrows():
-    #    drop_value = round(float(row["Landed DOI"]) - float(row["Landed DOI - JI"]), 2)
-    #    #center_x = [str(logic) for logic in selected_data["Logic"]]  # Use same x values for alignment
-
-        # ✅ Add Drop Line (Scatter, Placed in Center)
-   #    fig.add_trace(go.Scatter(
-   #        x=[row["Logic"], row["Logic"]],
-   #        y=[row["Landed DOI"],
-      #     mode="lines",
-      #     line=dict(color="red", width=2, dash="solid"),  # Solid red line
-       #   name=f"Drop {row['Logic']}",
-       #   yaxis="y2",  # ✅ Use secondary y-axis to place it on top
-       #     #text=[f"<span style='background-color:yellow; padding:2px'>{drop_value:.1f}</span>"],  
-       #     #textposition="top center",
-        #    #textfont=dict(color="black"),  # ✅ Black text for visibility
-        #    hoverinfo="skip",
-       #     showlegend = False# ✅ Ensure hover shows exact value
-      #  ))
-
-     #   fig.add_annotation(
-      #      x=row["Logic"],
-      #      y=row["Landed DOI - JI"] + 0.5,  # ✅ Offset to avoid overlap
-      #      text=f"{round(float(row['Landed DOI']) - float(row['Landed DOI - JI']), 2)}",
-       #     showarrow=False,
-       #     font=dict(color="black", size=12),
-      #      bgcolor="yellow",  # ✅ Background color for better visibility
-      #      borderpad=4, 
-      #  )
-       
     # ✅ Improve layout
     fig.update_layout(
         xaxis_title="Logic",
@@ -310,7 +214,6 @@ if page == "OOS Projection WH":
     )
     
     # ✅ Display graph in Streamlit
-    #st.write("### DOI Movement Comparison Graph")
     st.markdown("<b><span style='font-size:26px; color:#20639B;'>DOI Movement Comparison Graph</span></b>", unsafe_allow_html=True)
     st.plotly_chart(fig, use_container_width=False)
 
@@ -333,9 +236,14 @@ if page == "OOS Projection WH":
     st.dataframe(logic_df, hide_index=True, use_container_width=True)
 
 elif page == "Inbound Quantity Simulation":
+    st.subheader("Data is based on RL Upload 10-14 Feb 2025")
+    st.markdown("<b><span style='font-size:26px; color:#20639B;'>Inbound Qty Comparison</span></b>", unsafe_allow_html=True)
     pareto_options = data["Pareto"].dropna().unique().tolist()
-    
-    #selected_location = st.sidebar.selectbox("Select Location ID", data["location_id"].dropna().unique())
+
+
+    logic_options = filtered_data["Logic"].dropna().unique()
+    selected_logic = st.selectbox("Select Logic", logic_options, key="logic_dropdown")
+
     selected_pareto = st.sidebar.multiselect("Select Pareto", pareto_order,default=[])
     selected_business_tag = st.sidebar.selectbox("Select Business Tag", data["business_tagging"].dropna().unique())
     
@@ -350,10 +258,6 @@ elif page == "Inbound Quantity Simulation":
     
     # Ensure numeric conversion
     filtered_data["Landed DOI"] = pd.to_numeric(filtered_data["Landed DOI"], errors="coerce")
-    
-    # Select Logic dropdown
-    logic_options = filtered_data["Logic"].dropna().unique()
-    selected_logic = st.selectbox("Select Logic", logic_options, key="logic_dropdown")
     
     # Compute total RL Quantity
     inbound_data_week = filtered_data.loc[filtered_data["Logic"] == selected_logic, "New RL Qty"].sum()
@@ -384,17 +288,12 @@ elif page == "Inbound Quantity Simulation":
     )
     
     st.markdown("---")
-    
-    # Read frequency vendor data
 
     # Read frequency vendor data
-  # Read frequency vendor data
+
     freq_vendors = pd.read_csv("Freq vendors.csv")
     freq_vendors["Inbound Days"] = freq_vendors["Inbound Days"].str.split(", ")
-    
-    # Select Logic
-    selected_logic = st.selectbox("Select Logic", filtered_data["Logic"].unique())
-    
+
     # Filter data based on selected logic
     filtered_data = filtered_data[filtered_data["Logic"] == selected_logic]
     
@@ -442,7 +341,6 @@ elif page == "Inbound Quantity Simulation":
                  color_discrete_map={"Regular": "#A7C7E7", "Frequent": "green"})  # Pastel blue for regular, green for frequent
     
     st.plotly_chart(fig, use_container_width=True)
-
             
     # **Logic Details Table**
     logic_details = pd.DataFrame({
