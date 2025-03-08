@@ -336,17 +336,17 @@ elif page == "Inbound Quantity Simulation":
     pareto_options = data["Pareto"].dropna().unique().tolist()
     
     selected_location = st.sidebar.selectbox("Select Location ID", data["location_id"].dropna().unique())
-    selected_pareto = st.sidebar.selectbox("Select Pareto", pareto_options, default=[])
+    selected_pareto = st.sidebar.selectbox("Select Pareto", pareto_options)
     selected_business_tag = st.sidebar.selectbox("Select Business Tag", data["business_tagging"].dropna().unique())
     
     # Apply filters
     filtered_data = data.copy()
     if selected_pareto:
-        filtered_data = filtered_data[filtered_data["Pareto"].isin(selected_pareto)]
+        filtered_data = filtered_data[filtered_data["Pareto"] == selected_pareto]
     if selected_location:
         filtered_data = filtered_data[filtered_data["location_id"] == selected_location]
     if selected_business_tag:
-        filtered_data = filtered_data[filtered_data["business_tagging"].isin(selected_business_tag)]
+        filtered_data = filtered_data[filtered_data["business_tagging"] == selected_selected_business_tag]
     
     # Ensure numeric conversion
     filtered_data["Landed DOI"] = pd.to_numeric(filtered_data["Landed DOI"], errors="coerce")
