@@ -94,7 +94,7 @@ if page == "OOS Projection WH":
     missing_cols = required_cols - set(selected_data.columns)
     if missing_cols:
         st.error(f"Missing columns in selected_data: {missing_cols}")
-    selected_data = selected_data.groupby(["vendor_id", "primary_vendor_name", "Logic"], as_index=False).agg(agg_dict)
+    selected_data = selected_data.groupby(["vendor_display", "Logic"], as_index=False).agg(agg_dict)
     selected_data["Verdict"] = selected_data.apply(lambda row: "Tidak Aman" if row["Landed DOI"] < 5 else "Aman", axis=1)
     
     # Table display with formatting
