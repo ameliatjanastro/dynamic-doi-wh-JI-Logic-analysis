@@ -392,20 +392,16 @@ elif page == "Inbound Quantity Simulation":
     freq_vendors["Inbound Days"] = freq_vendors["Inbound Days"].str.split(", ")
     
     # Merge vendor frequency data
-    inbound_data2 = filtered_data.groupby(["primary_vendor_name", "Logic"], as_index=False).agg(
+    inbound_data2 = filtered_data.groupby(["primary_vendor_name"], as_index=False).agg(
         **{"Sum RL Qty": ("New RL Qty", "sum"), "First Ship Date": ("Ship Date", "min")}
     )
-    inbound_data2 = inbound_data2[inbound_data2["Logic"] == selected_logic]
     
     # Merge with frequency vendors
-    merged_data = inbound_data2.merge(freq_vendors, on="primary_vendor_name", how="right")
-    merged_data["Freq"] = merged_data["Freq"].fillna(1)  # Set default frequency to 1
-    merged_data["RL Qty per Freq"] = (merged_data["Sum RL Qty"] / merged_data["Freq"]).fillna(0)
+    merged_data = inbound_data2.merge(freq_vendors, on="primary_vendor_name", how="left")
+    merged_data["Freq"] = merged_data["Freq"].fillna(1)  # Default frequency to 1
+    merged_data["RL Qty per Freq"] = (merged_data["Sum RL Qty"] / merged_data["Freq"]).fillna(0).astype(int)
     
-    # Ensure no NaN and cast to int
-    merged_data["RL Qty per Freq"] = merged_data["RL Qty per Freq"].astype(int)
-    
-    # Display DataFrame after dropping NaN values
+    # Display DataFrame
     st.dataframe(merged_data[["primary_vendor_name", "Inbound Days", "Sum RL Qty", "First Ship Date", "RL Qty per Freq"]].dropna())
     
     st.markdown("---")
@@ -413,28 +409,34 @@ elif page == "Inbound Quantity Simulation":
     # **Step 1: Identify frequent vendors**
     freq_vendor_names = set(freq_vendors["primary_vendor_name"].unique())
     
-    # **Step 2: Adjust RL Qty for frequent vendors**
-    filtered_data["Adjusted RL Qty"] = filtered_data.apply(
-        lambda row: merged_data.loc[merged_data["primary_vendor_name"] == row["primary_vendor_name"], "RL Qty per Freq"].values[0]
-        if row["primary_vendor_name"] in freq_vendor_names else row["New RL Qty"],
-        axis=1
+    # **Step 2: Separate frequent & non-frequent vendor data**
+    non_freq_data = filtered_data[~filtered_data["primary_vendor_name"].isin(freq_vendor_names)]
+    freq_data = merged_data[merged_data["primary_vendor_name"].isin(freq_vendor_names)]
+    
+    # **Step 3: Aggregate RL Qty for non-frequent vendors**
+    non_freq_agg = non_freq_data.groupby(["Ship Date"], as_index=False).agg(
+        {"New RL Qty": "sum"}
     )
+    non_freq_agg["Logic"] = "Regular"  # Label non-frequent vendors
     
-    # **Step 3: Separate frequent and non-frequent vendors for plotting**
-    filtered_data["Vendor Type"] = filtered_data["primary_vendor_name"].apply(lambda x: "Frequent" if x in freq_vendor_names else "Regular")
+    # **Step 4: Aggregate RL Qty per Freq for frequent vendors**
+    freq_agg = freq_data.groupby(["First Ship Date"], as_index=False).agg(
+        {"RL Qty per Freq": "sum"}
+    )
+    freq_agg = freq_agg.rename(columns={"First Ship Date": "Ship Date"})  # Rename for merging
+    freq_agg["Logic"] = "Frequent"  # Set label as "Frequent"
     
-    # **Step 4: Aggregate inbound quantity by Ship Date, Logic, and Vendor Type**
-    inbound_data = filtered_data.groupby(["Ship Date", "Logic", "Vendor Type"], as_index=False)["Adjusted RL Qty"].sum()
+    # **Step 5: Ensure y-values are integers**
+    non_freq_agg["New RL Qty"] = non_freq_agg["New RL Qty"].astype(int)
+    freq_agg["RL Qty per Freq"] = freq_agg["RL Qty per Freq"].astype(int)
     
-    # **Step 5: Define colors**
-    colors = {"Frequent": "green", "Regular": "#A7C7E7"}  # Pastel blue for regular vendors
+    # **Step 6: Merge both datasets**
+    final_data = pd.concat([non_freq_agg, freq_agg.rename(columns={"RL Qty per Freq": "New RL Qty"})], ignore_index=True)
     
-    # **Step 6: Plot the corrected data**
-    fig = px.bar(
-        inbound_data, x="Ship Date", y="Adjusted RL Qty", color="Vendor Type", 
-        text_auto=True, color_discrete_map=colors, barmode="group")  # Side-by-side bars
-    
-    fig.update_yaxes(tickformat=",d")  # Ensure integer y-axis values
+    # **Step 7: Create grouped bar chart**
+    fig = px.bar(final_data, x="Ship Date", y="New RL Qty", color="Logic", text_auto=True, 
+                 barmode="group", title="Total RL Quantity by Ship Date",
+                 color_discrete_map={"Regular": "blue", "Frequent": "green"})  # Blue for regular, green for frequent
     
     st.plotly_chart(fig, use_container_width=True)
 
