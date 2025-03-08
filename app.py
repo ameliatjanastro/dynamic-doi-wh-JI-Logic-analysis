@@ -397,6 +397,7 @@ elif page == "Inbound Quantity Simulation":
     
     merged_data = inbound_data2.merge(freq_vendors, on="primary_vendor_name", how="right")
     merged_data["RL Qty per Freq"] = merged_data["Sum RL Qty"] / merged_data["Freq"]
+    merged_data["RL Qty per Freq"] = merged_data["RL Qty per Freq"].astype(int)
     
     # Display DataFrame
     st.dataframe(merged_data[["primary_vendor_name", "Inbound Days", "Sum RL Qty", "First Ship Date", "RL Qty per Freq"]])
