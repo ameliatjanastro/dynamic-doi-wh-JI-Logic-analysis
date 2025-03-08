@@ -425,12 +425,14 @@ elif page == "Inbound Quantity Simulation":
     final_data = pd.concat([non_freq_agg, freq_agg], ignore_index=True)
     
     # **Step 6: Plot the updated stacked bar chart**
-    fig = px.bar(final_data, x="Ship Date", y=["New RL Qty", "RL Qty per Freq"], color="Logic", text_auto=True,
-                 labels={"value": "RL Quantity", "variable": "Type"},
-                 title="Total RL Quantity by Ship Date")
+    fig = px.bar(final_data, x="Ship Date", y="New RL Qty", color="Logic", text_auto=True, 
+             barmode="group", title="Total RL Quantity by Ship Date (Grouped Logic)")
+
+    # **Step 7: Add a separate bar for frequent vendor RL Qty**
+    fig.add_trace(px.bar(freq_agg, x="Ship Date", y="RL Qty per Freq", color="Logic", text_auto=True).data[0])
     
     st.plotly_chart(fig, use_container_width=True)
-    
+        
     # **Logic Details Table**
     logic_details = pd.DataFrame({
         "Logic Name": ["Logic A", "Logic B", "Logic C", "Logic D"],
