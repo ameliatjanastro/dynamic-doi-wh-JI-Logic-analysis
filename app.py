@@ -8,10 +8,10 @@ st.set_page_config(layout="wide")
 
 # Define file paths
 file_paths = {
-    "Logic A": "logic_a.csv",
-    "Logic B": "logic_b.csv",
-    "Logic C": "logic_c_new.csv",
-    "Logic D": "logic_d.csv",
+    "Logic A": "logic a.csv",
+    "Logic B": "logic b.csv",
+    "Logic C": "logic c_new.csv",
+    "Logic D": "logic d.csv",
 }
 
 # Common columns and logic-related columns
