@@ -342,7 +342,7 @@ elif page == "Inbound Quantity Simulation":
     # Apply filters
     filtered_data = data.copy()
     if selected_pareto:
-        filtered_data = filtered_data[filtered_data["Pareto"]isin.(selected_pareto)]
+        filtered_data = filtered_data[filtered_data["Pareto"].isin(selected_pareto)]
     if selected_location:
         filtered_data = filtered_data[filtered_data["location_id"] == selected_location]
     if selected_business_tag:
