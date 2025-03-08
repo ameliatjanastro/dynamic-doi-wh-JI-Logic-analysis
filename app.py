@@ -241,7 +241,7 @@ elif page == "Inbound Quantity Simulation":
     pareto_options = data["Pareto"].dropna().unique().tolist()
 
 
-    logic_options = filtered_data["Logic"].dropna().unique()
+    logic_options = data["Logic"].dropna().unique()
     selected_logic = st.selectbox("Select Logic", logic_options, key="logic_dropdown")
 
     selected_pareto = st.sidebar.multiselect("Select Pareto", pareto_order,default=[])
