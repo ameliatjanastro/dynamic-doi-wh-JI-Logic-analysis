@@ -13,7 +13,7 @@ st.set_page_config(layout="wide")
 file_paths = {
     "Logic A": "logic a.csv",
     "Logic B": "logic b.csv",
-    "Logic C": "logic c.csv",
+    "Logic C": "logic c new.csv",
     "Logic D": "logic d.csv",
 }
 # Load and normalize data
@@ -80,7 +80,7 @@ if page == "OOS Projection WH":
         selected_data = data[data["product_id"] == selected_product.split(" - ")[0]]
     elif view_option == "Vendor":
         # Create vendor display selection
-        data["vendor_display"] = data["vendor_id"].astype(str) + " - " + data["primary_vendor_name"]
+        data["vendor_display"] = np.where(data["primary_vendor_name"] == "0", data["vendor_id"].astype(str), data["vendor_id"].astype(str) + " - " + data["primary_vendor_name"])
         selected_vendor = st.sidebar.selectbox("Select Vendor", data.sort_values(by="vendor_id")["vendor_display"].unique())
     
         # Ensure vendor filtering is correct
@@ -160,30 +160,33 @@ if page == "OOS Projection WH":
 
     # Show table with only logic columns
 
-    selected_data["Verdict"] = selected_data.apply(lambda row: "Tidak Aman" if row["Landed DOI - JI"] < 2 else "Aman", axis=1)
+    selected_data["Verdict"] = selected_data.apply(lambda row: "Tidak Aman" if row["Landed DOI"] < 5 else "Aman", axis=1)
     
     st.markdown("<b><span style='font-size:26px; color:#20639B;'>Comparison Table</span></b>", unsafe_allow_html=True)
     #st.write("### Comparison Table")
-    table_columns = ["Logic", "coverage", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI", "Landed DOI - JI", "Verdict"]
+    table_columns = ["Logic", "coverage", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI", "Verdict"] #"Landed DOI - JI", 
     original_dtypes = selected_data.dtypes
     
-    def highlight_verdict(row):
-        color = "background-color: red; color: white;" if row["Verdict"] == "Tidak Aman" else ""
-        return [color] * len(row)
-
+    def highlight_cells(val):
+        if val == "Tidak Aman":
+            return "background-color: red; color: white;"  # Red background, white text
+        return ""
+  
+    #formatted_df = selected_data.style.applymap(highlight_cells, subset=["Verdict"])
     formatted_df = selected_data[table_columns].sort_values(
         by="Logic", 
         key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})
-    ).style.format({
+    ).style.applymap(highlight_cells, subset=["Verdict"]).format({
         "New RL Value": "{:,.0f}",  # Adds comma separator (1,000s, no decimals)
         "New DOI Policy WH": "{:.2f}",  # 2 decimal places
         "Landed DOI": "{:.2f}",  # 2 decimal places
-        "Landed DOI - JI": "{:.2f}",  # 2 decimal places
+        #"Landed DOI - JI": "{:.2f}",  # 2 decimal places
     })
 
-    selected_data = selected_data.astype(original_dtypes)
+    #selected_data = selected_data.astype(original_dtypes)
+    
     st.dataframe(formatted_df, hide_index=True, use_container_width=True)
-
+    
     st.markdown(
     """
     <style>
@@ -195,7 +198,6 @@ if page == "OOS Projection WH":
     """,
     unsafe_allow_html=True
     )
-
     
     # Comparison Graph
     #st.write("### Comparison Graph")
@@ -312,7 +314,7 @@ if page == "OOS Projection WH":
     st.plotly_chart(fig, use_container_width=False)
 
     # ✅ Add Note Above Table
-    st.write("**📝 Note:** All logics assume LDP LBH per 10 Feb 2025 → LDP+LBH 85% SOH, thus SOH might not be entirely accurate 🙂")
+    st.write("**📝 Note:** All logics assume LDP LBH per 10 Feb 2025 → LDP+LBH 85% are added to SOH, thus SOH might not be entirely accurate 🙂")
     
     # ✅ Define Logic Details Data
     logic_details = {
@@ -320,7 +322,7 @@ if page == "OOS Projection WH":
         "Logic Details": [
             "cov sesuai RL everyday, dynamic DOI 50% * JI",
             "cov sesuai RL everyday, dynamic DOI JI",
-            "cov sesuai RL everyday, dynamic DOI JI + FR Add Cov Days",
+            "cov sesuai RL everyday, dynamic DOI JI*FR Performance weight",
             "cov 14 Days, DOI Policy 5"
         ]
     }
@@ -366,7 +368,55 @@ elif page == "Inbound Quantity Simulation":
     ]
     
     # ✅ Group by Ship Date and Logic to get total inbound quantity after filtering
-    inbound_data = filtered_data.groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum()
+    inbound_data = (filtered_data[filtered_data["primary_vendor_name"] != "0"].groupby(["Ship Date", "Logic"], as_index=False)["New RL Qty"].sum())
+
+    filtered_data["Landed DOI"] = pd.to_numeric(filtered_data["Landed DOI"], errors="coerce")
+    filtered_logic_data = filtered_data[filtered_data["primary_vendor_name"] != "0"]
+    logic_options = filtered_logic_data["Logic"].unique()
+
+    st.markdown(
+    """
+    <style>
+    div[data-testid="stSelectbox"] {
+        width: auto !important;
+        display: inline-block !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+    )
+
+    # Select Logic first
+    selected_logic = st.selectbox("", logic_options, key="logic_dropdown", label_visibility="collapsed")
+    
+    # Compute values based on selected_logic
+    inbound_data_week = filtered_logic_data.loc[filtered_logic_data["Logic"] == selected_logic, "New RL Qty"].sum()
+    tidakaman = filtered_logic_data.loc[
+        (filtered_logic_data["Logic"] == selected_logic) & 
+        (filtered_logic_data["Landed DOI"] < 5), 
+        "New RL Qty"
+    ].count()
+    
+    st.markdown(f"##### Total RL Qty for **{selected_logic}**: {inbound_data_week} | Total SKU Tidak Aman (Landed DOI < 5): <span style='color:red; font-weight:bold;'>{tidakaman}</span>", 
+        unsafe_allow_html=True)
+
+
+    table_tidakaman = ["Logic", "product_id","product_name","Pareto", "primary_vendor_name","New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI"]
+    #original_dtypes = selected_data.dtypes
+    tidakaman_df = filtered_logic_data[(filtered_logic_data["Landed DOI"] < 5) & (filtered_logic_data["Logic"] == selected_logic)][table_tidakaman]
+    tidakaman_df = tidakaman_df.sort_values(by="Logic", key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4}))
+
+    csv = tidakaman_df.to_csv(index=False)
+
+    # Export Button (Without Displaying DataFrame)
+    st.download_button(
+        label="📥 Download SKU Tidak Aman :( ",
+        data=csv,
+        file_name="tidakamanlist.csv",
+        mime="text/csv"
+    )
+
+    st.markdown("---")
     
     # ✅ Create the line graph using Plotly Express
     if chart_type == "Line Chart":
@@ -459,7 +509,7 @@ elif page == "Inbound Quantity Simulation":
     st.plotly_chart(fig2, use_container_width=True)
 
     # ✅ Add Note Above Table
-    st.write("**📝 Note:** All logics assume LDP LBH per 10 Feb 2025 → LDP+LBH 85% SOH, thus SOH might not be entirely accurate 🙂")
+    st.write("**📝 Note:** All logics assume LDP LBH per 10 Feb 2025 → LDP+LBH 85% are added to SOH, thus SOH might not be entirely accurate 🙂")
     
     # ✅ Define Logic Details Data
     logic_details = {
@@ -467,7 +517,7 @@ elif page == "Inbound Quantity Simulation":
         "Logic Details": [
             "cov sesuai RL everyday, dynamic DOI 50% * JI",
             "cov sesuai RL everyday, dynamic DOI JI",
-            "cov sesuai RL everyday, dynamic DOI JI + FR Add Cov Days",
+            "cov sesuai RL everyday, dynamic DOI JI*FR Performance weight",
             "cov 14 Days, DOI Policy 5"
         ]
     }
@@ -475,3 +525,5 @@ elif page == "Inbound Quantity Simulation":
     # ✅ Convert to DataFrame & Display Table
     logic_df = pd.DataFrame(logic_details)
     st.dataframe(logic_df, hide_index=True, use_container_width=True)
+
+
