@@ -167,23 +167,23 @@ if page == "OOS Projection WH":
         table_columns = ["Logic", "coverage", "New RL Qty", "New RL Value", "New DOI Policy WH", "Landed DOI", "Verdict"] #"Landed DOI - JI", 
         original_dtypes = selected_data.dtypes
     
-    def highlight_cells(val):
-        if val == "Tidak Aman":
-            return "background-color: red; color: white;"  # Red background, white text
-        return ""
-  
-    #formatted_df = selected_data.style.applymap(highlight_cells, subset=["Verdict"])
-    formatted_df = selected_data[table_columns].sort_values(
-        by="Logic", 
-        key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})
-    ).style.applymap(highlight_cells, subset=["Verdict"]).format({
-        "New RL Value": "{:,.0f}",  # Adds comma separator (1,000s, no decimals)
-        "New DOI Policy WH": "{:.2f}",  # 2 decimal places
-        "Landed DOI": "{:.2f}",  # 2 decimal places
-        #"Landed DOI - JI": "{:.2f}",  # 2 decimal places
-    })
-
-    #selected_data = selected_data.astype(original_dtypes)
+        def highlight_cells(val):
+            if val == "Tidak Aman":
+                return "background-color: red; color: white;"  # Red background, white text
+            return ""
+      
+        #formatted_df = selected_data.style.applymap(highlight_cells, subset=["Verdict"])
+        formatted_df = selected_data[table_columns].sort_values(
+            by="Logic", 
+            key=lambda x: x.map({"Logic A": 1, "Logic B": 2, "Logic C": 3, "Logic D": 4})
+        ).style.applymap(highlight_cells, subset=["Verdict"]).format({
+            "New RL Value": "{:,.0f}",  # Adds comma separator (1,000s, no decimals)
+            "New DOI Policy WH": "{:.2f}",  # 2 decimal places
+            "Landed DOI": "{:.2f}",  # 2 decimal places
+            #"Landed DOI - JI": "{:.2f}",  # 2 decimal places
+        })
+    
+        #selected_data = selected_data.astype(original_dtypes)
     
     st.dataframe(formatted_df, hide_index=True, use_container_width=True)
     
@@ -256,14 +256,14 @@ if page == "OOS Projection WH":
     #    #center_x = [str(logic) for logic in selected_data["Logic"]]  # Use same x values for alignment
 
         # ✅ Add Drop Line (Scatter, Placed in Center)
-       # fig.add_trace(go.Scatter(
-       #     x=[row["Logic"], row["Logic"]],
-       #     y=[row["Landed DOI"], row["Landed DOI - JI"]],
-       #     mode="lines",
-       #     line=dict(color="red", width=2, dash="solid"),  # Solid red line
-       #     name=f"Drop {row['Logic']}",
-       #     yaxis="y2",  # ✅ Use secondary y-axis to place it on top
-            #text=[f"<span style='background-color:yellow; padding:2px'>{drop_value:.1f}</span>"],  
+   #    fig.add_trace(go.Scatter(
+   #        x=[row["Logic"], row["Logic"]],
+   #        y=[row["Landed DOI"],
+      #     mode="lines",
+      #     line=dict(color="red", width=2, dash="solid"),  # Solid red line
+       #   name=f"Drop {row['Logic']}",
+       #   yaxis="y2",  # ✅ Use secondary y-axis to place it on top
+       #     #text=[f"<span style='background-color:yellow; padding:2px'>{drop_value:.1f}</span>"],  
        #     #textposition="top center",
         #    #textfont=dict(color="black"),  # ✅ Black text for visibility
         #    hoverinfo="skip",
