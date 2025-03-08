@@ -63,7 +63,8 @@ page = st.sidebar.selectbox("Choose a page", ["Inbound Quantity Simulation", "OO
 if page == "OOS Projection WH":
     
     # Sidebar filters
-    st.subheader("Data is based on RL Upload 10-14 Feb 2025")
+    st.markdown('<h5 style="color:gray;">Data is based on RL Upload 10-14 Feb 2025</h5>', unsafe_allow_html=True)
+
     view_option = st.sidebar.radio("View by", ["Product ID", "Vendor"])
     
     if view_option == "Product ID":
@@ -236,7 +237,8 @@ if page == "OOS Projection WH":
     st.dataframe(logic_df, hide_index=True, use_container_width=True)
 
 elif page == "Inbound Quantity Simulation":
-    st.subheader("Data is based on RL Upload 10-14 Feb 2025")
+    st.markdown('<h5 style="color:gray;">Data is based on RL Upload 10-14 Feb 2025</h5>', unsafe_allow_html=True)
+
     st.markdown("<b><span style='font-size:26px; color:#20639B;'>Inbound Qty Comparison</span></b>", unsafe_allow_html=True)
     pareto_options = data["Pareto"].dropna().unique().tolist()
 
